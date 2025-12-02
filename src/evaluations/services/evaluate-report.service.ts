@@ -9,7 +9,6 @@ import {
   UATReportDocument,
 } from '../../uat-reports/models/uat-report';
 import { GetScoringRulesService } from '../../scoring-rules/services/get-scoring-rules.service';
-import { GetUserService } from '../../users/services/get-user.service';
 import { TestIdentityEvaluator } from './evaluators/test-identity.evaluator';
 import { TestEnvironmentEvaluator } from './evaluators/test-environment.evaluator';
 import { StepsToReproduceEvaluator } from './evaluators/steps-to-reproduce.evaluator';

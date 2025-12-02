@@ -20,10 +20,13 @@ export class UpdateValidationThresholdService {
     private trackConfigChangeService: TrackConfigChangeService,
   ) {}
 
-  async update(threshold: number, userId: string): Promise<ValidationConfigView> {
+  async update(
+    threshold: number,
+    userId: string,
+  ): Promise<ValidationConfigView> {
     try {
       // Get current config or create new one
-      let config = await this.validationConfigModel
+      const config = await this.validationConfigModel
         .findOne()
         .sort({ updatedAt: -1 });
 

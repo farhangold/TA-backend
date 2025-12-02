@@ -45,7 +45,9 @@ export class GetDashboardStatsService {
       return {
         totalReports,
         validReports: counts[ReportStatus.VALID] || 0,
-        invalidReports: (counts[ReportStatus.INVALID] || 0) + (counts[ReportStatus.FAILED] || 0),
+        invalidReports:
+          (counts[ReportStatus.INVALID] || 0) +
+          (counts[ReportStatus.FAILED] || 0),
         pendingReports: counts[ReportStatus.PENDING_EVALUATION] || 0,
         evaluatingReports: counts[ReportStatus.EVALUATING] || 0,
         failedReports: counts[ReportStatus.FAILED] || 0,
@@ -59,4 +61,3 @@ export class GetDashboardStatsService {
     }
   }
 }
-

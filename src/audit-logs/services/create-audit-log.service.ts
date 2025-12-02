@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ObjectId } from 'bson';
-import { ThrowGQL, GQLThrowType } from '@app/gqlerr';
 import { AuditLog, AuditLogDocument } from '../models/audit-log';
 import { AuditAction } from '../enums/audit-action.enum';
 import { AuditEntity } from '../enums/audit-entity.enum';

@@ -27,7 +27,7 @@ export class GetEvaluationService {
         .populate('reportId')
         .populate('evaluatedBy')
         .lean()
-        .exec()) as EvaluationDocument | null;
+        .exec()) as unknown as EvaluationDocument | null;
 
       if (!evaluation) {
         throw new ThrowGQL('Evaluation not found', GQLThrowType.NOT_FOUND);
@@ -64,7 +64,7 @@ export class GetEvaluationService {
         this.evaluationModel.countDocuments({ reportId }),
       ]);
 
-      const evaluations = evaluationsResult as EvaluationDocument[];
+      const evaluations = evaluationsResult as unknown as EvaluationDocument[];
 
       const edges: EvaluationEdge[] = evaluations.map(
         (evaluation, index): EvaluationEdge => ({

@@ -32,7 +32,7 @@ export class TokenService {
           this.configService.get<string>('jwt.refreshSecret') ||
           'dev-refresh-secret-key',
       });
-    } catch (error) {
+    } catch {
       return null;
     }
   }

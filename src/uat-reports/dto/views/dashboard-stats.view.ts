@@ -26,4 +26,3 @@ export class DashboardStatsView {
   @Field(() => Int)
   verifyingReports: number; // PENDING_EVALUATION + EVALUATING
 }
-

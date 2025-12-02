@@ -42,7 +42,9 @@ export class TrackConfigChangeService {
     }
   }
 
-  async getHistory(pagination?: PaginationInput): Promise<ConfigHistoryConnection> {
+  async getHistory(
+    pagination?: PaginationInput,
+  ): Promise<ConfigHistoryConnection> {
     try {
       const page = pagination?.page || 1;
       const limit = pagination?.limit || 20;

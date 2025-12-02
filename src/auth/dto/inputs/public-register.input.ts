@@ -16,4 +16,3 @@ export class PublicRegisterInput {
   @IsString()
   name: string;
 }
-

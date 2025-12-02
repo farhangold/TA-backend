@@ -6,7 +6,6 @@ import { TestEnvironment, TestEnvironmentSchema } from './test-environment';
 import { Evidence, EvidenceSchema } from './evidence';
 import { SeverityLevel } from '../enums/severity-level.enum';
 import { ReportStatus } from '../enums/report-status.enum';
-import { User } from '../../users/models/user';
 
 @Schema({ timestamps: true })
 @ObjectType()

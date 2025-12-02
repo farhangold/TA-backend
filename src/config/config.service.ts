@@ -5,5 +5,3 @@ export const configService = {
     return Number.isNaN(port) ? 3000 : port;
   },
 };
-
-

@@ -23,7 +23,12 @@ export class User {
   password: string;
 
   @Field(() => UserRole)
-  @Prop({ required: true, type: String, enum: UserRole, default: UserRole.VIEWER })
+  @Prop({
+    required: true,
+    type: String,
+    enum: UserRole,
+    default: UserRole.VIEWER,
+  })
   role: UserRole;
 
   @Field()

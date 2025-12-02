@@ -14,7 +14,10 @@ export class UpdateUATReportService {
     private uatReportModel: Model<UATReportDocument>,
   ) {}
 
-  async update(id: string, input: UpdateUATReportInput): Promise<UATReportView> {
+  async update(
+    id: string,
+    input: UpdateUATReportInput,
+  ): Promise<UATReportView> {
     try {
       const updateData: any = {};
 
