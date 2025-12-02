@@ -26,7 +26,7 @@ export class AuthService {
       // Find user by email
       const user = await this.getUserService.findByEmail(input.email);
       if (!user) {
-        throw new ThrowGQL('Invalid credentials', GQLThrowType.UNAUTHORIZED);
+        throw new ThrowGQL('Invalid credentials', GQLThrowType.NOT_AUTHORIZED);
       }
 
       // Verify password
@@ -35,7 +35,7 @@ export class AuthService {
         user.password,
       );
       if (!isPasswordValid) {
-        throw new ThrowGQL('Invalid credentials', GQLThrowType.UNAUTHORIZED);
+        throw new ThrowGQL('Invalid credentials', GQLThrowType.NOT_AUTHORIZED);
       }
 
       // Generate tokens
@@ -66,7 +66,10 @@ export class AuthService {
       // Verify refresh token
       const payload = this.tokenService.verifyRefreshToken(token);
       if (!payload) {
-        throw new ThrowGQL('Invalid refresh token', GQLThrowType.UNAUTHORIZED);
+        throw new ThrowGQL(
+          'Invalid refresh token',
+          GQLThrowType.NOT_AUTHORIZED,
+        );
       }
 
       // Get user
@@ -111,7 +114,7 @@ export class AuthService {
       if (existingUser) {
         throw new ThrowGQL(
           'User with this email already exists',
-          GQLThrowType.CONFLICT,
+          GQLThrowType.DUPLICATE,
         );
       }
 

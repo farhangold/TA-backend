@@ -98,8 +98,11 @@ export class EvaluationsResolver {
       evaluation.evaluatedBy !== null
     ) {
       // Already populated
-      return evaluation.evaluatedBy;
+      return evaluation.evaluatedBy as UserView;
     }
-    return await this.getUserService.findById(evaluation.evaluatedBy);
+    // At this point evaluatedBy should be an ID string; cast to string for the service call
+    return await this.getUserService.findById(
+      evaluation.evaluatedBy as unknown as string,
+    );
   }
 }

@@ -22,7 +22,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: any) {
     const user = await this.getUserService.findById(payload.sub);
     if (!user) {
-      throw new ThrowGQL('Invalid token', GQLThrowType.UNAUTHORIZED);
+      throw new ThrowGQL('Invalid token', GQLThrowType.NOT_AUTHORIZED);
     }
     return user;
   }

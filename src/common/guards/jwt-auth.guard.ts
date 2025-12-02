@@ -17,7 +17,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     if (err || !user) {
       throw new ThrowGQL(
         'Unauthorized: You must be logged in to access this resource',
-        GQLThrowType.UNAUTHORIZED,
+        GQLThrowType.NOT_AUTHORIZED,
       );
     }
     return user;

@@ -26,7 +26,7 @@ export class RolesGuard implements CanActivate {
     if (!user) {
       throw new ThrowGQL(
         'Unauthorized: Authentication required',
-        GQLThrowType.UNAUTHORIZED,
+        GQLThrowType.NOT_AUTHORIZED,
       );
     }
 

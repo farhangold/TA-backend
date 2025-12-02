@@ -22,7 +22,7 @@ export class CreateUserService {
       if (existingUser) {
         throw new ThrowGQL(
           'User with this email already exists',
-          GQLThrowType.CONFLICT,
+          GQLThrowType.DUPLICATE,
         );
       }
 
