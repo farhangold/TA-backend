@@ -1,0 +1,382 @@
+---
+alwaysApply: true
+---
+# NestJS GraphQL Project Rules
+
+You are an expert in NestJS, GraphQL, TypeScript, MongoDB, and Mongoose.
+
+## Tech Stack
+
+- Framework: NestJS v10+
+- API: GraphQL with Apollo Server (code-first approach)
+- Database: MongoDB with Mongoose
+- Authentication: JWT with Passport
+- Validation: class-validator
+- Language: TypeScript (ES2021+)
+
+## Architecture Patterns
+
+### Module Structure
+
+Follow feature-based modular architecture:
+
+```
+feature/
+├── feature.module.ts        # Module definition
+├── feature.resolver.ts      # GraphQL resolver
+├── dto/
+│   ├── inputs/             # GraphQL input types (@InputType)
+│   │   ├── create.feature.input.ts
+│   │   └── update.feature.input.ts
+│   ├── views/              # GraphQL return types (@ObjectType)
+│   │   └── feature.view.ts
+│   └── args/               # GraphQL arguments (@ArgsType)
+│       └── get.feature.args.ts
+├── models/
+│   ├── feature.ts          # Mongoose schema & GraphQL ObjectType
+│   └── parser.ts           # Data transformation utilities
+├── services/               # Business logic (one per operation)
+│   ├── create.feature.service.ts
+│   ├── get.feature.service.ts
+│   ├── update.feature.service.ts
+│   └── delete.feature.service.ts
+└── guards/                 # Optional: feature-specific guards
+```
+
+### Service Organization
+
+- Create separate service file for each CRUD operation
+- Naming: `{operation}.{feature}.service.ts`
+- Single responsibility per service
+- Example: `create.task.service.ts`, `update.task.service.ts`
+
+### Module Configuration
+
+```typescript
+@Module({
+  imports: [
+    MongooseModule.forFeature([{ name: Model.name, schema: ModelSchema }]),
+    forwardRef(() => RelatedModule), // For circular dependencies
+    OtherModule,
+  ],
+  providers: [
+    FeatureResolver,
+    CreateFeatureService,
+    GetFeatureService,
+    UpdateFeatureService,
+    DeleteFeatureService,
+  ],
+  exports: [
+    CreateFeatureService,
+    GetFeatureService,
+    UpdateFeatureService,
+    DeleteFeatureService,
+  ],
+})
+export class FeatureModule {}
+```
+
+## Code Conventions
+
+### Models (Mongoose + GraphQL)
+
+Use both `@Schema()` and `@ObjectType()` decorators on same class:
+
+```typescript
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Field, ObjectType } from '@nestjs/graphql';
+import { HydratedDocument } from 'mongoose';
+
+@Schema()
+@ObjectType()
+export class Feature {
+  @Field()
+  @Prop({ required: true })
+  _id: string;
+
+  @Field()
+  @Prop({ required: true })
+  name: string;
+
+  @Field({ nullable: true })
+  @Prop({ required: false })
+  description: string;
+}
+
+export type FeatureDocument = HydratedDocument<Feature>;
+export const FeatureSchema = SchemaFactory.createForClass(Feature);
+```
+
+Key points:
+- Always include `_id` field as string
+- Use `@Prop()` for Mongoose, `@Field()` for GraphQL
+- Export type alias: `export type ModelDocument = HydratedDocument<Model>`
+- Export schema: `export const ModelSchema = SchemaFactory.createForClass(Model)`
+- Create nested types as separate classes with both decorators
+
+### DTOs (Data Transfer Objects)
+
+#### Input Types
+- Use `@InputType()` decorator
+- Place in `dto/inputs/` directory
+- Naming: `{operation}.{feature}.input.ts`
+- Use `{ nullable: true }` for optional fields
+
+```typescript
+import { InputType, Field } from '@nestjs/graphql';
+
+@InputType()
+export class CreateFeatureInput {
+  @Field()
+  name: string;
+
+  @Field({ nullable: true })
+  description?: string;
+}
+```
+
+#### View Types (Return Types)
+- Use `@ObjectType()` decorator
+- Place in `dto/views/` directory
+- Naming: `{feature}.view.ts`
+- Mirror model structure, can include computed fields
+
+#### Arguments
+- Use `@ArgsType()` decorator
+- Place in `dto/args/` directory
+- For complex query parameters
+
+### Resolvers
+
+```typescript
+import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { UseGuards } from '@nestjs/common';
+
+@Resolver(() => Feature)
+export class FeatureResolver {
+  constructor(
+    private readonly createService: CreateFeatureService,
+    private readonly getService: GetFeatureService,
+  ) {}
+
+  @Mutation(() => FeatureView)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  async createFeature(
+    @Args('input') input: CreateFeatureInput
+  ): Promise<FeatureView> {
+    return this.createService.create(input);
+  }
+
+  @Query(() => [FeatureView])
+  async getFeatures(): Promise<FeatureView[]> {
+    return this.getService.findAll();
+  }
+}
+```
+
+Key points:
+- Use `@Resolver(() => ModelType)` decorator
+- Inject services via constructor
+- Always specify return types: `@Query(() => ReturnType)`
+- Use `@Args('paramName')` for parameters
+- Apply guards using decorators
+- Use custom decorators: `@Roles('admin', 'worker')`
+
+### Services
+
+```typescript
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { ObjectId } from 'bson';
+import { ThrowGQL, GQLThrowType } from '@app/gqlerr';
+
+@Injectable()
+export class CreateFeatureService {
+  constructor(
+    @InjectModel(Feature.name)
+    private featureModel: Model<Feature>,
+  ) {}
+
+  async create(input: CreateFeatureInput): Promise<FeatureView> {
+    try {
+      const parsedInput = parseRequest(input);
+      const result = await this.featureModel.create({
+        _id: new ObjectId(),
+        ...parsedInput,
+      });
+      return parseToView(result);
+    } catch (error) {
+      throw new ThrowGQL(error, GQLThrowType.UNPROCESSABLE);
+    }
+  }
+}
+```
+
+Key points:
+- Use `@Injectable()` decorator
+- Inject models: `@InjectModel(Model.name)`
+- Use parser functions for transformations
+- Handle errors with `ThrowGQL`
+- Wrap operations in try-catch
+- Always use `new ObjectId()` from 'bson' for MongoDB IDs
+
+### Parser Pattern
+
+Create `parser.ts` in models directory:
+
+```typescript
+export function parseRequest(input: CreateFeatureInput): Partial<Feature> {
+  // Transform input DTO to model format
+  return { ...input };
+}
+
+export function parseToView(doc: FeatureDocument): FeatureView {
+  // Transform document to view DTO
+  return { ...doc.toObject() };
+}
+
+export function parseToDocument(data: any): Partial<Feature> {
+  // Transform to Mongoose document format
+  return data;
+}
+```
+
+### Guards and Decorators
+
+#### Custom Decorators
+
+Place in `decorators/` directory:
+
+```typescript
+import { SetMetadata } from '@nestjs/common';
+export const Roles = (...roles: string[]) => SetMetadata('roles', roles);
+```
+
+#### Guards
+
+Place in `guards/` directory, implement `CanActivate`:
+
+```typescript
+import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { GqlExecutionContext } from '@nestjs/graphql';
+
+@Injectable()
+export class JwtAuthGuard implements CanActivate {
+  canActivate(context: ExecutionContext): boolean {
+    const ctx = GqlExecutionContext.create(context);
+    // Implementation
+    return true;
+  }
+}
+```
+
+### Error Handling
+
+Use custom error library from `@app/gqlerr`:
+
+```typescript
+throw new ThrowGQL(error, GQLThrowType.UNPROCESSABLE);
+// Available types: UNPROCESSABLE, NOT_FOUND, UNAUTHORIZED, etc.
+```
+
+Use `Try()` helper for safe operations.
+
+### GraphQL Configuration
+
+Use code-first approach in `app.module.ts`:
+
+```typescript
+GraphQLModule.forRoot<ApolloDriverConfig>({
+  driver: ApolloDriver,
+  autoSchemaFile: true,
+  sortSchema: true,
+  playground: true,
+  introspection: true,
+  formatError: GQLErrFormatter,
+  context: ({ req, res }) => ({ req, res }),
+})
+```
+
+### Database Configuration
+
+```typescript
+MongooseModule.forRootAsync({
+  useFactory: () => ({
+    uri: process.env.MONGODB_URI,
+    connectTimeoutMS: 10000,
+    dbName: 'your_database_name',
+  }),
+})
+```
+
+### Authentication & Authorization
+
+- Use JWT strategy with passport-jwt
+- Store JWT secret in environment variables
+- Extract token from Authorization header: `Bearer <token>`
+- Attach decoded user to request object
+- Implement token verification in guards
+- Implement logout with token invalidation
+
+## Import Organization
+
+Order imports:
+1. NestJS core imports
+2. Third-party libraries
+3. Internal modules (relative imports)
+4. Custom libraries (path aliases like @app/*)
+
+## Naming Conventions
+
+- Files: kebab-case (lowercase with hyphens)
+- Classes: PascalCase
+- Interfaces: PascalCase (prefix with 'I' only if necessary)
+- Variables/Functions: camelCase
+- Constants: UPPER_SNAKE_CASE
+- MongoDB IDs: Always use `_id` (with underscore)
+
+## TypeScript Configuration
+
+- Target: ES2021
+- Enable decorators: `experimentalDecorators` and `emitDecoratorMetadata`
+- Use path aliases: `@app/libraryname`
+- Disable strict null checks for flexibility
+- Remove comments in production build
+
+## Best Practices
+
+1. Keep resolvers thin, move logic to services
+2. Always define explicit return types
+3. Use custom error types for consistent responses
+4. Use class-validator decorators in DTOs
+5. Always validate and sanitize inputs
+6. Use lean() for read-only queries when appropriate
+7. Use forwardRef() for circular dependencies
+8. Only export what other modules need
+9. Always use async/await over promises
+10. Don't mix business logic in resolvers
+11. Don't forget @Injectable() on services
+12. Don't use plain Error, use ThrowGQL
+13. Don't forget to register schemas in MongooseModule.forFeature()
+14. Don't expose sensitive data in GraphQL responses
+
+## When Creating New Features
+
+1. Create module directory with proper structure
+2. Define Mongoose model with GraphQL decorators
+3. Create input and view DTOs
+4. Implement separate services for each operation
+5. Create resolver with decorators and guards
+6. Add module to app.module.ts imports
+7. Export services that other modules need
+8. Write unit tests for services
+9. Test queries/mutations in GraphQL playground
+
+## Additional Considerations
+
+- Use `@nestjs/throttler` for rate-limiting
+- Use `@nestjs/schedule` for cron jobs
+- Use cookie-parser for session management
+- Use `@nestjs/config` with ConfigService for configuration
