@@ -9,7 +9,7 @@ import { configService } from './config/config.service';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const config = app.get(ConfigService);
-  
+
   // Configure CORS with allowed origins from environment
   const allowedOrigins = config.get<string[]>('app.corsOrigins') || [
     'http://localhost:3000',
