@@ -181,4 +181,57 @@ export class InitializeScoringRulesService {
       },
     ];
   }
+
+  getDefaultBugReportRules() {
+    return [
+      {
+        attribute: AttributeType.TEST_ENVIRONMENT,
+        description: 'Test Environment Completeness',
+        criteria: 'IF OS, browser, dan perangkat diisi lengkap THEN 1 ELSE 0',
+        weight: 25,
+        isActive: true,
+      },
+      {
+        attribute: AttributeType.STEPS_TO_REPRODUCE,
+        description: 'Input (Step to Reproduce)',
+        criteria:
+          'IF langkah ≥ 3 dan berurutan logis THEN 1 ELSE 0.5 jika ambigu',
+        weight: 35,
+        isActive: true,
+      },
+      {
+        attribute: AttributeType.ACTUAL_RESULT,
+        description: 'Description',
+        criteria: 'IF deskripsi hasil aktual ≥ 30 karakter THEN 1 ELSE 0',
+        weight: 25,
+        isActive: true,
+      },
+      {
+        attribute: AttributeType.SUPPORTING_EVIDENCE,
+        description: 'Screenshot/Evidence',
+        criteria: 'IF evidence tidak kosong dan sesuai kebutuhan THEN 1 ELSE 0',
+        weight: 15,
+        isActive: true,
+      },
+    ];
+  }
+
+  getDefaultSuccessReportRules() {
+    return [
+      {
+        attribute: AttributeType.TEST_ENVIRONMENT,
+        description: 'Environment',
+        criteria: 'IF OS, browser, dan perangkat diisi lengkap THEN 1 ELSE 0',
+        weight: 40,
+        isActive: true,
+      },
+      {
+        attribute: AttributeType.ACTUAL_RESULT,
+        description: 'Description',
+        criteria: 'IF deskripsi hasil aktual ≥ 30 karakter THEN 1 ELSE 0',
+        weight: 60,
+        isActive: true,
+      },
+    ];
+  }
 }

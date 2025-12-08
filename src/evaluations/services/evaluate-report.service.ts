@@ -17,6 +17,9 @@ import { ExpectedResultEvaluator } from './evaluators/expected-result.evaluator'
 import { SupportingEvidenceEvaluator } from './evaluators/supporting-evidence.evaluator';
 import { SeverityLevelEvaluator } from './evaluators/severity-level.evaluator';
 import { InformationConsistencyEvaluator } from './evaluators/information-consistency.evaluator';
+import { DescriptionSuccessEvaluator } from './evaluators/description-success.evaluator';
+import { EnvironmentSuccessEvaluator } from './evaluators/environment-success.evaluator';
+import { ReportType } from '../../uat-reports/enums/report-type.enum';
 import { CalculateScoreService } from './calculate-score.service';
 import { DetermineStatusService } from './determine-status.service';
 import { GenerateFeedbackService } from './generate-feedback.service';
@@ -41,6 +44,8 @@ export class EvaluateReportService {
     private supportingEvidenceEvaluator: SupportingEvidenceEvaluator,
     private severityLevelEvaluator: SeverityLevelEvaluator,
     private informationConsistencyEvaluator: InformationConsistencyEvaluator,
+    private descriptionSuccessEvaluator: DescriptionSuccessEvaluator,
+    private environmentSuccessEvaluator: EnvironmentSuccessEvaluator,
     private calculateScoreService: CalculateScoreService,
     private determineStatusService: DetermineStatusService,
     private generateFeedbackService: GenerateFeedbackService,
@@ -56,14 +61,20 @@ export class EvaluateReportService {
         throw new ThrowGQL('Report not found', GQLThrowType.NOT_FOUND);
       }
 
+      // Get reportType
+      const reportType = report.reportType || ReportType.BUG_REPORT;
+
       // Update report status to EVALUATING
       await this.uatReportModel.updateOne(
         { _id: reportId },
         { $set: { status: ReportStatus.EVALUATING } },
       );
 
-      // 2. Get active scoring rules
-      const rules = await this.getScoringRulesService.getActiveRules();
+      // 2. Get scoring rules based on report type
+      const rules =
+        await this.getScoringRulesService.getScoringRulesByReportType(
+          reportType,
+        );
       const rulesMap = rules.reduce((map, rule) => {
         map[rule.attribute] = rule;
         return map;
@@ -73,20 +84,25 @@ export class EvaluateReportService {
       const validationConfig =
         await this.getScoringRulesService.getValidationConfig();
 
-      // 4. Run each attribute evaluator
+      // 4. Run each attribute evaluator based on report type
       const attributeScores: any[] = [];
 
-      const evaluators = {
-        [AttributeType.TEST_IDENTITY]: this.testIdentityEvaluator,
-        [AttributeType.TEST_ENVIRONMENT]: this.testEnvironmentEvaluator,
-        [AttributeType.STEPS_TO_REPRODUCE]: this.stepsToReproduceEvaluator,
-        [AttributeType.ACTUAL_RESULT]: this.actualResultEvaluator,
-        [AttributeType.EXPECTED_RESULT]: this.expectedResultEvaluator,
-        [AttributeType.SUPPORTING_EVIDENCE]: this.supportingEvidenceEvaluator,
-        [AttributeType.SEVERITY_LEVEL]: this.severityLevelEvaluator,
-        [AttributeType.INFORMATION_CONSISTENCY]:
-          this.informationConsistencyEvaluator,
-      };
+      // Select evaluators based on report type
+      let evaluators: Record<string, any>;
+      if (reportType === ReportType.SUCCESS_REPORT) {
+        evaluators = {
+          [AttributeType.TEST_ENVIRONMENT]: this.environmentSuccessEvaluator,
+          [AttributeType.ACTUAL_RESULT]: this.descriptionSuccessEvaluator,
+        };
+      } else {
+        // Bug Report evaluators
+        evaluators = {
+          [AttributeType.TEST_ENVIRONMENT]: this.testEnvironmentEvaluator,
+          [AttributeType.STEPS_TO_REPRODUCE]: this.stepsToReproduceEvaluator,
+          [AttributeType.ACTUAL_RESULT]: this.actualResultEvaluator,
+          [AttributeType.SUPPORTING_EVIDENCE]: this.supportingEvidenceEvaluator,
+        };
+      }
 
       for (const [attribute, evaluator] of Object.entries(evaluators)) {
         const rule = rulesMap[attribute];
@@ -123,6 +139,7 @@ export class EvaluateReportService {
       const evaluation = await this.evaluationModel.create({
         _id: new ObjectId().toString(),
         reportId,
+        reportType,
         attributeScores,
         totalScore,
         maxScore,

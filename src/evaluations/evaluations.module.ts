@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Evaluation, EvaluationSchema } from './models/evaluation';
 import { UATReportsModule } from '../uat-reports/uat-reports.module';
@@ -14,6 +14,8 @@ import { ExpectedResultEvaluator } from './services/evaluators/expected-result.e
 import { SupportingEvidenceEvaluator } from './services/evaluators/supporting-evidence.evaluator';
 import { SeverityLevelEvaluator } from './services/evaluators/severity-level.evaluator';
 import { InformationConsistencyEvaluator } from './services/evaluators/information-consistency.evaluator';
+import { DescriptionSuccessEvaluator } from './services/evaluators/description-success.evaluator';
+import { EnvironmentSuccessEvaluator } from './services/evaluators/environment-success.evaluator';
 import { CalculateScoreService } from './services/calculate-score.service';
 import { DetermineStatusService } from './services/determine-status.service';
 import { GenerateFeedbackService } from './services/generate-feedback.service';
@@ -29,7 +31,7 @@ import { EvaluationsResolver } from './evaluations.resolver';
       { name: UATReport.name, schema: UATReportSchema },
       { name: User.name, schema: UserSchema },
     ]),
-    UATReportsModule,
+    forwardRef(() => UATReportsModule),
     ScoringRulesModule,
     UsersModule,
   ],
@@ -42,6 +44,8 @@ import { EvaluationsResolver } from './evaluations.resolver';
     SupportingEvidenceEvaluator,
     SeverityLevelEvaluator,
     InformationConsistencyEvaluator,
+    DescriptionSuccessEvaluator,
+    EnvironmentSuccessEvaluator,
     CalculateScoreService,
     DetermineStatusService,
     GenerateFeedbackService,

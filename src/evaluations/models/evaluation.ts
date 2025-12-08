@@ -7,6 +7,7 @@ import {
   EvaluationFeedbackSchema,
 } from './evaluation-feedback';
 import { ValidationStatus } from '../enums/validation-status.enum';
+import { ReportType } from '../../uat-reports/enums/report-type.enum';
 
 @Schema({ timestamps: true })
 @ObjectType()
@@ -18,6 +19,10 @@ export class Evaluation {
   @Field(() => String)
   @Prop({ required: true, type: MongooseSchema.Types.String, ref: 'UATReport' })
   reportId: string;
+
+  @Field(() => ReportType)
+  @Prop({ required: true, type: String, enum: ReportType })
+  reportType: ReportType;
 
   @Field(() => [AttributeScore])
   @Prop({ required: true, type: [AttributeScoreSchema] })
@@ -68,3 +73,5 @@ EvaluationSchema.index({ reportId: 1 });
 EvaluationSchema.index({ evaluatedAt: -1 });
 EvaluationSchema.index({ validationStatus: 1 });
 EvaluationSchema.index({ reportId: 1, version: -1 });
+EvaluationSchema.index({ reportType: 1 });
+EvaluationSchema.index({ reportType: 1, validationStatus: 1 });

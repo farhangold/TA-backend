@@ -5,6 +5,7 @@ export function parseEvaluationToView(doc: EvaluationDocument): EvaluationView {
   return {
     _id: doc._id,
     reportId: doc.reportId,
+    reportType: doc.reportType,
     report: undefined as never, // Populated by GraphQL @ResolveField
     attributeScores: doc.attributeScores,
     totalScore: doc.totalScore,

@@ -6,6 +6,7 @@ import { TestEnvironment, TestEnvironmentSchema } from './test-environment';
 import { Evidence, EvidenceSchema } from './evidence';
 import { SeverityLevel } from '../enums/severity-level.enum';
 import { ReportStatus } from '../enums/report-status.enum';
+import { ReportType } from '../enums/report-type.enum';
 
 @Schema({ timestamps: true })
 @ObjectType()
@@ -18,25 +19,29 @@ export class UATReport {
   @Prop({ required: true, type: TestIdentitySchema })
   testIdentity: TestIdentity;
 
+  @Field(() => ReportType)
+  @Prop({ required: true, type: String, enum: ReportType })
+  reportType: ReportType;
+
   @Field(() => TestEnvironment)
   @Prop({ required: true, type: TestEnvironmentSchema })
   testEnvironment: TestEnvironment;
 
-  @Field(() => [String])
-  @Prop({ required: true, type: [String] })
-  stepsToReproduce: string[];
+  @Field(() => [String], { nullable: true })
+  @Prop({ required: false, type: [String] })
+  stepsToReproduce?: string[];
 
   @Field()
   @Prop({ required: true })
   actualResult: string;
 
-  @Field()
-  @Prop({ required: true })
-  expectedResult: string;
+  @Field({ nullable: true })
+  @Prop({ required: false })
+  expectedResult?: string;
 
-  @Field(() => [Evidence])
-  @Prop({ required: true, type: [EvidenceSchema], default: [] })
-  supportingEvidence: Evidence[];
+  @Field(() => [Evidence], { nullable: true })
+  @Prop({ required: false, type: [EvidenceSchema], default: [] })
+  supportingEvidence?: Evidence[];
 
   @Field(() => SeverityLevel)
   @Prop({ required: true, type: String, enum: SeverityLevel })
@@ -80,3 +85,5 @@ UATReportSchema.index({ createdBy: 1 });
 UATReportSchema.index({ createdAt: -1 });
 UATReportSchema.index({ domain: 1 });
 UATReportSchema.index({ status: 1, severityLevel: 1 });
+UATReportSchema.index({ reportType: 1 });
+UATReportSchema.index({ reportType: 1, status: 1 });

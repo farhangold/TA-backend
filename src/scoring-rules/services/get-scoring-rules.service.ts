@@ -12,8 +12,10 @@ import {
   parseValidationConfigToView,
 } from '../models/parser';
 import { AttributeType } from '../enums/attribute-type.enum';
+import { ReportType } from '../../uat-reports/enums/report-type.enum';
 import { ScoringRuleView } from '../dto/views/scoring-rule.view';
 import { ValidationConfigView } from '../dto/views/validation-config.view';
+import { InitializeScoringRulesService } from './initialize-scoring-rules.service';
 
 @Injectable()
 export class GetScoringRulesService {
@@ -22,6 +24,7 @@ export class GetScoringRulesService {
     private scoringRuleModel: Model<ScoringRuleDocument>,
     @InjectModel(ValidationConfig.name)
     private validationConfigModel: Model<ValidationConfigDocument>,
+    private initializeScoringRulesService: InitializeScoringRulesService,
   ) {}
 
   async findAll(): Promise<ScoringRuleView[]> {
@@ -77,6 +80,60 @@ export class GetScoringRulesService {
       if (error instanceof ThrowGQL) {
         throw error;
       }
+      throw new ThrowGQL(error, GQLThrowType.UNPROCESSABLE);
+    }
+  }
+
+  async getScoringRulesByReportType(
+    reportType: ReportType,
+  ): Promise<ScoringRuleView[]> {
+    try {
+      // Try to get rules from database first
+      const rules = await this.scoringRuleModel.find({ isActive: true }).exec();
+
+      // Filter rules based on report type
+      const bugReportAttributes = [
+        AttributeType.TEST_ENVIRONMENT,
+        AttributeType.STEPS_TO_REPRODUCE,
+        AttributeType.ACTUAL_RESULT,
+        AttributeType.SUPPORTING_EVIDENCE,
+      ];
+
+      const successReportAttributes = [
+        AttributeType.TEST_ENVIRONMENT,
+        AttributeType.ACTUAL_RESULT,
+      ];
+
+      const relevantAttributes =
+        reportType === ReportType.BUG_REPORT
+          ? bugReportAttributes
+          : successReportAttributes;
+
+      const filteredRules = rules.filter((rule) =>
+        relevantAttributes.includes(rule.attribute),
+      );
+
+      // If no rules found, return default rules
+      if (filteredRules.length === 0) {
+        const defaultRules =
+          reportType === ReportType.BUG_REPORT
+            ? this.initializeScoringRulesService.getDefaultBugReportRules()
+            : this.initializeScoringRulesService.getDefaultSuccessReportRules();
+
+        return defaultRules.map((rule) => ({
+          _id: '',
+          attribute: rule.attribute,
+          description: rule.description,
+          criteria: rule.criteria,
+          weight: rule.weight,
+          isActive: rule.isActive,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }));
+      }
+
+      return filteredRules.map(parseScoringRuleToView);
+    } catch (error) {
       throw new ThrowGQL(error, GQLThrowType.UNPROCESSABLE);
     }
   }

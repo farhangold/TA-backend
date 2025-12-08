@@ -2,6 +2,7 @@ import { ObjectType, Field, Float, Int } from '@nestjs/graphql';
 import { AttributeScore } from '../../models/attribute-score';
 import { EvaluationFeedback } from '../../models/evaluation-feedback';
 import { ValidationStatus } from '../../enums/validation-status.enum';
+import { ReportType } from '../../../uat-reports/enums/report-type.enum';
 import { UATReportView } from '../../../uat-reports/dto/views/uat-report.view';
 import { UserView } from '../../../users/dto/views/user.view';
 
@@ -12,6 +13,9 @@ export class EvaluationView {
 
   @Field(() => String)
   reportId: string;
+
+  @Field(() => ReportType)
+  reportType: ReportType;
 
   @Field(() => UATReportView)
   report: UATReportView;

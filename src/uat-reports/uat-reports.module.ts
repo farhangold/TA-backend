@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UATReport, UATReportSchema } from './models/uat-report';
 import { User, UserSchema } from '../users/models/user';
@@ -10,6 +10,7 @@ import { DeleteUATReportService } from './services/delete-uat-report.service';
 import { UploadBatchReportsService } from './services/upload-batch-reports.service';
 import { GetDashboardStatsService } from './services/get-dashboard-stats.service';
 import { UATReportsResolver } from './uat-reports.resolver';
+import { EvaluationsModule } from '../evaluations/evaluations.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { UATReportsResolver } from './uat-reports.resolver';
       { name: UATReport.name, schema: UATReportSchema },
       { name: User.name, schema: UserSchema },
     ]),
+    forwardRef(() => EvaluationsModule),
   ],
   providers: [
     CreateUATReportService,
