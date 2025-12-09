@@ -21,11 +21,10 @@ export class GetEvaluationService {
   async findByReportId(reportId: string): Promise<EvaluationView> {
     try {
       // Get the latest evaluation for the report
+      // Note: reportId and evaluatedBy are not populated here because they are resolved via GraphQL @ResolveField
       const evaluation = (await this.evaluationModel
         .findOne({ reportId })
         .sort({ version: -1 })
-        .populate('reportId')
-        .populate('evaluatedBy')
         .lean()
         .exec()) as unknown as EvaluationDocument | null;
 
@@ -54,8 +53,7 @@ export class GetEvaluationService {
       const [evaluationsResult, totalCount] = await Promise.all([
         this.evaluationModel
           .find({ reportId })
-          .populate('reportId')
-          .populate('evaluatedBy')
+          // Note: reportId and evaluatedBy are not populated here because they are resolved via GraphQL @ResolveField
           .sort({ version: -1 })
           .skip(skip)
           .limit(limit)

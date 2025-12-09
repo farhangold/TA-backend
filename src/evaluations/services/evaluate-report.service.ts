@@ -25,6 +25,7 @@ import { DetermineStatusService } from './determine-status.service';
 import { GenerateFeedbackService } from './generate-feedback.service';
 import { parseEvaluationToView } from '../models/parser';
 import { AttributeType } from '../../scoring-rules/enums/attribute-type.enum';
+import { CompletenessStatus } from '../enums/completeness-status.enum';
 import { ReportStatus } from '../../uat-reports/enums/report-status.enum';
 import { EvaluationView } from '../dto/views/evaluation.view';
 
@@ -125,6 +126,43 @@ export class EvaluateReportService {
       // 7. Generate feedback for failed attributes
       const feedback = this.generateFeedbackService.generate(attributeScores);
 
+      // 7.5. Determine completeness status based on required fields
+      const incompleteAttributes: AttributeType[] = [];
+
+      // Check Steps to Reproduce
+      if (
+        !report.stepsToReproduce ||
+        !Array.isArray(report.stepsToReproduce) ||
+        report.stepsToReproduce.length === 0 ||
+        report.stepsToReproduce.every((step) => !step || step.trim() === '')
+      ) {
+        incompleteAttributes.push(AttributeType.STEPS_TO_REPRODUCE);
+      }
+
+      // Check Actual Result
+      if (!report.actualResult || report.actualResult.trim() === '') {
+        incompleteAttributes.push(AttributeType.ACTUAL_RESULT);
+      }
+
+      // Check Expected Result
+      if (!report.expectedResult || report.expectedResult.trim() === '') {
+        incompleteAttributes.push(AttributeType.EXPECTED_RESULT);
+      }
+
+      // Check Supporting Evidence
+      if (
+        !report.supportingEvidence ||
+        !Array.isArray(report.supportingEvidence) ||
+        report.supportingEvidence.length === 0
+      ) {
+        incompleteAttributes.push(AttributeType.SUPPORTING_EVIDENCE);
+      }
+
+      const completenessStatus =
+        incompleteAttributes.length === 0
+          ? CompletenessStatus.COMPLETE
+          : CompletenessStatus.INCOMPLETE;
+
       // 8. Calculate processing time
       const processingTime = Date.now() - startTime;
 
@@ -145,6 +183,8 @@ export class EvaluateReportService {
         maxScore,
         scorePercentage,
         validationStatus,
+        completenessStatus,
+        incompleteAttributes,
         feedback,
         processingTime,
         evaluatedBy: userId || null,

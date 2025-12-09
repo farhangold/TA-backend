@@ -1919,13 +1919,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b, _c, _d, _e;
+var _a, _b, _c, _d, _e, _f;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.EvaluationView = void 0;
 const graphql_1 = __webpack_require__(/*! @nestjs/graphql */ "@nestjs/graphql");
 const attribute_score_1 = __webpack_require__(/*! ../../models/attribute-score */ "./src/evaluations/models/attribute-score.ts");
 const evaluation_feedback_1 = __webpack_require__(/*! ../../models/evaluation-feedback */ "./src/evaluations/models/evaluation-feedback.ts");
 const validation_status_enum_1 = __webpack_require__(/*! ../../enums/validation-status.enum */ "./src/evaluations/enums/validation-status.enum.ts");
+const completeness_status_enum_1 = __webpack_require__(/*! ../../enums/completeness-status.enum */ "./src/evaluations/enums/completeness-status.enum.ts");
+const attribute_type_enum_1 = __webpack_require__(/*! ../../../scoring-rules/enums/attribute-type.enum */ "./src/scoring-rules/enums/attribute-type.enum.ts");
 const report_type_enum_1 = __webpack_require__(/*! ../../../uat-reports/enums/report-type.enum */ "./src/uat-reports/enums/report-type.enum.ts");
 const uat_report_view_1 = __webpack_require__(/*! ../../../uat-reports/dto/views/uat-report.view */ "./src/uat-reports/dto/views/uat-report.view.ts");
 const user_view_1 = __webpack_require__(/*! ../../../users/dto/views/user.view */ "./src/users/dto/views/user.view.ts");
@@ -1969,6 +1971,14 @@ __decorate([
     __metadata("design:type", typeof (_c = typeof validation_status_enum_1.ValidationStatus !== "undefined" && validation_status_enum_1.ValidationStatus) === "function" ? _c : Object)
 ], EvaluationView.prototype, "validationStatus", void 0);
 __decorate([
+    (0, graphql_1.Field)(() => completeness_status_enum_1.CompletenessStatus, { nullable: true }),
+    __metadata("design:type", typeof (_d = typeof completeness_status_enum_1.CompletenessStatus !== "undefined" && completeness_status_enum_1.CompletenessStatus) === "function" ? _d : Object)
+], EvaluationView.prototype, "completenessStatus", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => [attribute_type_enum_1.AttributeType], { nullable: true }),
+    __metadata("design:type", Array)
+], EvaluationView.prototype, "incompleteAttributes", void 0);
+__decorate([
     (0, graphql_1.Field)(() => [evaluation_feedback_1.EvaluationFeedback]),
     __metadata("design:type", Array)
 ], EvaluationView.prototype, "feedback", void 0);
@@ -1978,11 +1988,11 @@ __decorate([
 ], EvaluationView.prototype, "processingTime", void 0);
 __decorate([
     (0, graphql_1.Field)(() => user_view_1.UserView, { nullable: true }),
-    __metadata("design:type", typeof (_d = typeof user_view_1.UserView !== "undefined" && user_view_1.UserView) === "function" ? _d : Object)
+    __metadata("design:type", typeof (_e = typeof user_view_1.UserView !== "undefined" && user_view_1.UserView) === "function" ? _e : Object)
 ], EvaluationView.prototype, "evaluatedBy", void 0);
 __decorate([
     (0, graphql_1.Field)(),
-    __metadata("design:type", typeof (_e = typeof Date !== "undefined" && Date) === "function" ? _e : Object)
+    __metadata("design:type", typeof (_f = typeof Date !== "undefined" && Date) === "function" ? _f : Object)
 ], EvaluationView.prototype, "evaluatedAt", void 0);
 __decorate([
     (0, graphql_1.Field)(() => graphql_1.Int),
@@ -1991,6 +2001,29 @@ __decorate([
 exports.EvaluationView = EvaluationView = __decorate([
     (0, graphql_1.ObjectType)()
 ], EvaluationView);
+
+
+/***/ }),
+
+/***/ "./src/evaluations/enums/completeness-status.enum.ts":
+/*!***********************************************************!*\
+  !*** ./src/evaluations/enums/completeness-status.enum.ts ***!
+  \***********************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CompletenessStatus = void 0;
+const graphql_1 = __webpack_require__(/*! @nestjs/graphql */ "@nestjs/graphql");
+var CompletenessStatus;
+(function (CompletenessStatus) {
+    CompletenessStatus["COMPLETE"] = "COMPLETE";
+    CompletenessStatus["INCOMPLETE"] = "INCOMPLETE";
+})(CompletenessStatus || (exports.CompletenessStatus = CompletenessStatus = {}));
+(0, graphql_1.registerEnumType)(CompletenessStatus, {
+    name: 'CompletenessStatus',
+    description: 'Completeness status indicating whether all required attributes are complete',
+});
 
 
 /***/ }),
@@ -2393,7 +2426,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b, _c;
+var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.EvaluationSchema = exports.Evaluation = void 0;
 const mongoose_1 = __webpack_require__(/*! @nestjs/mongoose */ "@nestjs/mongoose");
@@ -2402,6 +2435,8 @@ const mongoose_2 = __webpack_require__(/*! mongoose */ "mongoose");
 const attribute_score_1 = __webpack_require__(/*! ./attribute-score */ "./src/evaluations/models/attribute-score.ts");
 const evaluation_feedback_1 = __webpack_require__(/*! ./evaluation-feedback */ "./src/evaluations/models/evaluation-feedback.ts");
 const validation_status_enum_1 = __webpack_require__(/*! ../enums/validation-status.enum */ "./src/evaluations/enums/validation-status.enum.ts");
+const completeness_status_enum_1 = __webpack_require__(/*! ../enums/completeness-status.enum */ "./src/evaluations/enums/completeness-status.enum.ts");
+const attribute_type_enum_1 = __webpack_require__(/*! ../../scoring-rules/enums/attribute-type.enum */ "./src/scoring-rules/enums/attribute-type.enum.ts");
 const report_type_enum_1 = __webpack_require__(/*! ../../uat-reports/enums/report-type.enum */ "./src/uat-reports/enums/report-type.enum.ts");
 let Evaluation = class Evaluation {
 };
@@ -2447,6 +2482,21 @@ __decorate([
     __metadata("design:type", typeof (_b = typeof validation_status_enum_1.ValidationStatus !== "undefined" && validation_status_enum_1.ValidationStatus) === "function" ? _b : Object)
 ], Evaluation.prototype, "validationStatus", void 0);
 __decorate([
+    (0, graphql_1.Field)(() => completeness_status_enum_1.CompletenessStatus),
+    (0, mongoose_1.Prop)({
+        required: false,
+        type: String,
+        enum: completeness_status_enum_1.CompletenessStatus,
+        default: completeness_status_enum_1.CompletenessStatus.COMPLETE,
+    }),
+    __metadata("design:type", typeof (_c = typeof completeness_status_enum_1.CompletenessStatus !== "undefined" && completeness_status_enum_1.CompletenessStatus) === "function" ? _c : Object)
+], Evaluation.prototype, "completenessStatus", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => [attribute_type_enum_1.AttributeType], { nullable: true }),
+    (0, mongoose_1.Prop)({ required: false, type: [String], enum: attribute_type_enum_1.AttributeType, default: [] }),
+    __metadata("design:type", Array)
+], Evaluation.prototype, "incompleteAttributes", void 0);
+__decorate([
     (0, graphql_1.Field)(() => [evaluation_feedback_1.EvaluationFeedback]),
     (0, mongoose_1.Prop)({ required: true, type: [evaluation_feedback_1.EvaluationFeedbackSchema], default: [] }),
     __metadata("design:type", Array)
@@ -2464,7 +2514,7 @@ __decorate([
 __decorate([
     (0, graphql_1.Field)(),
     (0, mongoose_1.Prop)({ required: true, default: () => new Date() }),
-    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+    __metadata("design:type", typeof (_d = typeof Date !== "undefined" && Date) === "function" ? _d : Object)
 ], Evaluation.prototype, "evaluatedAt", void 0);
 __decorate([
     (0, graphql_1.Field)(() => graphql_1.Int),
@@ -2490,15 +2540,55 @@ exports.EvaluationSchema.index({ reportType: 1, validationStatus: 1 });
 /*!******************************************!*\
   !*** ./src/evaluations/models/parser.ts ***!
   \******************************************/
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.parseEvaluationToView = parseEvaluationToView;
+const completeness_status_enum_1 = __webpack_require__(/*! ../enums/completeness-status.enum */ "./src/evaluations/enums/completeness-status.enum.ts");
 function parseEvaluationToView(doc) {
+    let completenessStatus;
+    let incompleteAttributes;
+    if (doc.completenessStatus) {
+        completenessStatus = doc.completenessStatus;
+        incompleteAttributes = doc.incompleteAttributes || [];
+    }
+    else {
+        incompleteAttributes = [];
+        completenessStatus = completeness_status_enum_1.CompletenessStatus.COMPLETE;
+    }
+    let reportId;
+    if (typeof doc.reportId === 'string') {
+        reportId = doc.reportId;
+    }
+    else if (doc.reportId &&
+        typeof doc.reportId === 'object' &&
+        '_id' in doc.reportId) {
+        reportId =
+            doc.reportId._id?.toString() || doc.reportId._id;
+    }
+    else {
+        reportId = String(doc.reportId);
+    }
+    let evaluatedBy;
+    if (!doc.evaluatedBy) {
+        evaluatedBy = undefined;
+    }
+    else if (typeof doc.evaluatedBy === 'string') {
+        evaluatedBy = doc.evaluatedBy;
+    }
+    else if (doc.evaluatedBy &&
+        typeof doc.evaluatedBy === 'object' &&
+        '_id' in doc.evaluatedBy) {
+        evaluatedBy =
+            doc.evaluatedBy._id?.toString() || doc.evaluatedBy._id;
+    }
+    else {
+        evaluatedBy = String(doc.evaluatedBy);
+    }
     return {
         _id: doc._id,
-        reportId: doc.reportId,
+        reportId,
         reportType: doc.reportType,
         report: undefined,
         attributeScores: doc.attributeScores,
@@ -2506,9 +2596,11 @@ function parseEvaluationToView(doc) {
         maxScore: doc.maxScore,
         scorePercentage: doc.scorePercentage,
         validationStatus: doc.validationStatus,
+        completenessStatus,
+        incompleteAttributes,
         feedback: doc.feedback,
         processingTime: doc.processingTime,
-        evaluatedBy: doc.evaluatedBy,
+        evaluatedBy: evaluatedBy,
         evaluatedAt: doc.evaluatedAt,
         version: doc.version,
     };
@@ -2689,6 +2781,7 @@ const determine_status_service_1 = __webpack_require__(/*! ./determine-status.se
 const generate_feedback_service_1 = __webpack_require__(/*! ./generate-feedback.service */ "./src/evaluations/services/generate-feedback.service.ts");
 const parser_1 = __webpack_require__(/*! ../models/parser */ "./src/evaluations/models/parser.ts");
 const attribute_type_enum_1 = __webpack_require__(/*! ../../scoring-rules/enums/attribute-type.enum */ "./src/scoring-rules/enums/attribute-type.enum.ts");
+const completeness_status_enum_1 = __webpack_require__(/*! ../enums/completeness-status.enum */ "./src/evaluations/enums/completeness-status.enum.ts");
 const report_status_enum_1 = __webpack_require__(/*! ../../uat-reports/enums/report-status.enum */ "./src/uat-reports/enums/report-status.enum.ts");
 let EvaluateReportService = class EvaluateReportService {
     constructor(evaluationModel, uatReportModel, getScoringRulesService, testIdentityEvaluator, testEnvironmentEvaluator, stepsToReproduceEvaluator, actualResultEvaluator, expectedResultEvaluator, supportingEvidenceEvaluator, severityLevelEvaluator, informationConsistencyEvaluator, descriptionSuccessEvaluator, environmentSuccessEvaluator, calculateScoreService, determineStatusService, generateFeedbackService) {
@@ -2750,6 +2843,27 @@ let EvaluateReportService = class EvaluateReportService {
             const { totalScore, maxScore, scorePercentage } = this.calculateScoreService.calculate(attributeScores);
             const validationStatus = this.determineStatusService.determine(scorePercentage, validationConfig.threshold);
             const feedback = this.generateFeedbackService.generate(attributeScores);
+            const incompleteAttributes = [];
+            if (!report.stepsToReproduce ||
+                !Array.isArray(report.stepsToReproduce) ||
+                report.stepsToReproduce.length === 0 ||
+                report.stepsToReproduce.every((step) => !step || step.trim() === '')) {
+                incompleteAttributes.push(attribute_type_enum_1.AttributeType.STEPS_TO_REPRODUCE);
+            }
+            if (!report.actualResult || report.actualResult.trim() === '') {
+                incompleteAttributes.push(attribute_type_enum_1.AttributeType.ACTUAL_RESULT);
+            }
+            if (!report.expectedResult || report.expectedResult.trim() === '') {
+                incompleteAttributes.push(attribute_type_enum_1.AttributeType.EXPECTED_RESULT);
+            }
+            if (!report.supportingEvidence ||
+                !Array.isArray(report.supportingEvidence) ||
+                report.supportingEvidence.length === 0) {
+                incompleteAttributes.push(attribute_type_enum_1.AttributeType.SUPPORTING_EVIDENCE);
+            }
+            const completenessStatus = incompleteAttributes.length === 0
+                ? completeness_status_enum_1.CompletenessStatus.COMPLETE
+                : completeness_status_enum_1.CompletenessStatus.INCOMPLETE;
             const processingTime = Date.now() - startTime;
             const latestEvaluation = await this.evaluationModel
                 .findOne({ reportId })
@@ -2765,6 +2879,8 @@ let EvaluateReportService = class EvaluateReportService {
                 maxScore,
                 scorePercentage,
                 validationStatus,
+                completenessStatus,
+                incompleteAttributes,
                 feedback,
                 processingTime,
                 evaluatedBy: userId || null,
@@ -3413,8 +3529,6 @@ let GetEvaluationService = class GetEvaluationService {
             const evaluation = (await this.evaluationModel
                 .findOne({ reportId })
                 .sort({ version: -1 })
-                .populate('reportId')
-                .populate('evaluatedBy')
                 .lean()
                 .exec());
             if (!evaluation) {
@@ -3437,8 +3551,6 @@ let GetEvaluationService = class GetEvaluationService {
             const [evaluationsResult, totalCount] = await Promise.all([
                 this.evaluationModel
                     .find({ reportId })
-                    .populate('reportId')
-                    .populate('evaluatedBy')
                     .sort({ version: -1 })
                     .skip(skip)
                     .limit(limit)

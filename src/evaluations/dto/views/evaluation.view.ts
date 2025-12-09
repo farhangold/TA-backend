@@ -2,6 +2,8 @@ import { ObjectType, Field, Float, Int } from '@nestjs/graphql';
 import { AttributeScore } from '../../models/attribute-score';
 import { EvaluationFeedback } from '../../models/evaluation-feedback';
 import { ValidationStatus } from '../../enums/validation-status.enum';
+import { CompletenessStatus } from '../../enums/completeness-status.enum';
+import { AttributeType } from '../../../scoring-rules/enums/attribute-type.enum';
 import { ReportType } from '../../../uat-reports/enums/report-type.enum';
 import { UATReportView } from '../../../uat-reports/dto/views/uat-report.view';
 import { UserView } from '../../../users/dto/views/user.view';
@@ -34,6 +36,12 @@ export class EvaluationView {
 
   @Field(() => ValidationStatus)
   validationStatus: ValidationStatus;
+
+  @Field(() => CompletenessStatus, { nullable: true })
+  completenessStatus?: CompletenessStatus;
+
+  @Field(() => [AttributeType], { nullable: true })
+  incompleteAttributes?: AttributeType[];
 
   @Field(() => [EvaluationFeedback])
   feedback: EvaluationFeedback[];
