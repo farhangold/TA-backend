@@ -9,9 +9,10 @@ export class Evidence {
   @Prop({ required: true, type: String, enum: EvidenceType })
   type: EvidenceType;
 
-  @Field()
-  @Prop({ required: true })
-  url: string;
+  // URL tidak lagi wajib terisi; cukup string (boleh kosong) atau null
+  @Field({ nullable: true })
+  @Prop({ required: false })
+  url?: string | null;
 
   @Field({ nullable: true })
   @Prop({ required: false })
