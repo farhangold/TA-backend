@@ -258,9 +258,17 @@ export class UploadBatchReportsService {
             description: null,
           };
         }
+        // e is expected to be an object with shape similar to Evidence
+        const url =
+          typeof e.url === 'string'
+            ? e.url
+            : typeof e === 'string'
+            ? e
+            : '';
+
         return {
           type: e.type || EvidenceType.SCREENSHOT,
-          url: e.url || e,
+          url,
           description: e.description || null,
         };
       });
