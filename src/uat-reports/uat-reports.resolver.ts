@@ -8,6 +8,7 @@ import { GetUATReportService } from './services/get-uat-report.service';
 import { ListUATReportsService } from './services/list-uat-reports.service';
 import { UpdateUATReportService } from './services/update-uat-report.service';
 import { DeleteUATReportService } from './services/delete-uat-report.service';
+import { DeleteBulkUATReportsService } from './services/delete-bulk-uat-reports.service';
 import { UploadBatchReportsService } from './services/upload-batch-reports.service';
 import { GetDashboardStatsService } from './services/get-dashboard-stats.service';
 import { UATReportView } from './dto/views/uat-report.view';
@@ -32,6 +33,7 @@ export class UATReportsResolver {
     private readonly deleteUATReportService: DeleteUATReportService,
     private readonly uploadBatchReportsService: UploadBatchReportsService,
     private readonly getDashboardStatsService: GetDashboardStatsService,
+    private readonly deleteBulkUATReportsService: DeleteBulkUATReportsService,
   ) {}
 
   @Mutation(() => UATReportView, { name: 'createUATReport' })
@@ -69,6 +71,22 @@ export class UATReportsResolver {
   @Roles('ADMIN')
   async deleteUATReport(@Args('id') id: string): Promise<boolean> {
     return await this.deleteUATReportService.delete(id);
+  }
+
+  @Mutation(() => Boolean, { name: 'deleteBulkUATReports' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  async deleteBulkUATReports(
+    @Args({ name: 'ids', type: () => [String] }) ids: string[],
+  ): Promise<boolean> {
+    return await this.deleteBulkUATReportsService.deleteByIds(ids);
+  }
+
+  @Mutation(() => Boolean, { name: 'deleteAllUATReports' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  async deleteAllUATReports(): Promise<boolean> {
+    return await this.deleteBulkUATReportsService.deleteAll();
   }
 
   @Query(() => UATReportView, { name: 'getUATReport' })

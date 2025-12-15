@@ -9,6 +9,7 @@ import { UpdateUATReportService } from './services/update-uat-report.service';
 import { DeleteUATReportService } from './services/delete-uat-report.service';
 import { UploadBatchReportsService } from './services/upload-batch-reports.service';
 import { GetDashboardStatsService } from './services/get-dashboard-stats.service';
+import { DeleteBulkUATReportsService } from './services/delete-bulk-uat-reports.service';
 import { UATReportsResolver } from './uat-reports.resolver';
 import { EvaluationsModule } from '../evaluations/evaluations.module';
 
@@ -26,6 +27,7 @@ import { EvaluationsModule } from '../evaluations/evaluations.module';
     ListUATReportsService,
     UpdateUATReportService,
     DeleteUATReportService,
+    DeleteBulkUATReportsService,
     UploadBatchReportsService,
     GetDashboardStatsService,
     UATReportsResolver,
@@ -36,6 +38,7 @@ import { EvaluationsModule } from '../evaluations/evaluations.module';
     ListUATReportsService,
     UpdateUATReportService,
     DeleteUATReportService,
+    DeleteBulkUATReportsService,
   ],
 })
 export class UATReportsModule {}
