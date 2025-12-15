@@ -127,35 +127,48 @@ export class EvaluateReportService {
       const feedback = this.generateFeedbackService.generate(attributeScores);
 
       // 7.5. Determine completeness status based on required fields
+      // NOTE:
+      // - Bug Report  : requires steps to reproduce + actual result + expected result + supporting evidence
+      // - Success Report : does NOT require steps to reproduce or supporting evidence.
+      //   It is considered complete as long as the success description (actualResult) is filled.
       const incompleteAttributes: AttributeType[] = [];
 
-      // Check Steps to Reproduce
-      if (
-        !report.stepsToReproduce ||
-        !Array.isArray(report.stepsToReproduce) ||
-        report.stepsToReproduce.length === 0 ||
-        report.stepsToReproduce.every((step) => !step || step.trim() === '')
-      ) {
-        incompleteAttributes.push(AttributeType.STEPS_TO_REPRODUCE);
-      }
+      if (reportType === ReportType.SUCCESS_REPORT) {
+        // For success reports, only the success description (ACTUAL_RESULT) is required.
+        if (!report.actualResult || report.actualResult.trim() === '') {
+          incompleteAttributes.push(AttributeType.ACTUAL_RESULT);
+        }
+      } else {
+        // Bug reports require all main diagnostic attributes
 
-      // Check Actual Result
-      if (!report.actualResult || report.actualResult.trim() === '') {
-        incompleteAttributes.push(AttributeType.ACTUAL_RESULT);
-      }
+        // Check Steps to Reproduce
+        if (
+          !report.stepsToReproduce ||
+          !Array.isArray(report.stepsToReproduce) ||
+          report.stepsToReproduce.length === 0 ||
+          report.stepsToReproduce.every((step) => !step || step.trim() === '')
+        ) {
+          incompleteAttributes.push(AttributeType.STEPS_TO_REPRODUCE);
+        }
 
-      // Check Expected Result
-      if (!report.expectedResult || report.expectedResult.trim() === '') {
-        incompleteAttributes.push(AttributeType.EXPECTED_RESULT);
-      }
+        // Check Actual Result
+        if (!report.actualResult || report.actualResult.trim() === '') {
+          incompleteAttributes.push(AttributeType.ACTUAL_RESULT);
+        }
 
-      // Check Supporting Evidence
-      if (
-        !report.supportingEvidence ||
-        !Array.isArray(report.supportingEvidence) ||
-        report.supportingEvidence.length === 0
-      ) {
-        incompleteAttributes.push(AttributeType.SUPPORTING_EVIDENCE);
+        // Check Expected Result
+        if (!report.expectedResult || report.expectedResult.trim() === '') {
+          incompleteAttributes.push(AttributeType.EXPECTED_RESULT);
+        }
+
+        // Check Supporting Evidence
+        if (
+          !report.supportingEvidence ||
+          !Array.isArray(report.supportingEvidence) ||
+          report.supportingEvidence.length === 0
+        ) {
+          incompleteAttributes.push(AttributeType.SUPPORTING_EVIDENCE);
+        }
       }
 
       const completenessStatus =
