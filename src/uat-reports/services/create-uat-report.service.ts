@@ -21,6 +21,22 @@ export class CreateUATReportService {
     userId: string,
   ): Promise<UATReportView> {
     try {
+      // Check for redundant data: same user, same test identity + domain + actual result
+      const existing = await this.uatReportModel.findOne({
+        'testIdentity.testId': input.testIdentity?.testId,
+        'testIdentity.version': input.testIdentity?.version,
+        domain: input.domain || null,
+        actualResult: input.actualResult,
+        createdBy: userId,
+      });
+
+      if (existing) {
+        throw new ThrowGQL(
+          'UAT Report redundan: data dengan Test ID, versi, domain, dan actual result yang sama sudah ada.',
+          GQLThrowType.UNPROCESSABLE,
+        );
+      }
+
       const report = await this.uatReportModel.create({
         _id: new ObjectId().toString(),
         ...input,

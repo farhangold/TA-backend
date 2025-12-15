@@ -87,3 +87,13 @@ UATReportSchema.index({ domain: 1 });
 UATReportSchema.index({ status: 1, severityLevel: 1 });
 UATReportSchema.index({ reportType: 1 });
 UATReportSchema.index({ reportType: 1, status: 1 });
+
+// Index to help detect redundant reports:
+// same user, same testId + version + domain + actualResult
+UATReportSchema.index({
+  'testIdentity.testId': 1,
+  'testIdentity.version': 1,
+  domain: 1,
+  actualResult: 1,
+  createdBy: 1,
+});

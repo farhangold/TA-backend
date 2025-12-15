@@ -82,6 +82,9 @@ export class UploadBatchReportsService {
         errors: [],
       };
 
+      // Track duplicates within the same batch (in-memory)
+      const seenKeys = new Set<string>();
+
       for (let i = 0; i < parsedData.length; i++) {
         try {
           const reportData = parsedData[i];
@@ -133,6 +136,50 @@ export class UploadBatchReportsService {
             status: ReportStatus.PENDING_EVALUATION,
             createdBy: userId,
           };
+
+          // Build redundancy key: same user + same testId + version + domain + actualResult
+          const dedupeKey = [
+            userId,
+            testIdentity.testId || '',
+            testIdentity.version || '',
+            reportObj.domain || '',
+            reportObj.actualResult || '',
+          ].join('||');
+
+          // 1) Check duplicates within the same uploaded file
+          if (seenKeys.has(dedupeKey)) {
+            results.failed++;
+            results.errors.push({
+              row: i + 1,
+              message:
+                'Data redundan di dalam file upload: kombinasi Test ID, versi, domain, dan actual result sudah muncul sebelumnya.',
+              data: JSON.stringify(parsedData[i]),
+            });
+            continue;
+          }
+
+          // 2) Check duplicates against existing data in database
+          const existing = await this.uatReportModel.findOne({
+            'testIdentity.testId': testIdentity.testId,
+            'testIdentity.version': testIdentity.version,
+            domain: reportObj.domain || null,
+            actualResult: reportObj.actualResult,
+            createdBy: userId,
+          });
+
+          if (existing) {
+            results.failed++;
+            results.errors.push({
+              row: i + 1,
+              message:
+                'Data redundan: laporan dengan Test ID, versi, domain, dan actual result yang sama sudah tersimpan sebelumnya.',
+              data: JSON.stringify(parsedData[i]),
+            });
+            continue;
+          }
+
+          // Mark as seen for this batch
+          seenKeys.add(dedupeKey);
 
           // Only set these for Bug Reports
           if (reportType === ReportType.BUG_REPORT) {
