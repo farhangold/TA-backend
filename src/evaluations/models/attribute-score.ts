@@ -28,6 +28,10 @@ export class AttributeScore {
   @Field()
   @Prop({ required: true })
   passed: boolean;
+
+  @Field({ nullable: true })
+  @Prop({ required: false })
+  reasoning?: string;
 }
 
 export const AttributeScoreSchema =

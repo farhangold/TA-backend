@@ -9,16 +9,16 @@ import {
   UATReportDocument,
 } from '../../uat-reports/models/uat-report';
 import { GetScoringRulesService } from '../../scoring-rules/services/get-scoring-rules.service';
-import { TestIdentityEvaluator } from './evaluators/test-identity.evaluator';
-import { TestEnvironmentEvaluator } from './evaluators/test-environment.evaluator';
-import { StepsToReproduceEvaluator } from './evaluators/steps-to-reproduce.evaluator';
-import { ActualResultEvaluator } from './evaluators/actual-result.evaluator';
-import { ExpectedResultEvaluator } from './evaluators/expected-result.evaluator';
-import { SupportingEvidenceEvaluator } from './evaluators/supporting-evidence.evaluator';
-import { SeverityLevelEvaluator } from './evaluators/severity-level.evaluator';
-import { InformationConsistencyEvaluator } from './evaluators/information-consistency.evaluator';
-import { DescriptionSuccessEvaluator } from './evaluators/description-success.evaluator';
-import { EnvironmentSuccessEvaluator } from './evaluators/environment-success.evaluator';
+import { LLMTestIdentityEvaluator } from './evaluators/llm-test-identity.evaluator';
+import { LLMTestEnvironmentEvaluator } from './evaluators/llm-test-environment.evaluator';
+import { LLMStepsToReproduceEvaluator } from './evaluators/llm-steps-to-reproduce.evaluator';
+import { LLMActualResultEvaluator } from './evaluators/llm-actual-result.evaluator';
+import { LLMExpectedResultEvaluator } from './evaluators/llm-expected-result.evaluator';
+import { LLMSupportingEvidenceEvaluator } from './evaluators/llm-supporting-evidence.evaluator';
+import { LLMSeverityLevelEvaluator } from './evaluators/llm-severity-level.evaluator';
+import { LLMInformationConsistencyEvaluator } from './evaluators/llm-information-consistency.evaluator';
+import { LLMDescriptionSuccessEvaluator } from './evaluators/llm-description-success.evaluator';
+import { LLMEnvironmentSuccessEvaluator } from './evaluators/llm-environment-success.evaluator';
 import { ReportType } from '../../uat-reports/enums/report-type.enum';
 import { CalculateScoreService } from './calculate-score.service';
 import { DetermineStatusService } from './determine-status.service';
@@ -37,16 +37,16 @@ export class EvaluateReportService {
     @InjectModel(UATReport.name)
     private uatReportModel: Model<UATReportDocument>,
     private getScoringRulesService: GetScoringRulesService,
-    private testIdentityEvaluator: TestIdentityEvaluator,
-    private testEnvironmentEvaluator: TestEnvironmentEvaluator,
-    private stepsToReproduceEvaluator: StepsToReproduceEvaluator,
-    private actualResultEvaluator: ActualResultEvaluator,
-    private expectedResultEvaluator: ExpectedResultEvaluator,
-    private supportingEvidenceEvaluator: SupportingEvidenceEvaluator,
-    private severityLevelEvaluator: SeverityLevelEvaluator,
-    private informationConsistencyEvaluator: InformationConsistencyEvaluator,
-    private descriptionSuccessEvaluator: DescriptionSuccessEvaluator,
-    private environmentSuccessEvaluator: EnvironmentSuccessEvaluator,
+    private testIdentityEvaluator: LLMTestIdentityEvaluator,
+    private testEnvironmentEvaluator: LLMTestEnvironmentEvaluator,
+    private stepsToReproduceEvaluator: LLMStepsToReproduceEvaluator,
+    private actualResultEvaluator: LLMActualResultEvaluator,
+    private expectedResultEvaluator: LLMExpectedResultEvaluator,
+    private supportingEvidenceEvaluator: LLMSupportingEvidenceEvaluator,
+    private severityLevelEvaluator: LLMSeverityLevelEvaluator,
+    private informationConsistencyEvaluator: LLMInformationConsistencyEvaluator,
+    private descriptionSuccessEvaluator: LLMDescriptionSuccessEvaluator,
+    private environmentSuccessEvaluator: LLMEnvironmentSuccessEvaluator,
     private calculateScoreService: CalculateScoreService,
     private determineStatusService: DetermineStatusService,
     private generateFeedbackService: GenerateFeedbackService,
@@ -105,13 +105,40 @@ export class EvaluateReportService {
         };
       }
 
-      for (const [attribute, evaluator] of Object.entries(evaluators)) {
-        const rule = rulesMap[attribute];
-        if (rule) {
-          const score = evaluator.evaluate(report.toObject(), rule);
-          attributeScores.push(score);
-        }
-      }
+      // Run evaluators in parallel for better performance
+      const evaluationPromises = Object.entries(evaluators).map(
+        async ([attribute, evaluator]) => {
+          const rule = rulesMap[attribute];
+          if (rule) {
+            try {
+              const score = await evaluator.evaluate(
+                report.toObject(),
+                rule,
+                reportType,
+              );
+              return score;
+            } catch (error) {
+              // If evaluation fails, return a default score of 0
+              console.error(
+                `Error evaluating attribute ${attribute}:`,
+                error,
+              );
+              return {
+                attribute: attribute as AttributeType,
+                score: 0,
+                maxScore: 1,
+                weight: rule.weight,
+                weightedScore: 0,
+                passed: false,
+              };
+            }
+          }
+          return null;
+        },
+      );
+
+      const scores = await Promise.all(evaluationPromises);
+      attributeScores.push(...scores.filter((score) => score !== null));
 
       // 5. Calculate weighted scores
       const { totalScore, maxScore, scorePercentage } =

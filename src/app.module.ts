@@ -10,6 +10,7 @@ import appConfig from './config/app.config';
 import databaseConfig from './config/database.config';
 import jwtConfig from './config/jwt.config';
 import throttleConfig from './config/throttle.config';
+import llmConfig from './llm/config/llm.config';
 import { DateTimeScalar } from './common/scalars/date-time.scalar';
 import { JSONScalar } from './common/scalars/json.scalar';
 import { AuthModule } from './auth/auth.module';
@@ -23,7 +24,7 @@ import { AuditLogsModule } from './audit-logs/audit-logs.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, databaseConfig, jwtConfig, throttleConfig],
+      load: [appConfig, databaseConfig, jwtConfig, throttleConfig, llmConfig],
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,

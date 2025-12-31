@@ -164,6 +164,7 @@ const app_config_1 = __webpack_require__(/*! ./config/app.config */ "./src/confi
 const database_config_1 = __webpack_require__(/*! ./config/database.config */ "./src/config/database.config.ts");
 const jwt_config_1 = __webpack_require__(/*! ./config/jwt.config */ "./src/config/jwt.config.ts");
 const throttle_config_1 = __webpack_require__(/*! ./config/throttle.config */ "./src/config/throttle.config.ts");
+const llm_config_1 = __webpack_require__(/*! ./llm/config/llm.config */ "./src/llm/config/llm.config.ts");
 const date_time_scalar_1 = __webpack_require__(/*! ./common/scalars/date-time.scalar */ "./src/common/scalars/date-time.scalar.ts");
 const json_scalar_1 = __webpack_require__(/*! ./common/scalars/json.scalar */ "./src/common/scalars/json.scalar.ts");
 const auth_module_1 = __webpack_require__(/*! ./auth/auth.module */ "./src/auth/auth.module.ts");
@@ -180,7 +181,7 @@ exports.AppModule = AppModule = __decorate([
         imports: [
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
-                load: [app_config_1.default, database_config_1.default, jwt_config_1.default, throttle_config_1.default],
+                load: [app_config_1.default, database_config_1.default, jwt_config_1.default, throttle_config_1.default, llm_config_1.default],
             }),
             graphql_1.GraphQLModule.forRoot({
                 driver: apollo_1.ApolloDriver,
@@ -2097,24 +2098,26 @@ const evaluation_1 = __webpack_require__(/*! ./models/evaluation */ "./src/evalu
 const uat_reports_module_1 = __webpack_require__(/*! ../uat-reports/uat-reports.module */ "./src/uat-reports/uat-reports.module.ts");
 const scoring_rules_module_1 = __webpack_require__(/*! ../scoring-rules/scoring-rules.module */ "./src/scoring-rules/scoring-rules.module.ts");
 const users_module_1 = __webpack_require__(/*! ../users/users.module */ "./src/users/users.module.ts");
+const llm_module_1 = __webpack_require__(/*! ../llm/llm.module */ "./src/llm/llm.module.ts");
 const uat_report_1 = __webpack_require__(/*! ../uat-reports/models/uat-report */ "./src/uat-reports/models/uat-report.ts");
 const user_1 = __webpack_require__(/*! ../users/models/user */ "./src/users/models/user.ts");
-const test_identity_evaluator_1 = __webpack_require__(/*! ./services/evaluators/test-identity.evaluator */ "./src/evaluations/services/evaluators/test-identity.evaluator.ts");
-const test_environment_evaluator_1 = __webpack_require__(/*! ./services/evaluators/test-environment.evaluator */ "./src/evaluations/services/evaluators/test-environment.evaluator.ts");
-const steps_to_reproduce_evaluator_1 = __webpack_require__(/*! ./services/evaluators/steps-to-reproduce.evaluator */ "./src/evaluations/services/evaluators/steps-to-reproduce.evaluator.ts");
-const actual_result_evaluator_1 = __webpack_require__(/*! ./services/evaluators/actual-result.evaluator */ "./src/evaluations/services/evaluators/actual-result.evaluator.ts");
-const expected_result_evaluator_1 = __webpack_require__(/*! ./services/evaluators/expected-result.evaluator */ "./src/evaluations/services/evaluators/expected-result.evaluator.ts");
-const supporting_evidence_evaluator_1 = __webpack_require__(/*! ./services/evaluators/supporting-evidence.evaluator */ "./src/evaluations/services/evaluators/supporting-evidence.evaluator.ts");
-const severity_level_evaluator_1 = __webpack_require__(/*! ./services/evaluators/severity-level.evaluator */ "./src/evaluations/services/evaluators/severity-level.evaluator.ts");
-const information_consistency_evaluator_1 = __webpack_require__(/*! ./services/evaluators/information-consistency.evaluator */ "./src/evaluations/services/evaluators/information-consistency.evaluator.ts");
-const description_success_evaluator_1 = __webpack_require__(/*! ./services/evaluators/description-success.evaluator */ "./src/evaluations/services/evaluators/description-success.evaluator.ts");
-const environment_success_evaluator_1 = __webpack_require__(/*! ./services/evaluators/environment-success.evaluator */ "./src/evaluations/services/evaluators/environment-success.evaluator.ts");
+const llm_test_identity_evaluator_1 = __webpack_require__(/*! ./services/evaluators/llm-test-identity.evaluator */ "./src/evaluations/services/evaluators/llm-test-identity.evaluator.ts");
+const llm_test_environment_evaluator_1 = __webpack_require__(/*! ./services/evaluators/llm-test-environment.evaluator */ "./src/evaluations/services/evaluators/llm-test-environment.evaluator.ts");
+const llm_steps_to_reproduce_evaluator_1 = __webpack_require__(/*! ./services/evaluators/llm-steps-to-reproduce.evaluator */ "./src/evaluations/services/evaluators/llm-steps-to-reproduce.evaluator.ts");
+const llm_actual_result_evaluator_1 = __webpack_require__(/*! ./services/evaluators/llm-actual-result.evaluator */ "./src/evaluations/services/evaluators/llm-actual-result.evaluator.ts");
+const llm_expected_result_evaluator_1 = __webpack_require__(/*! ./services/evaluators/llm-expected-result.evaluator */ "./src/evaluations/services/evaluators/llm-expected-result.evaluator.ts");
+const llm_supporting_evidence_evaluator_1 = __webpack_require__(/*! ./services/evaluators/llm-supporting-evidence.evaluator */ "./src/evaluations/services/evaluators/llm-supporting-evidence.evaluator.ts");
+const llm_severity_level_evaluator_1 = __webpack_require__(/*! ./services/evaluators/llm-severity-level.evaluator */ "./src/evaluations/services/evaluators/llm-severity-level.evaluator.ts");
+const llm_information_consistency_evaluator_1 = __webpack_require__(/*! ./services/evaluators/llm-information-consistency.evaluator */ "./src/evaluations/services/evaluators/llm-information-consistency.evaluator.ts");
+const llm_description_success_evaluator_1 = __webpack_require__(/*! ./services/evaluators/llm-description-success.evaluator */ "./src/evaluations/services/evaluators/llm-description-success.evaluator.ts");
+const llm_environment_success_evaluator_1 = __webpack_require__(/*! ./services/evaluators/llm-environment-success.evaluator */ "./src/evaluations/services/evaluators/llm-environment-success.evaluator.ts");
 const calculate_score_service_1 = __webpack_require__(/*! ./services/calculate-score.service */ "./src/evaluations/services/calculate-score.service.ts");
 const determine_status_service_1 = __webpack_require__(/*! ./services/determine-status.service */ "./src/evaluations/services/determine-status.service.ts");
 const generate_feedback_service_1 = __webpack_require__(/*! ./services/generate-feedback.service */ "./src/evaluations/services/generate-feedback.service.ts");
 const evaluate_report_service_1 = __webpack_require__(/*! ./services/evaluate-report.service */ "./src/evaluations/services/evaluate-report.service.ts");
 const get_evaluation_service_1 = __webpack_require__(/*! ./services/get-evaluation.service */ "./src/evaluations/services/get-evaluation.service.ts");
 const batch_evaluate_reports_service_1 = __webpack_require__(/*! ./services/batch-evaluate-reports.service */ "./src/evaluations/services/batch-evaluate-reports.service.ts");
+const delete_evaluation_service_1 = __webpack_require__(/*! ./services/delete-evaluation.service */ "./src/evaluations/services/delete-evaluation.service.ts");
 const evaluations_resolver_1 = __webpack_require__(/*! ./evaluations.resolver */ "./src/evaluations/evaluations.resolver.ts");
 let EvaluationsModule = class EvaluationsModule {
 };
@@ -2130,27 +2133,29 @@ exports.EvaluationsModule = EvaluationsModule = __decorate([
             (0, common_1.forwardRef)(() => uat_reports_module_1.UATReportsModule),
             scoring_rules_module_1.ScoringRulesModule,
             users_module_1.UsersModule,
+            llm_module_1.LLMModule,
         ],
         providers: [
-            test_identity_evaluator_1.TestIdentityEvaluator,
-            test_environment_evaluator_1.TestEnvironmentEvaluator,
-            steps_to_reproduce_evaluator_1.StepsToReproduceEvaluator,
-            actual_result_evaluator_1.ActualResultEvaluator,
-            expected_result_evaluator_1.ExpectedResultEvaluator,
-            supporting_evidence_evaluator_1.SupportingEvidenceEvaluator,
-            severity_level_evaluator_1.SeverityLevelEvaluator,
-            information_consistency_evaluator_1.InformationConsistencyEvaluator,
-            description_success_evaluator_1.DescriptionSuccessEvaluator,
-            environment_success_evaluator_1.EnvironmentSuccessEvaluator,
+            llm_test_identity_evaluator_1.LLMTestIdentityEvaluator,
+            llm_test_environment_evaluator_1.LLMTestEnvironmentEvaluator,
+            llm_steps_to_reproduce_evaluator_1.LLMStepsToReproduceEvaluator,
+            llm_actual_result_evaluator_1.LLMActualResultEvaluator,
+            llm_expected_result_evaluator_1.LLMExpectedResultEvaluator,
+            llm_supporting_evidence_evaluator_1.LLMSupportingEvidenceEvaluator,
+            llm_severity_level_evaluator_1.LLMSeverityLevelEvaluator,
+            llm_information_consistency_evaluator_1.LLMInformationConsistencyEvaluator,
+            llm_description_success_evaluator_1.LLMDescriptionSuccessEvaluator,
+            llm_environment_success_evaluator_1.LLMEnvironmentSuccessEvaluator,
             calculate_score_service_1.CalculateScoreService,
             determine_status_service_1.DetermineStatusService,
             generate_feedback_service_1.GenerateFeedbackService,
             evaluate_report_service_1.EvaluateReportService,
             get_evaluation_service_1.GetEvaluationService,
             batch_evaluate_reports_service_1.BatchEvaluateReportsService,
+            delete_evaluation_service_1.DeleteEvaluationService,
             evaluations_resolver_1.EvaluationsResolver,
         ],
-        exports: [evaluate_report_service_1.EvaluateReportService, get_evaluation_service_1.GetEvaluationService],
+        exports: [evaluate_report_service_1.EvaluateReportService, get_evaluation_service_1.GetEvaluationService, delete_evaluation_service_1.DeleteEvaluationService],
     })
 ], EvaluationsModule);
 
@@ -2176,7 +2181,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.EvaluationsResolver = void 0;
 const graphql_1 = __webpack_require__(/*! @nestjs/graphql */ "@nestjs/graphql");
@@ -2186,6 +2191,7 @@ const decorators_1 = __webpack_require__(/*! ../common/decorators */ "./src/comm
 const evaluate_report_service_1 = __webpack_require__(/*! ./services/evaluate-report.service */ "./src/evaluations/services/evaluate-report.service.ts");
 const get_evaluation_service_1 = __webpack_require__(/*! ./services/get-evaluation.service */ "./src/evaluations/services/get-evaluation.service.ts");
 const batch_evaluate_reports_service_1 = __webpack_require__(/*! ./services/batch-evaluate-reports.service */ "./src/evaluations/services/batch-evaluate-reports.service.ts");
+const delete_evaluation_service_1 = __webpack_require__(/*! ./services/delete-evaluation.service */ "./src/evaluations/services/delete-evaluation.service.ts");
 const evaluation_view_1 = __webpack_require__(/*! ./dto/views/evaluation.view */ "./src/evaluations/dto/views/evaluation.view.ts");
 const evaluation_connection_view_1 = __webpack_require__(/*! ./dto/views/evaluation-connection.view */ "./src/evaluations/dto/views/evaluation-connection.view.ts");
 const uat_report_view_1 = __webpack_require__(/*! ../uat-reports/dto/views/uat-report.view */ "./src/uat-reports/dto/views/uat-report.view.ts");
@@ -2194,10 +2200,11 @@ const get_uat_report_service_1 = __webpack_require__(/*! ../uat-reports/services
 const get_user_service_1 = __webpack_require__(/*! ../users/services/get-user.service */ "./src/users/services/get-user.service.ts");
 const types_1 = __webpack_require__(/*! ../common/types */ "./src/common/types/index.ts");
 let EvaluationsResolver = class EvaluationsResolver {
-    constructor(evaluateReportService, getEvaluationService, batchEvaluateReportsService, getUATReportService, getUserService) {
+    constructor(evaluateReportService, getEvaluationService, batchEvaluateReportsService, deleteEvaluationService, getUATReportService, getUserService) {
         this.evaluateReportService = evaluateReportService;
         this.getEvaluationService = getEvaluationService;
         this.batchEvaluateReportsService = batchEvaluateReportsService;
+        this.deleteEvaluationService = deleteEvaluationService;
         this.getUATReportService = getUATReportService;
         this.getUserService = getUserService;
     }
@@ -2212,6 +2219,9 @@ let EvaluationsResolver = class EvaluationsResolver {
     }
     async getEvaluationHistory(reportId, pagination) {
         return this.getEvaluationService.findHistoryByReportId(reportId, pagination);
+    }
+    async deleteEvaluationByReport(reportId) {
+        return this.deleteEvaluationService.deleteByReportId(reportId);
     }
     async getReport(evaluation) {
         if (typeof evaluation.reportId === 'object' &&
@@ -2239,8 +2249,8 @@ __decorate([
     __param(0, (0, graphql_1.Args)('id')),
     __param(1, (0, decorators_1.CurrentUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_f = typeof user_view_1.UserView !== "undefined" && user_view_1.UserView) === "function" ? _f : Object]),
-    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
+    __metadata("design:paramtypes", [String, typeof (_g = typeof user_view_1.UserView !== "undefined" && user_view_1.UserView) === "function" ? _g : Object]),
+    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
 ], EvaluationsResolver.prototype, "evaluateReport", null);
 __decorate([
     (0, graphql_1.Mutation)(() => [evaluation_view_1.EvaluationView], { name: 'evaluateBatchReports' }),
@@ -2249,8 +2259,8 @@ __decorate([
     __param(0, (0, graphql_1.Args)('ids', { type: () => [String] })),
     __param(1, (0, decorators_1.CurrentUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Array, typeof (_h = typeof user_view_1.UserView !== "undefined" && user_view_1.UserView) === "function" ? _h : Object]),
-    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
+    __metadata("design:paramtypes", [Array, typeof (_j = typeof user_view_1.UserView !== "undefined" && user_view_1.UserView) === "function" ? _j : Object]),
+    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
 ], EvaluationsResolver.prototype, "evaluateBatchReports", null);
 __decorate([
     (0, graphql_1.Query)(() => evaluation_view_1.EvaluationView, { name: 'getEvaluation' }),
@@ -2258,7 +2268,7 @@ __decorate([
     __param(0, (0, graphql_1.Args)('reportId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
+    __metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
 ], EvaluationsResolver.prototype, "getEvaluation", null);
 __decorate([
     (0, graphql_1.Query)(() => evaluation_connection_view_1.EvaluationConnection, { name: 'getEvaluationHistory' }),
@@ -2266,26 +2276,35 @@ __decorate([
     __param(0, (0, graphql_1.Args)('reportId')),
     __param(1, (0, graphql_1.Args)('pagination', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_l = typeof types_1.PaginationInput !== "undefined" && types_1.PaginationInput) === "function" ? _l : Object]),
-    __metadata("design:returntype", typeof (_m = typeof Promise !== "undefined" && Promise) === "function" ? _m : Object)
+    __metadata("design:paramtypes", [String, typeof (_m = typeof types_1.PaginationInput !== "undefined" && types_1.PaginationInput) === "function" ? _m : Object]),
+    __metadata("design:returntype", typeof (_o = typeof Promise !== "undefined" && Promise) === "function" ? _o : Object)
 ], EvaluationsResolver.prototype, "getEvaluationHistory", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => Boolean, { name: 'deleteEvaluationByReport' }),
+    (0, common_1.UseGuards)(guards_1.JwtAuthGuard, guards_1.RolesGuard),
+    (0, decorators_1.Roles)('ADMIN', 'REVIEWER'),
+    __param(0, (0, graphql_1.Args)('reportId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
+], EvaluationsResolver.prototype, "deleteEvaluationByReport", null);
 __decorate([
     (0, graphql_1.ResolveField)(() => uat_report_view_1.UATReportView, { name: 'report' }),
     __param(0, (0, graphql_1.Parent)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_o = typeof evaluation_view_1.EvaluationView !== "undefined" && evaluation_view_1.EvaluationView) === "function" ? _o : Object]),
-    __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
+    __metadata("design:paramtypes", [typeof (_q = typeof evaluation_view_1.EvaluationView !== "undefined" && evaluation_view_1.EvaluationView) === "function" ? _q : Object]),
+    __metadata("design:returntype", typeof (_r = typeof Promise !== "undefined" && Promise) === "function" ? _r : Object)
 ], EvaluationsResolver.prototype, "getReport", null);
 __decorate([
     (0, graphql_1.ResolveField)(() => user_view_1.UserView, { name: 'evaluatedBy', nullable: true }),
     __param(0, (0, graphql_1.Parent)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_q = typeof evaluation_view_1.EvaluationView !== "undefined" && evaluation_view_1.EvaluationView) === "function" ? _q : Object]),
-    __metadata("design:returntype", typeof (_r = typeof Promise !== "undefined" && Promise) === "function" ? _r : Object)
+    __metadata("design:paramtypes", [typeof (_s = typeof evaluation_view_1.EvaluationView !== "undefined" && evaluation_view_1.EvaluationView) === "function" ? _s : Object]),
+    __metadata("design:returntype", typeof (_t = typeof Promise !== "undefined" && Promise) === "function" ? _t : Object)
 ], EvaluationsResolver.prototype, "getEvaluatedBy", null);
 exports.EvaluationsResolver = EvaluationsResolver = __decorate([
     (0, graphql_1.Resolver)(() => evaluation_view_1.EvaluationView),
-    __metadata("design:paramtypes", [typeof (_a = typeof evaluate_report_service_1.EvaluateReportService !== "undefined" && evaluate_report_service_1.EvaluateReportService) === "function" ? _a : Object, typeof (_b = typeof get_evaluation_service_1.GetEvaluationService !== "undefined" && get_evaluation_service_1.GetEvaluationService) === "function" ? _b : Object, typeof (_c = typeof batch_evaluate_reports_service_1.BatchEvaluateReportsService !== "undefined" && batch_evaluate_reports_service_1.BatchEvaluateReportsService) === "function" ? _c : Object, typeof (_d = typeof get_uat_report_service_1.GetUATReportService !== "undefined" && get_uat_report_service_1.GetUATReportService) === "function" ? _d : Object, typeof (_e = typeof get_user_service_1.GetUserService !== "undefined" && get_user_service_1.GetUserService) === "function" ? _e : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof evaluate_report_service_1.EvaluateReportService !== "undefined" && evaluate_report_service_1.EvaluateReportService) === "function" ? _a : Object, typeof (_b = typeof get_evaluation_service_1.GetEvaluationService !== "undefined" && get_evaluation_service_1.GetEvaluationService) === "function" ? _b : Object, typeof (_c = typeof batch_evaluate_reports_service_1.BatchEvaluateReportsService !== "undefined" && batch_evaluate_reports_service_1.BatchEvaluateReportsService) === "function" ? _c : Object, typeof (_d = typeof delete_evaluation_service_1.DeleteEvaluationService !== "undefined" && delete_evaluation_service_1.DeleteEvaluationService) === "function" ? _d : Object, typeof (_e = typeof get_uat_report_service_1.GetUATReportService !== "undefined" && get_uat_report_service_1.GetUATReportService) === "function" ? _e : Object, typeof (_f = typeof get_user_service_1.GetUserService !== "undefined" && get_user_service_1.GetUserService) === "function" ? _f : Object])
 ], EvaluationsResolver);
 
 
@@ -2346,6 +2365,11 @@ __decorate([
     (0, mongoose_1.Prop)({ required: true }),
     __metadata("design:type", Boolean)
 ], AttributeScore.prototype, "passed", void 0);
+__decorate([
+    (0, graphql_1.Field)({ nullable: true }),
+    (0, mongoose_1.Prop)({ required: false }),
+    __metadata("design:type", String)
+], AttributeScore.prototype, "reasoning", void 0);
 exports.AttributeScore = AttributeScore = __decorate([
     (0, mongoose_1.Schema)({ _id: false }),
     (0, graphql_1.ObjectType)()
@@ -2699,6 +2723,63 @@ exports.CalculateScoreService = CalculateScoreService = __decorate([
 
 /***/ }),
 
+/***/ "./src/evaluations/services/delete-evaluation.service.ts":
+/*!***************************************************************!*\
+  !*** ./src/evaluations/services/delete-evaluation.service.ts ***!
+  \***************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DeleteEvaluationService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const mongoose_1 = __webpack_require__(/*! @nestjs/mongoose */ "@nestjs/mongoose");
+const mongoose_2 = __webpack_require__(/*! mongoose */ "mongoose");
+const gqlerr_1 = __webpack_require__(/*! @app/gqlerr */ "./libs/gqlerr/src/index.ts");
+const evaluation_1 = __webpack_require__(/*! ../models/evaluation */ "./src/evaluations/models/evaluation.ts");
+let DeleteEvaluationService = class DeleteEvaluationService {
+    constructor(evaluationModel) {
+        this.evaluationModel = evaluationModel;
+    }
+    async deleteByReportId(reportId) {
+        try {
+            const result = await this.evaluationModel.deleteMany({ reportId });
+            if (result.deletedCount === 0) {
+                throw new gqlerr_1.ThrowGQL('Evaluation not found', gqlerr_1.GQLThrowType.NOT_FOUND);
+            }
+            return true;
+        }
+        catch (error) {
+            if (error instanceof gqlerr_1.ThrowGQL) {
+                throw error;
+            }
+            throw new gqlerr_1.ThrowGQL(error, gqlerr_1.GQLThrowType.UNPROCESSABLE);
+        }
+    }
+};
+exports.DeleteEvaluationService = DeleteEvaluationService;
+exports.DeleteEvaluationService = DeleteEvaluationService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, mongoose_1.InjectModel)(evaluation_1.Evaluation.name)),
+    __metadata("design:paramtypes", [typeof (_a = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _a : Object])
+], DeleteEvaluationService);
+
+
+/***/ }),
+
 /***/ "./src/evaluations/services/determine-status.service.ts":
 /*!**************************************************************!*\
   !*** ./src/evaluations/services/determine-status.service.ts ***!
@@ -2765,16 +2846,16 @@ const gqlerr_1 = __webpack_require__(/*! @app/gqlerr */ "./libs/gqlerr/src/index
 const evaluation_1 = __webpack_require__(/*! ../models/evaluation */ "./src/evaluations/models/evaluation.ts");
 const uat_report_1 = __webpack_require__(/*! ../../uat-reports/models/uat-report */ "./src/uat-reports/models/uat-report.ts");
 const get_scoring_rules_service_1 = __webpack_require__(/*! ../../scoring-rules/services/get-scoring-rules.service */ "./src/scoring-rules/services/get-scoring-rules.service.ts");
-const test_identity_evaluator_1 = __webpack_require__(/*! ./evaluators/test-identity.evaluator */ "./src/evaluations/services/evaluators/test-identity.evaluator.ts");
-const test_environment_evaluator_1 = __webpack_require__(/*! ./evaluators/test-environment.evaluator */ "./src/evaluations/services/evaluators/test-environment.evaluator.ts");
-const steps_to_reproduce_evaluator_1 = __webpack_require__(/*! ./evaluators/steps-to-reproduce.evaluator */ "./src/evaluations/services/evaluators/steps-to-reproduce.evaluator.ts");
-const actual_result_evaluator_1 = __webpack_require__(/*! ./evaluators/actual-result.evaluator */ "./src/evaluations/services/evaluators/actual-result.evaluator.ts");
-const expected_result_evaluator_1 = __webpack_require__(/*! ./evaluators/expected-result.evaluator */ "./src/evaluations/services/evaluators/expected-result.evaluator.ts");
-const supporting_evidence_evaluator_1 = __webpack_require__(/*! ./evaluators/supporting-evidence.evaluator */ "./src/evaluations/services/evaluators/supporting-evidence.evaluator.ts");
-const severity_level_evaluator_1 = __webpack_require__(/*! ./evaluators/severity-level.evaluator */ "./src/evaluations/services/evaluators/severity-level.evaluator.ts");
-const information_consistency_evaluator_1 = __webpack_require__(/*! ./evaluators/information-consistency.evaluator */ "./src/evaluations/services/evaluators/information-consistency.evaluator.ts");
-const description_success_evaluator_1 = __webpack_require__(/*! ./evaluators/description-success.evaluator */ "./src/evaluations/services/evaluators/description-success.evaluator.ts");
-const environment_success_evaluator_1 = __webpack_require__(/*! ./evaluators/environment-success.evaluator */ "./src/evaluations/services/evaluators/environment-success.evaluator.ts");
+const llm_test_identity_evaluator_1 = __webpack_require__(/*! ./evaluators/llm-test-identity.evaluator */ "./src/evaluations/services/evaluators/llm-test-identity.evaluator.ts");
+const llm_test_environment_evaluator_1 = __webpack_require__(/*! ./evaluators/llm-test-environment.evaluator */ "./src/evaluations/services/evaluators/llm-test-environment.evaluator.ts");
+const llm_steps_to_reproduce_evaluator_1 = __webpack_require__(/*! ./evaluators/llm-steps-to-reproduce.evaluator */ "./src/evaluations/services/evaluators/llm-steps-to-reproduce.evaluator.ts");
+const llm_actual_result_evaluator_1 = __webpack_require__(/*! ./evaluators/llm-actual-result.evaluator */ "./src/evaluations/services/evaluators/llm-actual-result.evaluator.ts");
+const llm_expected_result_evaluator_1 = __webpack_require__(/*! ./evaluators/llm-expected-result.evaluator */ "./src/evaluations/services/evaluators/llm-expected-result.evaluator.ts");
+const llm_supporting_evidence_evaluator_1 = __webpack_require__(/*! ./evaluators/llm-supporting-evidence.evaluator */ "./src/evaluations/services/evaluators/llm-supporting-evidence.evaluator.ts");
+const llm_severity_level_evaluator_1 = __webpack_require__(/*! ./evaluators/llm-severity-level.evaluator */ "./src/evaluations/services/evaluators/llm-severity-level.evaluator.ts");
+const llm_information_consistency_evaluator_1 = __webpack_require__(/*! ./evaluators/llm-information-consistency.evaluator */ "./src/evaluations/services/evaluators/llm-information-consistency.evaluator.ts");
+const llm_description_success_evaluator_1 = __webpack_require__(/*! ./evaluators/llm-description-success.evaluator */ "./src/evaluations/services/evaluators/llm-description-success.evaluator.ts");
+const llm_environment_success_evaluator_1 = __webpack_require__(/*! ./evaluators/llm-environment-success.evaluator */ "./src/evaluations/services/evaluators/llm-environment-success.evaluator.ts");
 const report_type_enum_1 = __webpack_require__(/*! ../../uat-reports/enums/report-type.enum */ "./src/uat-reports/enums/report-type.enum.ts");
 const calculate_score_service_1 = __webpack_require__(/*! ./calculate-score.service */ "./src/evaluations/services/calculate-score.service.ts");
 const determine_status_service_1 = __webpack_require__(/*! ./determine-status.service */ "./src/evaluations/services/determine-status.service.ts");
@@ -2833,33 +2914,56 @@ let EvaluateReportService = class EvaluateReportService {
                     [attribute_type_enum_1.AttributeType.SUPPORTING_EVIDENCE]: this.supportingEvidenceEvaluator,
                 };
             }
-            for (const [attribute, evaluator] of Object.entries(evaluators)) {
+            const evaluationPromises = Object.entries(evaluators).map(async ([attribute, evaluator]) => {
                 const rule = rulesMap[attribute];
                 if (rule) {
-                    const score = evaluator.evaluate(report.toObject(), rule);
-                    attributeScores.push(score);
+                    try {
+                        const score = await evaluator.evaluate(report.toObject(), rule, reportType);
+                        return score;
+                    }
+                    catch (error) {
+                        console.error(`Error evaluating attribute ${attribute}:`, error);
+                        return {
+                            attribute: attribute,
+                            score: 0,
+                            maxScore: 1,
+                            weight: rule.weight,
+                            weightedScore: 0,
+                            passed: false,
+                        };
+                    }
                 }
-            }
+                return null;
+            });
+            const scores = await Promise.all(evaluationPromises);
+            attributeScores.push(...scores.filter((score) => score !== null));
             const { totalScore, maxScore, scorePercentage } = this.calculateScoreService.calculate(attributeScores);
             const validationStatus = this.determineStatusService.determine(scorePercentage, validationConfig.threshold);
             const feedback = this.generateFeedbackService.generate(attributeScores);
             const incompleteAttributes = [];
-            if (!report.stepsToReproduce ||
-                !Array.isArray(report.stepsToReproduce) ||
-                report.stepsToReproduce.length === 0 ||
-                report.stepsToReproduce.every((step) => !step || step.trim() === '')) {
-                incompleteAttributes.push(attribute_type_enum_1.AttributeType.STEPS_TO_REPRODUCE);
+            if (reportType === report_type_enum_1.ReportType.SUCCESS_REPORT) {
+                if (!report.actualResult || report.actualResult.trim() === '') {
+                    incompleteAttributes.push(attribute_type_enum_1.AttributeType.ACTUAL_RESULT);
+                }
             }
-            if (!report.actualResult || report.actualResult.trim() === '') {
-                incompleteAttributes.push(attribute_type_enum_1.AttributeType.ACTUAL_RESULT);
-            }
-            if (!report.expectedResult || report.expectedResult.trim() === '') {
-                incompleteAttributes.push(attribute_type_enum_1.AttributeType.EXPECTED_RESULT);
-            }
-            if (!report.supportingEvidence ||
-                !Array.isArray(report.supportingEvidence) ||
-                report.supportingEvidence.length === 0) {
-                incompleteAttributes.push(attribute_type_enum_1.AttributeType.SUPPORTING_EVIDENCE);
+            else {
+                if (!report.stepsToReproduce ||
+                    !Array.isArray(report.stepsToReproduce) ||
+                    report.stepsToReproduce.length === 0 ||
+                    report.stepsToReproduce.every((step) => !step || step.trim() === '')) {
+                    incompleteAttributes.push(attribute_type_enum_1.AttributeType.STEPS_TO_REPRODUCE);
+                }
+                if (!report.actualResult || report.actualResult.trim() === '') {
+                    incompleteAttributes.push(attribute_type_enum_1.AttributeType.ACTUAL_RESULT);
+                }
+                if (!report.expectedResult || report.expectedResult.trim() === '') {
+                    incompleteAttributes.push(attribute_type_enum_1.AttributeType.EXPECTED_RESULT);
+                }
+                if (!report.supportingEvidence ||
+                    !Array.isArray(report.supportingEvidence) ||
+                    report.supportingEvidence.length === 0) {
+                    incompleteAttributes.push(attribute_type_enum_1.AttributeType.SUPPORTING_EVIDENCE);
+                }
             }
             const completenessStatus = incompleteAttributes.length === 0
                 ? completeness_status_enum_1.CompletenessStatus.COMPLETE
@@ -2908,16 +3012,16 @@ exports.EvaluateReportService = EvaluateReportService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_1.InjectModel)(evaluation_1.Evaluation.name)),
     __param(1, (0, mongoose_1.InjectModel)(uat_report_1.UATReport.name)),
-    __metadata("design:paramtypes", [typeof (_a = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _a : Object, typeof (_b = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _b : Object, typeof (_c = typeof get_scoring_rules_service_1.GetScoringRulesService !== "undefined" && get_scoring_rules_service_1.GetScoringRulesService) === "function" ? _c : Object, typeof (_d = typeof test_identity_evaluator_1.TestIdentityEvaluator !== "undefined" && test_identity_evaluator_1.TestIdentityEvaluator) === "function" ? _d : Object, typeof (_e = typeof test_environment_evaluator_1.TestEnvironmentEvaluator !== "undefined" && test_environment_evaluator_1.TestEnvironmentEvaluator) === "function" ? _e : Object, typeof (_f = typeof steps_to_reproduce_evaluator_1.StepsToReproduceEvaluator !== "undefined" && steps_to_reproduce_evaluator_1.StepsToReproduceEvaluator) === "function" ? _f : Object, typeof (_g = typeof actual_result_evaluator_1.ActualResultEvaluator !== "undefined" && actual_result_evaluator_1.ActualResultEvaluator) === "function" ? _g : Object, typeof (_h = typeof expected_result_evaluator_1.ExpectedResultEvaluator !== "undefined" && expected_result_evaluator_1.ExpectedResultEvaluator) === "function" ? _h : Object, typeof (_j = typeof supporting_evidence_evaluator_1.SupportingEvidenceEvaluator !== "undefined" && supporting_evidence_evaluator_1.SupportingEvidenceEvaluator) === "function" ? _j : Object, typeof (_k = typeof severity_level_evaluator_1.SeverityLevelEvaluator !== "undefined" && severity_level_evaluator_1.SeverityLevelEvaluator) === "function" ? _k : Object, typeof (_l = typeof information_consistency_evaluator_1.InformationConsistencyEvaluator !== "undefined" && information_consistency_evaluator_1.InformationConsistencyEvaluator) === "function" ? _l : Object, typeof (_m = typeof description_success_evaluator_1.DescriptionSuccessEvaluator !== "undefined" && description_success_evaluator_1.DescriptionSuccessEvaluator) === "function" ? _m : Object, typeof (_o = typeof environment_success_evaluator_1.EnvironmentSuccessEvaluator !== "undefined" && environment_success_evaluator_1.EnvironmentSuccessEvaluator) === "function" ? _o : Object, typeof (_p = typeof calculate_score_service_1.CalculateScoreService !== "undefined" && calculate_score_service_1.CalculateScoreService) === "function" ? _p : Object, typeof (_q = typeof determine_status_service_1.DetermineStatusService !== "undefined" && determine_status_service_1.DetermineStatusService) === "function" ? _q : Object, typeof (_r = typeof generate_feedback_service_1.GenerateFeedbackService !== "undefined" && generate_feedback_service_1.GenerateFeedbackService) === "function" ? _r : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _a : Object, typeof (_b = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _b : Object, typeof (_c = typeof get_scoring_rules_service_1.GetScoringRulesService !== "undefined" && get_scoring_rules_service_1.GetScoringRulesService) === "function" ? _c : Object, typeof (_d = typeof llm_test_identity_evaluator_1.LLMTestIdentityEvaluator !== "undefined" && llm_test_identity_evaluator_1.LLMTestIdentityEvaluator) === "function" ? _d : Object, typeof (_e = typeof llm_test_environment_evaluator_1.LLMTestEnvironmentEvaluator !== "undefined" && llm_test_environment_evaluator_1.LLMTestEnvironmentEvaluator) === "function" ? _e : Object, typeof (_f = typeof llm_steps_to_reproduce_evaluator_1.LLMStepsToReproduceEvaluator !== "undefined" && llm_steps_to_reproduce_evaluator_1.LLMStepsToReproduceEvaluator) === "function" ? _f : Object, typeof (_g = typeof llm_actual_result_evaluator_1.LLMActualResultEvaluator !== "undefined" && llm_actual_result_evaluator_1.LLMActualResultEvaluator) === "function" ? _g : Object, typeof (_h = typeof llm_expected_result_evaluator_1.LLMExpectedResultEvaluator !== "undefined" && llm_expected_result_evaluator_1.LLMExpectedResultEvaluator) === "function" ? _h : Object, typeof (_j = typeof llm_supporting_evidence_evaluator_1.LLMSupportingEvidenceEvaluator !== "undefined" && llm_supporting_evidence_evaluator_1.LLMSupportingEvidenceEvaluator) === "function" ? _j : Object, typeof (_k = typeof llm_severity_level_evaluator_1.LLMSeverityLevelEvaluator !== "undefined" && llm_severity_level_evaluator_1.LLMSeverityLevelEvaluator) === "function" ? _k : Object, typeof (_l = typeof llm_information_consistency_evaluator_1.LLMInformationConsistencyEvaluator !== "undefined" && llm_information_consistency_evaluator_1.LLMInformationConsistencyEvaluator) === "function" ? _l : Object, typeof (_m = typeof llm_description_success_evaluator_1.LLMDescriptionSuccessEvaluator !== "undefined" && llm_description_success_evaluator_1.LLMDescriptionSuccessEvaluator) === "function" ? _m : Object, typeof (_o = typeof llm_environment_success_evaluator_1.LLMEnvironmentSuccessEvaluator !== "undefined" && llm_environment_success_evaluator_1.LLMEnvironmentSuccessEvaluator) === "function" ? _o : Object, typeof (_p = typeof calculate_score_service_1.CalculateScoreService !== "undefined" && calculate_score_service_1.CalculateScoreService) === "function" ? _p : Object, typeof (_q = typeof determine_status_service_1.DetermineStatusService !== "undefined" && determine_status_service_1.DetermineStatusService) === "function" ? _q : Object, typeof (_r = typeof generate_feedback_service_1.GenerateFeedbackService !== "undefined" && generate_feedback_service_1.GenerateFeedbackService) === "function" ? _r : Object])
 ], EvaluateReportService);
 
 
 /***/ }),
 
-/***/ "./src/evaluations/services/evaluators/actual-result.evaluator.ts":
-/*!************************************************************************!*\
-  !*** ./src/evaluations/services/evaluators/actual-result.evaluator.ts ***!
-  \************************************************************************/
+/***/ "./src/evaluations/services/evaluators/llm-actual-result.evaluator.ts":
+/*!****************************************************************************!*\
+  !*** ./src/evaluations/services/evaluators/llm-actual-result.evaluator.ts ***!
+  \****************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2927,223 +3031,44 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ActualResultEvaluator = void 0;
+exports.LLMActualResultEvaluator = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const attribute_type_enum_1 = __webpack_require__(/*! ../../../scoring-rules/enums/attribute-type.enum */ "./src/scoring-rules/enums/attribute-type.enum.ts");
-let ActualResultEvaluator = class ActualResultEvaluator {
-    evaluate(report, rule) {
-        const actualResult = report.actualResult || '';
-        const score = actualResult.length >= 30 ? 1 : 0;
+const llm_evaluation_service_1 = __webpack_require__(/*! ../../../llm/services/llm-evaluation.service */ "./src/llm/services/llm-evaluation.service.ts");
+let LLMActualResultEvaluator = class LLMActualResultEvaluator {
+    constructor(llmEvaluationService) {
+        this.llmEvaluationService = llmEvaluationService;
+    }
+    async evaluate(report, rule, reportType) {
+        const result = await this.llmEvaluationService.evaluate(attribute_type_enum_1.AttributeType.ACTUAL_RESULT, report, reportType);
         return {
             attribute: attribute_type_enum_1.AttributeType.ACTUAL_RESULT,
-            score,
+            score: result.score,
             maxScore: 1,
             weight: rule.weight,
-            weightedScore: score * rule.weight,
-            passed: score >= 1,
+            weightedScore: result.score * rule.weight,
+            passed: result.score >= 0.7,
+            reasoning: result.reasoning,
         };
     }
 };
-exports.ActualResultEvaluator = ActualResultEvaluator;
-exports.ActualResultEvaluator = ActualResultEvaluator = __decorate([
-    (0, common_1.Injectable)()
-], ActualResultEvaluator);
+exports.LLMActualResultEvaluator = LLMActualResultEvaluator;
+exports.LLMActualResultEvaluator = LLMActualResultEvaluator = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof llm_evaluation_service_1.LLMEvaluationService !== "undefined" && llm_evaluation_service_1.LLMEvaluationService) === "function" ? _a : Object])
+], LLMActualResultEvaluator);
 
 
 /***/ }),
 
-/***/ "./src/evaluations/services/evaluators/description-success.evaluator.ts":
-/*!******************************************************************************!*\
-  !*** ./src/evaluations/services/evaluators/description-success.evaluator.ts ***!
-  \******************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DescriptionSuccessEvaluator = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const attribute_type_enum_1 = __webpack_require__(/*! ../../../scoring-rules/enums/attribute-type.enum */ "./src/scoring-rules/enums/attribute-type.enum.ts");
-let DescriptionSuccessEvaluator = class DescriptionSuccessEvaluator {
-    evaluate(report, rule) {
-        const description = (report.actualResult || '').trim();
-        let score = 0;
-        const maxScore = 60;
-        if (description.length === 0) {
-            score = 0;
-        }
-        else if (description.length < 30) {
-            score = 20;
-        }
-        else {
-            const hasActualResult = description.toLowerCase().includes('hasil') ||
-                description.toLowerCase().includes('berhasil') ||
-                description.toLowerCase().includes('success') ||
-                description.toLowerCase().includes('completed') ||
-                description.toLowerCase().includes('selesai');
-            const hasSpecificContext = description.length >= 50 &&
-                (description.includes('fungsi') ||
-                    description.includes('fitur') ||
-                    description.includes('proses') ||
-                    description.includes('function') ||
-                    description.includes('feature'));
-            const isConsistent = description.length >= 60 &&
-                !description.toLowerCase().includes('error') &&
-                !description.toLowerCase().includes('gagal') &&
-                !description.toLowerCase().includes('failed');
-            if (hasActualResult && hasSpecificContext && isConsistent) {
-                score = 60;
-            }
-            else if (hasActualResult && description.length >= 40) {
-                score = 40;
-            }
-            else {
-                score = 20;
-            }
-        }
-        return {
-            attribute: attribute_type_enum_1.AttributeType.ACTUAL_RESULT,
-            score,
-            maxScore,
-            weight: rule.weight,
-            weightedScore: (score / maxScore) * rule.weight,
-            passed: score >= 40,
-        };
-    }
-};
-exports.DescriptionSuccessEvaluator = DescriptionSuccessEvaluator;
-exports.DescriptionSuccessEvaluator = DescriptionSuccessEvaluator = __decorate([
-    (0, common_1.Injectable)()
-], DescriptionSuccessEvaluator);
-
-
-/***/ }),
-
-/***/ "./src/evaluations/services/evaluators/environment-success.evaluator.ts":
-/*!******************************************************************************!*\
-  !*** ./src/evaluations/services/evaluators/environment-success.evaluator.ts ***!
-  \******************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.EnvironmentSuccessEvaluator = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const attribute_type_enum_1 = __webpack_require__(/*! ../../../scoring-rules/enums/attribute-type.enum */ "./src/scoring-rules/enums/attribute-type.enum.ts");
-let EnvironmentSuccessEvaluator = class EnvironmentSuccessEvaluator {
-    evaluate(report, rule) {
-        const testEnvironment = report.testEnvironment;
-        if (!testEnvironment) {
-            return {
-                attribute: attribute_type_enum_1.AttributeType.TEST_ENVIRONMENT,
-                score: 0,
-                maxScore: 40,
-                weight: rule.weight,
-                weightedScore: 0,
-                passed: false,
-            };
-        }
-        const os = (testEnvironment.os || '').trim();
-        const device = (testEnvironment.device || '').trim();
-        const browser = (testEnvironment.browser || '').trim();
-        const filledCount = [os, device, browser].filter((field) => field && field.length > 0).length;
-        let score = 0;
-        const maxScore = 40;
-        if (filledCount === 0) {
-            score = 0;
-        }
-        else if (filledCount === 1) {
-            score = 10;
-        }
-        else if (filledCount === 2) {
-            score = 25;
-        }
-        else if (filledCount === 3) {
-            const isSpecific = os.length > 3 &&
-                device.length > 3 &&
-                browser.length > 3 &&
-                !os.toLowerCase().includes('unknown') &&
-                !device.toLowerCase().includes('unknown') &&
-                !browser.toLowerCase().includes('unknown');
-            if (isSpecific) {
-                score = 40;
-            }
-            else {
-                score = 25;
-            }
-        }
-        return {
-            attribute: attribute_type_enum_1.AttributeType.TEST_ENVIRONMENT,
-            score,
-            maxScore,
-            weight: rule.weight,
-            weightedScore: (score / maxScore) * rule.weight,
-            passed: score >= 25,
-        };
-    }
-};
-exports.EnvironmentSuccessEvaluator = EnvironmentSuccessEvaluator;
-exports.EnvironmentSuccessEvaluator = EnvironmentSuccessEvaluator = __decorate([
-    (0, common_1.Injectable)()
-], EnvironmentSuccessEvaluator);
-
-
-/***/ }),
-
-/***/ "./src/evaluations/services/evaluators/expected-result.evaluator.ts":
-/*!**************************************************************************!*\
-  !*** ./src/evaluations/services/evaluators/expected-result.evaluator.ts ***!
-  \**************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ExpectedResultEvaluator = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const attribute_type_enum_1 = __webpack_require__(/*! ../../../scoring-rules/enums/attribute-type.enum */ "./src/scoring-rules/enums/attribute-type.enum.ts");
-let ExpectedResultEvaluator = class ExpectedResultEvaluator {
-    evaluate(report, rule) {
-        const expectedResult = report.expectedResult || '';
-        const score = expectedResult && expectedResult.length >= 10 ? 1 : 0;
-        return {
-            attribute: attribute_type_enum_1.AttributeType.EXPECTED_RESULT,
-            score,
-            maxScore: 1,
-            weight: rule.weight,
-            weightedScore: score * rule.weight,
-            passed: score >= 1,
-        };
-    }
-};
-exports.ExpectedResultEvaluator = ExpectedResultEvaluator;
-exports.ExpectedResultEvaluator = ExpectedResultEvaluator = __decorate([
-    (0, common_1.Injectable)()
-], ExpectedResultEvaluator);
-
-
-/***/ }),
-
-/***/ "./src/evaluations/services/evaluators/information-consistency.evaluator.ts":
+/***/ "./src/evaluations/services/evaluators/llm-description-success.evaluator.ts":
 /*!**********************************************************************************!*\
-  !*** ./src/evaluations/services/evaluators/information-consistency.evaluator.ts ***!
+  !*** ./src/evaluations/services/evaluators/llm-description-success.evaluator.ts ***!
   \**********************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
@@ -3154,51 +3079,45 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.InformationConsistencyEvaluator = void 0;
+exports.LLMDescriptionSuccessEvaluator = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const attribute_type_enum_1 = __webpack_require__(/*! ../../../scoring-rules/enums/attribute-type.enum */ "./src/scoring-rules/enums/attribute-type.enum.ts");
-const severity_level_enum_1 = __webpack_require__(/*! ../../../uat-reports/enums/severity-level.enum */ "./src/uat-reports/enums/severity-level.enum.ts");
-let InformationConsistencyEvaluator = class InformationConsistencyEvaluator {
-    evaluate(report, rule) {
-        const actualResult = (report.actualResult || '').toLowerCase().trim();
-        const expectedResult = (report.expectedResult || '').toLowerCase().trim();
-        const areDifferent = actualResult !== expectedResult;
-        const areMeaningful = actualResult.length >= 10 && expectedResult.length >= 10;
-        let severityConsistent = true;
-        const severityLevel = report.severityLevel;
-        const combinedText = (actualResult + ' ' + expectedResult).toLowerCase();
-        if (severityLevel === severity_level_enum_1.SeverityLevel.CRITICAL) {
-            severityConsistent =
-                combinedText.includes('crash') ||
-                    combinedText.includes('fail') ||
-                    combinedText.includes('error') ||
-                    combinedText.includes('unable') ||
-                    true;
-        }
-        const score = areDifferent && areMeaningful && severityConsistent ? 1 : 0;
+const llm_evaluation_service_1 = __webpack_require__(/*! ../../../llm/services/llm-evaluation.service */ "./src/llm/services/llm-evaluation.service.ts");
+let LLMDescriptionSuccessEvaluator = class LLMDescriptionSuccessEvaluator {
+    constructor(llmEvaluationService) {
+        this.llmEvaluationService = llmEvaluationService;
+    }
+    async evaluate(report, rule, reportType) {
+        const result = await this.llmEvaluationService.evaluate(attribute_type_enum_1.AttributeType.ACTUAL_RESULT, report, reportType);
         return {
-            attribute: attribute_type_enum_1.AttributeType.INFORMATION_CONSISTENCY,
-            score,
+            attribute: attribute_type_enum_1.AttributeType.ACTUAL_RESULT,
+            score: result.score,
             maxScore: 1,
             weight: rule.weight,
-            weightedScore: score * rule.weight,
-            passed: score >= 1,
+            weightedScore: result.score * rule.weight,
+            passed: result.score >= 0.7,
+            reasoning: result.reasoning,
         };
     }
 };
-exports.InformationConsistencyEvaluator = InformationConsistencyEvaluator;
-exports.InformationConsistencyEvaluator = InformationConsistencyEvaluator = __decorate([
-    (0, common_1.Injectable)()
-], InformationConsistencyEvaluator);
+exports.LLMDescriptionSuccessEvaluator = LLMDescriptionSuccessEvaluator;
+exports.LLMDescriptionSuccessEvaluator = LLMDescriptionSuccessEvaluator = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof llm_evaluation_service_1.LLMEvaluationService !== "undefined" && llm_evaluation_service_1.LLMEvaluationService) === "function" ? _a : Object])
+], LLMDescriptionSuccessEvaluator);
 
 
 /***/ }),
 
-/***/ "./src/evaluations/services/evaluators/severity-level.evaluator.ts":
-/*!*************************************************************************!*\
-  !*** ./src/evaluations/services/evaluators/severity-level.evaluator.ts ***!
-  \*************************************************************************/
+/***/ "./src/evaluations/services/evaluators/llm-environment-success.evaluator.ts":
+/*!**********************************************************************************!*\
+  !*** ./src/evaluations/services/evaluators/llm-environment-success.evaluator.ts ***!
+  \**********************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3208,85 +3127,44 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SeverityLevelEvaluator = void 0;
+exports.LLMEnvironmentSuccessEvaluator = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const attribute_type_enum_1 = __webpack_require__(/*! ../../../scoring-rules/enums/attribute-type.enum */ "./src/scoring-rules/enums/attribute-type.enum.ts");
-const severity_level_enum_1 = __webpack_require__(/*! ../../../uat-reports/enums/severity-level.enum */ "./src/uat-reports/enums/severity-level.enum.ts");
-let SeverityLevelEvaluator = class SeverityLevelEvaluator {
-    evaluate(report, rule) {
-        const severityLevel = report.severityLevel;
-        const validLevels = [
-            severity_level_enum_1.SeverityLevel.LOW,
-            severity_level_enum_1.SeverityLevel.MEDIUM,
-            severity_level_enum_1.SeverityLevel.HIGH,
-            severity_level_enum_1.SeverityLevel.CRITICAL,
-        ];
-        const score = validLevels.includes(severityLevel) ? 1 : 0;
+const llm_evaluation_service_1 = __webpack_require__(/*! ../../../llm/services/llm-evaluation.service */ "./src/llm/services/llm-evaluation.service.ts");
+let LLMEnvironmentSuccessEvaluator = class LLMEnvironmentSuccessEvaluator {
+    constructor(llmEvaluationService) {
+        this.llmEvaluationService = llmEvaluationService;
+    }
+    async evaluate(report, rule, reportType) {
+        const result = await this.llmEvaluationService.evaluate(attribute_type_enum_1.AttributeType.TEST_ENVIRONMENT, report, reportType);
         return {
-            attribute: attribute_type_enum_1.AttributeType.SEVERITY_LEVEL,
-            score,
+            attribute: attribute_type_enum_1.AttributeType.TEST_ENVIRONMENT,
+            score: result.score,
             maxScore: 1,
             weight: rule.weight,
-            weightedScore: score * rule.weight,
-            passed: score >= 1,
+            weightedScore: result.score * rule.weight,
+            passed: result.score >= 0.7,
+            reasoning: result.reasoning,
         };
     }
 };
-exports.SeverityLevelEvaluator = SeverityLevelEvaluator;
-exports.SeverityLevelEvaluator = SeverityLevelEvaluator = __decorate([
-    (0, common_1.Injectable)()
-], SeverityLevelEvaluator);
+exports.LLMEnvironmentSuccessEvaluator = LLMEnvironmentSuccessEvaluator;
+exports.LLMEnvironmentSuccessEvaluator = LLMEnvironmentSuccessEvaluator = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof llm_evaluation_service_1.LLMEvaluationService !== "undefined" && llm_evaluation_service_1.LLMEvaluationService) === "function" ? _a : Object])
+], LLMEnvironmentSuccessEvaluator);
 
 
 /***/ }),
 
-/***/ "./src/evaluations/services/evaluators/steps-to-reproduce.evaluator.ts":
-/*!*****************************************************************************!*\
-  !*** ./src/evaluations/services/evaluators/steps-to-reproduce.evaluator.ts ***!
-  \*****************************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StepsToReproduceEvaluator = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const attribute_type_enum_1 = __webpack_require__(/*! ../../../scoring-rules/enums/attribute-type.enum */ "./src/scoring-rules/enums/attribute-type.enum.ts");
-let StepsToReproduceEvaluator = class StepsToReproduceEvaluator {
-    evaluate(report, rule) {
-        const steps = report.stepsToReproduce || [];
-        let score = 0;
-        if (steps.length >= 3) {
-            const areStepsClear = steps.every((step) => step && step.length >= 10);
-            score = areStepsClear ? 1 : 0.5;
-        }
-        return {
-            attribute: attribute_type_enum_1.AttributeType.STEPS_TO_REPRODUCE,
-            score,
-            maxScore: 1,
-            weight: rule.weight,
-            weightedScore: score * rule.weight,
-            passed: score >= 1,
-        };
-    }
-};
-exports.StepsToReproduceEvaluator = StepsToReproduceEvaluator;
-exports.StepsToReproduceEvaluator = StepsToReproduceEvaluator = __decorate([
-    (0, common_1.Injectable)()
-], StepsToReproduceEvaluator);
-
-
-/***/ }),
-
-/***/ "./src/evaluations/services/evaluators/supporting-evidence.evaluator.ts":
+/***/ "./src/evaluations/services/evaluators/llm-expected-result.evaluator.ts":
 /*!******************************************************************************!*\
-  !*** ./src/evaluations/services/evaluators/supporting-evidence.evaluator.ts ***!
+  !*** ./src/evaluations/services/evaluators/llm-expected-result.evaluator.ts ***!
   \******************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
@@ -3297,36 +3175,237 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SupportingEvidenceEvaluator = void 0;
+exports.LLMExpectedResultEvaluator = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const attribute_type_enum_1 = __webpack_require__(/*! ../../../scoring-rules/enums/attribute-type.enum */ "./src/scoring-rules/enums/attribute-type.enum.ts");
-let SupportingEvidenceEvaluator = class SupportingEvidenceEvaluator {
-    evaluate(report, rule) {
-        const supportingEvidence = report.supportingEvidence || [];
-        const score = supportingEvidence.length > 0 ? 1 : 0;
+const llm_evaluation_service_1 = __webpack_require__(/*! ../../../llm/services/llm-evaluation.service */ "./src/llm/services/llm-evaluation.service.ts");
+let LLMExpectedResultEvaluator = class LLMExpectedResultEvaluator {
+    constructor(llmEvaluationService) {
+        this.llmEvaluationService = llmEvaluationService;
+    }
+    async evaluate(report, rule, reportType) {
+        const result = await this.llmEvaluationService.evaluate(attribute_type_enum_1.AttributeType.EXPECTED_RESULT, report, reportType);
+        return {
+            attribute: attribute_type_enum_1.AttributeType.EXPECTED_RESULT,
+            score: result.score,
+            maxScore: 1,
+            weight: rule.weight,
+            weightedScore: result.score * rule.weight,
+            passed: result.score >= 0.7,
+            reasoning: result.reasoning,
+        };
+    }
+};
+exports.LLMExpectedResultEvaluator = LLMExpectedResultEvaluator;
+exports.LLMExpectedResultEvaluator = LLMExpectedResultEvaluator = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof llm_evaluation_service_1.LLMEvaluationService !== "undefined" && llm_evaluation_service_1.LLMEvaluationService) === "function" ? _a : Object])
+], LLMExpectedResultEvaluator);
+
+
+/***/ }),
+
+/***/ "./src/evaluations/services/evaluators/llm-information-consistency.evaluator.ts":
+/*!**************************************************************************************!*\
+  !*** ./src/evaluations/services/evaluators/llm-information-consistency.evaluator.ts ***!
+  \**************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LLMInformationConsistencyEvaluator = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const attribute_type_enum_1 = __webpack_require__(/*! ../../../scoring-rules/enums/attribute-type.enum */ "./src/scoring-rules/enums/attribute-type.enum.ts");
+const llm_evaluation_service_1 = __webpack_require__(/*! ../../../llm/services/llm-evaluation.service */ "./src/llm/services/llm-evaluation.service.ts");
+let LLMInformationConsistencyEvaluator = class LLMInformationConsistencyEvaluator {
+    constructor(llmEvaluationService) {
+        this.llmEvaluationService = llmEvaluationService;
+    }
+    async evaluate(report, rule, reportType) {
+        const result = await this.llmEvaluationService.evaluate(attribute_type_enum_1.AttributeType.INFORMATION_CONSISTENCY, report, reportType);
+        return {
+            attribute: attribute_type_enum_1.AttributeType.INFORMATION_CONSISTENCY,
+            score: result.score,
+            maxScore: 1,
+            weight: rule.weight,
+            weightedScore: result.score * rule.weight,
+            passed: result.score >= 0.7,
+            reasoning: result.reasoning,
+        };
+    }
+};
+exports.LLMInformationConsistencyEvaluator = LLMInformationConsistencyEvaluator;
+exports.LLMInformationConsistencyEvaluator = LLMInformationConsistencyEvaluator = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof llm_evaluation_service_1.LLMEvaluationService !== "undefined" && llm_evaluation_service_1.LLMEvaluationService) === "function" ? _a : Object])
+], LLMInformationConsistencyEvaluator);
+
+
+/***/ }),
+
+/***/ "./src/evaluations/services/evaluators/llm-severity-level.evaluator.ts":
+/*!*****************************************************************************!*\
+  !*** ./src/evaluations/services/evaluators/llm-severity-level.evaluator.ts ***!
+  \*****************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LLMSeverityLevelEvaluator = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const attribute_type_enum_1 = __webpack_require__(/*! ../../../scoring-rules/enums/attribute-type.enum */ "./src/scoring-rules/enums/attribute-type.enum.ts");
+const llm_evaluation_service_1 = __webpack_require__(/*! ../../../llm/services/llm-evaluation.service */ "./src/llm/services/llm-evaluation.service.ts");
+let LLMSeverityLevelEvaluator = class LLMSeverityLevelEvaluator {
+    constructor(llmEvaluationService) {
+        this.llmEvaluationService = llmEvaluationService;
+    }
+    async evaluate(report, rule, reportType) {
+        const result = await this.llmEvaluationService.evaluate(attribute_type_enum_1.AttributeType.SEVERITY_LEVEL, report, reportType);
+        return {
+            attribute: attribute_type_enum_1.AttributeType.SEVERITY_LEVEL,
+            score: result.score,
+            maxScore: 1,
+            weight: rule.weight,
+            weightedScore: result.score * rule.weight,
+            passed: result.score >= 0.7,
+            reasoning: result.reasoning,
+        };
+    }
+};
+exports.LLMSeverityLevelEvaluator = LLMSeverityLevelEvaluator;
+exports.LLMSeverityLevelEvaluator = LLMSeverityLevelEvaluator = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof llm_evaluation_service_1.LLMEvaluationService !== "undefined" && llm_evaluation_service_1.LLMEvaluationService) === "function" ? _a : Object])
+], LLMSeverityLevelEvaluator);
+
+
+/***/ }),
+
+/***/ "./src/evaluations/services/evaluators/llm-steps-to-reproduce.evaluator.ts":
+/*!*********************************************************************************!*\
+  !*** ./src/evaluations/services/evaluators/llm-steps-to-reproduce.evaluator.ts ***!
+  \*********************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LLMStepsToReproduceEvaluator = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const attribute_type_enum_1 = __webpack_require__(/*! ../../../scoring-rules/enums/attribute-type.enum */ "./src/scoring-rules/enums/attribute-type.enum.ts");
+const llm_evaluation_service_1 = __webpack_require__(/*! ../../../llm/services/llm-evaluation.service */ "./src/llm/services/llm-evaluation.service.ts");
+let LLMStepsToReproduceEvaluator = class LLMStepsToReproduceEvaluator {
+    constructor(llmEvaluationService) {
+        this.llmEvaluationService = llmEvaluationService;
+    }
+    async evaluate(report, rule, reportType) {
+        const result = await this.llmEvaluationService.evaluate(attribute_type_enum_1.AttributeType.STEPS_TO_REPRODUCE, report, reportType);
+        return {
+            attribute: attribute_type_enum_1.AttributeType.STEPS_TO_REPRODUCE,
+            score: result.score,
+            maxScore: 1,
+            weight: rule.weight,
+            weightedScore: result.score * rule.weight,
+            passed: result.score >= 0.7,
+            reasoning: result.reasoning,
+        };
+    }
+};
+exports.LLMStepsToReproduceEvaluator = LLMStepsToReproduceEvaluator;
+exports.LLMStepsToReproduceEvaluator = LLMStepsToReproduceEvaluator = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof llm_evaluation_service_1.LLMEvaluationService !== "undefined" && llm_evaluation_service_1.LLMEvaluationService) === "function" ? _a : Object])
+], LLMStepsToReproduceEvaluator);
+
+
+/***/ }),
+
+/***/ "./src/evaluations/services/evaluators/llm-supporting-evidence.evaluator.ts":
+/*!**********************************************************************************!*\
+  !*** ./src/evaluations/services/evaluators/llm-supporting-evidence.evaluator.ts ***!
+  \**********************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LLMSupportingEvidenceEvaluator = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const attribute_type_enum_1 = __webpack_require__(/*! ../../../scoring-rules/enums/attribute-type.enum */ "./src/scoring-rules/enums/attribute-type.enum.ts");
+const llm_evaluation_service_1 = __webpack_require__(/*! ../../../llm/services/llm-evaluation.service */ "./src/llm/services/llm-evaluation.service.ts");
+let LLMSupportingEvidenceEvaluator = class LLMSupportingEvidenceEvaluator {
+    constructor(llmEvaluationService) {
+        this.llmEvaluationService = llmEvaluationService;
+    }
+    async evaluate(report, rule, reportType) {
+        const result = await this.llmEvaluationService.evaluate(attribute_type_enum_1.AttributeType.SUPPORTING_EVIDENCE, report, reportType);
         return {
             attribute: attribute_type_enum_1.AttributeType.SUPPORTING_EVIDENCE,
-            score,
+            score: result.score,
             maxScore: 1,
             weight: rule.weight,
-            weightedScore: score * rule.weight,
-            passed: score >= 1,
+            weightedScore: result.score * rule.weight,
+            passed: result.score >= 0.7,
+            reasoning: result.reasoning,
         };
     }
 };
-exports.SupportingEvidenceEvaluator = SupportingEvidenceEvaluator;
-exports.SupportingEvidenceEvaluator = SupportingEvidenceEvaluator = __decorate([
-    (0, common_1.Injectable)()
-], SupportingEvidenceEvaluator);
+exports.LLMSupportingEvidenceEvaluator = LLMSupportingEvidenceEvaluator;
+exports.LLMSupportingEvidenceEvaluator = LLMSupportingEvidenceEvaluator = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof llm_evaluation_service_1.LLMEvaluationService !== "undefined" && llm_evaluation_service_1.LLMEvaluationService) === "function" ? _a : Object])
+], LLMSupportingEvidenceEvaluator);
 
 
 /***/ }),
 
-/***/ "./src/evaluations/services/evaluators/test-environment.evaluator.ts":
-/*!***************************************************************************!*\
-  !*** ./src/evaluations/services/evaluators/test-environment.evaluator.ts ***!
-  \***************************************************************************/
+/***/ "./src/evaluations/services/evaluators/llm-test-environment.evaluator.ts":
+/*!*******************************************************************************!*\
+  !*** ./src/evaluations/services/evaluators/llm-test-environment.evaluator.ts ***!
+  \*******************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3336,40 +3415,45 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TestEnvironmentEvaluator = void 0;
+exports.LLMTestEnvironmentEvaluator = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const attribute_type_enum_1 = __webpack_require__(/*! ../../../scoring-rules/enums/attribute-type.enum */ "./src/scoring-rules/enums/attribute-type.enum.ts");
-let TestEnvironmentEvaluator = class TestEnvironmentEvaluator {
-    evaluate(report, rule) {
-        const testEnvironment = report.testEnvironment;
-        const hasAllFields = testEnvironment &&
-            testEnvironment.os &&
-            testEnvironment.browser &&
-            testEnvironment.device;
-        const score = hasAllFields ? 1 : 0;
+const llm_evaluation_service_1 = __webpack_require__(/*! ../../../llm/services/llm-evaluation.service */ "./src/llm/services/llm-evaluation.service.ts");
+let LLMTestEnvironmentEvaluator = class LLMTestEnvironmentEvaluator {
+    constructor(llmEvaluationService) {
+        this.llmEvaluationService = llmEvaluationService;
+    }
+    async evaluate(report, rule, reportType) {
+        const result = await this.llmEvaluationService.evaluate(attribute_type_enum_1.AttributeType.TEST_ENVIRONMENT, report, reportType);
         return {
             attribute: attribute_type_enum_1.AttributeType.TEST_ENVIRONMENT,
-            score,
+            score: result.score,
             maxScore: 1,
             weight: rule.weight,
-            weightedScore: score * rule.weight,
-            passed: score >= 1,
+            weightedScore: result.score * rule.weight,
+            passed: result.score >= 0.7,
+            reasoning: result.reasoning,
         };
     }
 };
-exports.TestEnvironmentEvaluator = TestEnvironmentEvaluator;
-exports.TestEnvironmentEvaluator = TestEnvironmentEvaluator = __decorate([
-    (0, common_1.Injectable)()
-], TestEnvironmentEvaluator);
+exports.LLMTestEnvironmentEvaluator = LLMTestEnvironmentEvaluator;
+exports.LLMTestEnvironmentEvaluator = LLMTestEnvironmentEvaluator = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof llm_evaluation_service_1.LLMEvaluationService !== "undefined" && llm_evaluation_service_1.LLMEvaluationService) === "function" ? _a : Object])
+], LLMTestEnvironmentEvaluator);
 
 
 /***/ }),
 
-/***/ "./src/evaluations/services/evaluators/test-identity.evaluator.ts":
-/*!************************************************************************!*\
-  !*** ./src/evaluations/services/evaluators/test-identity.evaluator.ts ***!
-  \************************************************************************/
+/***/ "./src/evaluations/services/evaluators/llm-test-identity.evaluator.ts":
+/*!****************************************************************************!*\
+  !*** ./src/evaluations/services/evaluators/llm-test-identity.evaluator.ts ***!
+  \****************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3379,32 +3463,37 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TestIdentityEvaluator = void 0;
+exports.LLMTestIdentityEvaluator = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const attribute_type_enum_1 = __webpack_require__(/*! ../../../scoring-rules/enums/attribute-type.enum */ "./src/scoring-rules/enums/attribute-type.enum.ts");
-let TestIdentityEvaluator = class TestIdentityEvaluator {
-    evaluate(report, rule) {
-        const testIdentity = report.testIdentity;
-        const hasAllFields = testIdentity &&
-            testIdentity.testId &&
-            testIdentity.title &&
-            testIdentity.version;
-        const score = hasAllFields ? 1 : 0;
+const llm_evaluation_service_1 = __webpack_require__(/*! ../../../llm/services/llm-evaluation.service */ "./src/llm/services/llm-evaluation.service.ts");
+let LLMTestIdentityEvaluator = class LLMTestIdentityEvaluator {
+    constructor(llmEvaluationService) {
+        this.llmEvaluationService = llmEvaluationService;
+    }
+    async evaluate(report, rule, reportType) {
+        const result = await this.llmEvaluationService.evaluate(attribute_type_enum_1.AttributeType.TEST_IDENTITY, report, reportType);
         return {
             attribute: attribute_type_enum_1.AttributeType.TEST_IDENTITY,
-            score,
+            score: result.score,
             maxScore: 1,
             weight: rule.weight,
-            weightedScore: score * rule.weight,
-            passed: score >= 1,
+            weightedScore: result.score * rule.weight,
+            passed: result.score >= 0.7,
+            reasoning: result.reasoning,
         };
     }
 };
-exports.TestIdentityEvaluator = TestIdentityEvaluator;
-exports.TestIdentityEvaluator = TestIdentityEvaluator = __decorate([
-    (0, common_1.Injectable)()
-], TestIdentityEvaluator);
+exports.LLMTestIdentityEvaluator = LLMTestIdentityEvaluator;
+exports.LLMTestIdentityEvaluator = LLMTestIdentityEvaluator = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof llm_evaluation_service_1.LLMEvaluationService !== "undefined" && llm_evaluation_service_1.LLMEvaluationService) === "function" ? _a : Object])
+], LLMTestIdentityEvaluator);
 
 
 /***/ }),
@@ -3585,6 +3674,567 @@ exports.GetEvaluationService = GetEvaluationService = __decorate([
     __param(0, (0, mongoose_1.InjectModel)(evaluation_1.Evaluation.name)),
     __metadata("design:paramtypes", [typeof (_a = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _a : Object])
 ], GetEvaluationService);
+
+
+/***/ }),
+
+/***/ "./src/llm/config/llm.config.ts":
+/*!**************************************!*\
+  !*** ./src/llm/config/llm.config.ts ***!
+  \**************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
+exports["default"] = (0, config_1.registerAs)('llm', () => ({
+    apiKey: process.env.OPENAI_API_KEY || '',
+    model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
+    temperature: process.env.OPENAI_TEMPERATURE
+        ? parseFloat(process.env.OPENAI_TEMPERATURE)
+        : 0.3,
+    timeout: process.env.OPENAI_TIMEOUT
+        ? parseInt(process.env.OPENAI_TIMEOUT, 10)
+        : 30000,
+    maxRetries: process.env.OPENAI_MAX_RETRIES
+        ? parseInt(process.env.OPENAI_MAX_RETRIES, 10)
+        : 3,
+    cacheEnabled: process.env.LLM_CACHE_ENABLED !== 'false',
+    cacheTTL: process.env.LLM_CACHE_TTL
+        ? parseInt(process.env.LLM_CACHE_TTL, 10)
+        : 86400000,
+}));
+
+
+/***/ }),
+
+/***/ "./src/llm/llm.module.ts":
+/*!*******************************!*\
+  !*** ./src/llm/llm.module.ts ***!
+  \*******************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LLMModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
+const cache_manager_1 = __webpack_require__(/*! @nestjs/cache-manager */ "@nestjs/cache-manager");
+const llm_config_1 = __webpack_require__(/*! ./config/llm.config */ "./src/llm/config/llm.config.ts");
+const llm_evaluation_service_1 = __webpack_require__(/*! ./services/llm-evaluation.service */ "./src/llm/services/llm-evaluation.service.ts");
+const prompt_builder_service_1 = __webpack_require__(/*! ./services/prompt-builder.service */ "./src/llm/services/prompt-builder.service.ts");
+const llm_cache_service_1 = __webpack_require__(/*! ./services/llm-cache.service */ "./src/llm/services/llm-cache.service.ts");
+let LLMModule = class LLMModule {
+};
+exports.LLMModule = LLMModule;
+exports.LLMModule = LLMModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            config_1.ConfigModule.forFeature(llm_config_1.default),
+            cache_manager_1.CacheModule.register({
+                ttl: 86400000,
+                max: 1000,
+            }),
+        ],
+        providers: [
+            llm_evaluation_service_1.LLMEvaluationService,
+            prompt_builder_service_1.PromptBuilderService,
+            llm_cache_service_1.LLMCacheService,
+        ],
+        exports: [
+            llm_evaluation_service_1.LLMEvaluationService,
+            prompt_builder_service_1.PromptBuilderService,
+            llm_cache_service_1.LLMCacheService,
+        ],
+    })
+], LLMModule);
+
+
+/***/ }),
+
+/***/ "./src/llm/services/llm-cache.service.ts":
+/*!***********************************************!*\
+  !*** ./src/llm/services/llm-cache.service.ts ***!
+  \***********************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LLMCacheService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const cache_manager_1 = __webpack_require__(/*! @nestjs/cache-manager */ "@nestjs/cache-manager");
+const cache_manager_2 = __webpack_require__(/*! cache-manager */ "cache-manager");
+const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
+const crypto = __webpack_require__(/*! crypto */ "crypto");
+let LLMCacheService = class LLMCacheService {
+    constructor(cacheManager, configService) {
+        this.cacheManager = cacheManager;
+        this.configService = configService;
+        this.cacheEnabled =
+            this.configService.get('llm.cacheEnabled') !== false;
+    }
+    async get(attribute, reportData) {
+        if (!this.cacheEnabled) {
+            return null;
+        }
+        const cacheKey = this.generateCacheKey(attribute, reportData);
+        try {
+            const cached = await this.cacheManager.get(cacheKey);
+            return cached || null;
+        }
+        catch (error) {
+            console.error('Cache get error:', error);
+            return null;
+        }
+    }
+    async set(attribute, reportData, result, ttl) {
+        if (!this.cacheEnabled) {
+            return;
+        }
+        const cacheKey = this.generateCacheKey(attribute, reportData);
+        try {
+            await this.cacheManager.set(cacheKey, result, ttl);
+        }
+        catch (error) {
+            console.error('Cache set error:', error);
+        }
+    }
+    generateCacheKey(attribute, reportData) {
+        const dataToHash = JSON.stringify({
+            attribute,
+            testId: reportData.testIdentity?.testId,
+            version: reportData.testIdentity?.version,
+            actualResult: reportData.actualResult,
+            expectedResult: reportData.expectedResult,
+            stepsToReproduce: reportData.stepsToReproduce,
+            testEnvironment: reportData.testEnvironment,
+            supportingEvidence: reportData.supportingEvidence,
+            severityLevel: reportData.severityLevel,
+        });
+        const hash = crypto.createHash('sha256').update(dataToHash).digest('hex');
+        return `llm:eval:${attribute}:${hash}`;
+    }
+};
+exports.LLMCacheService = LLMCacheService;
+exports.LLMCacheService = LLMCacheService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, common_1.Inject)(cache_manager_1.CACHE_MANAGER)),
+    __metadata("design:paramtypes", [typeof (_a = typeof cache_manager_2.Cache !== "undefined" && cache_manager_2.Cache) === "function" ? _a : Object, typeof (_b = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _b : Object])
+], LLMCacheService);
+
+
+/***/ }),
+
+/***/ "./src/llm/services/llm-evaluation.service.ts":
+/*!****************************************************!*\
+  !*** ./src/llm/services/llm-evaluation.service.ts ***!
+  \****************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var LLMEvaluationService_1;
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LLMEvaluationService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
+const openai_1 = __webpack_require__(/*! openai */ "openai");
+const prompt_builder_service_1 = __webpack_require__(/*! ./prompt-builder.service */ "./src/llm/services/prompt-builder.service.ts");
+const llm_cache_service_1 = __webpack_require__(/*! ./llm-cache.service */ "./src/llm/services/llm-cache.service.ts");
+let LLMEvaluationService = LLMEvaluationService_1 = class LLMEvaluationService {
+    constructor(configService, promptBuilder, cacheService) {
+        this.configService = configService;
+        this.promptBuilder = promptBuilder;
+        this.cacheService = cacheService;
+        this.logger = new common_1.Logger(LLMEvaluationService_1.name);
+        const apiKey = this.configService.get('llm.apiKey');
+        if (!apiKey) {
+            this.logger.warn('OpenAI API key not configured');
+        }
+        this.openai = new openai_1.default({
+            apiKey: apiKey,
+        });
+        this.model = this.configService.get('llm.model') || 'gpt-4o-mini';
+        this.temperature =
+            this.configService.get('llm.temperature') || 0.3;
+        this.timeout = this.configService.get('llm.timeout') || 30000;
+        this.maxRetries = this.configService.get('llm.maxRetries') || 3;
+        this.cacheEnabled =
+            this.configService.get('llm.cacheEnabled') !== false;
+        this.cacheTTL =
+            this.configService.get('llm.cacheTTL') || 86400000;
+    }
+    async evaluate(attribute, report, reportType) {
+        if (this.cacheEnabled) {
+            const reportData = this.convertReportToPlainObject(report);
+            const cached = await this.cacheService.get(attribute, reportData);
+            if (cached) {
+                this.logger.debug(`Cache hit for attribute: ${attribute}`);
+                return cached;
+            }
+        }
+        const { systemPrompt, userPrompt } = this.promptBuilder.buildPrompt(attribute, report, reportType);
+        let lastError = null;
+        for (let attempt = 1; attempt <= this.maxRetries; attempt++) {
+            try {
+                const result = await this.callOpenAI(systemPrompt, userPrompt);
+                if (this.cacheEnabled) {
+                    const reportData = this.convertReportToPlainObject(report);
+                    await this.cacheService.set(attribute, reportData, result, this.cacheTTL);
+                }
+                return result;
+            }
+            catch (error) {
+                lastError = error;
+                this.logger.warn(`OpenAI API call failed (attempt ${attempt}/${this.maxRetries}): ${error.message}`);
+                if (error instanceof Error &&
+                    (error.message.includes('rate limit') ||
+                        error.message.includes('429'))) {
+                    const waitTime = Math.min(1000 * Math.pow(2, attempt), 10000);
+                    await this.sleep(waitTime);
+                }
+                else if (attempt < this.maxRetries) {
+                    const waitTime = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
+                    await this.sleep(waitTime);
+                }
+            }
+        }
+        this.logger.error(`All retry attempts failed for attribute ${attribute}. Returning default score.`);
+        return {
+            score: 0,
+            reasoning: `Evaluation failed after ${this.maxRetries} attempts: ${lastError?.message || 'Unknown error'}`,
+        };
+    }
+    async callOpenAI(systemPrompt, userPrompt) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+        try {
+            const completion = await this.openai.chat.completions.create({
+                model: this.model,
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: userPrompt },
+                ],
+                temperature: this.temperature,
+                response_format: { type: 'json_object' },
+                max_tokens: 200,
+            }, { signal: controller.signal });
+            clearTimeout(timeoutId);
+            const content = completion.choices[0]?.message?.content;
+            if (!content) {
+                throw new Error('Empty response from OpenAI');
+            }
+            const parsed = JSON.parse(content);
+            let score = parseFloat(parsed.score);
+            if (isNaN(score) || score < 0) {
+                score = 0;
+            }
+            else if (score > 1) {
+                score = 1;
+            }
+            return {
+                score,
+                reasoning: parsed.reasoning || 'No reasoning provided',
+            };
+        }
+        catch (error) {
+            clearTimeout(timeoutId);
+            if (error instanceof Error) {
+                if (error.name === 'AbortError') {
+                    throw new Error(`Request timeout after ${this.timeout}ms`);
+                }
+                throw error;
+            }
+            throw new Error('Unknown error occurred');
+        }
+    }
+    sleep(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+    convertReportToPlainObject(report) {
+        return {
+            testIdentity: report.testIdentity,
+            testEnvironment: report.testEnvironment,
+            stepsToReproduce: report.stepsToReproduce,
+            actualResult: report.actualResult,
+            expectedResult: report.expectedResult,
+            supportingEvidence: report.supportingEvidence,
+            severityLevel: report.severityLevel,
+            reportType: report.reportType,
+        };
+    }
+};
+exports.LLMEvaluationService = LLMEvaluationService;
+exports.LLMEvaluationService = LLMEvaluationService = LLMEvaluationService_1 = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object, typeof (_b = typeof prompt_builder_service_1.PromptBuilderService !== "undefined" && prompt_builder_service_1.PromptBuilderService) === "function" ? _b : Object, typeof (_c = typeof llm_cache_service_1.LLMCacheService !== "undefined" && llm_cache_service_1.LLMCacheService) === "function" ? _c : Object])
+], LLMEvaluationService);
+
+
+/***/ }),
+
+/***/ "./src/llm/services/prompt-builder.service.ts":
+/*!****************************************************!*\
+  !*** ./src/llm/services/prompt-builder.service.ts ***!
+  \****************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PromptBuilderService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const attribute_type_enum_1 = __webpack_require__(/*! ../../scoring-rules/enums/attribute-type.enum */ "./src/scoring-rules/enums/attribute-type.enum.ts");
+const report_type_enum_1 = __webpack_require__(/*! ../../uat-reports/enums/report-type.enum */ "./src/uat-reports/enums/report-type.enum.ts");
+let PromptBuilderService = class PromptBuilderService {
+    buildPrompt(attribute, report, reportType) {
+        const systemPrompt = this.getSystemPrompt(attribute, reportType);
+        const userPrompt = this.getUserPrompt(attribute, report, reportType);
+        return {
+            systemPrompt,
+            userPrompt,
+        };
+    }
+    getSystemPrompt(attribute, reportType) {
+        const reportTypeLabel = reportType === report_type_enum_1.ReportType.BUG_REPORT ? 'Bug Report' : 'Success Report';
+        return `You are an expert quality assurance evaluator. Your task is to evaluate ${reportTypeLabel.toLowerCase()} attributes and provide a score from 0.0 to 1.0.
+
+You must respond ONLY with valid JSON in this exact format:
+{"score": 0.0-1.0, "reasoning": "brief explanation of your evaluation"}
+
+The score should reflect:
+- 0.0-0.3: Poor quality, missing critical information
+- 0.4-0.6: Acceptable but incomplete or unclear
+- 0.7-0.9: Good quality with minor issues
+- 1.0: Excellent quality, complete and clear
+
+Be strict but fair in your evaluation.`;
+    }
+    getUserPrompt(attribute, report, reportType) {
+        const reportTypeLabel = reportType === report_type_enum_1.ReportType.BUG_REPORT ? 'Bug Report' : 'Success Report';
+        switch (attribute) {
+            case attribute_type_enum_1.AttributeType.TEST_ENVIRONMENT:
+                return this.buildTestEnvironmentPrompt(report, reportTypeLabel);
+            case attribute_type_enum_1.AttributeType.STEPS_TO_REPRODUCE:
+                return this.buildStepsToReproducePrompt(report, reportTypeLabel);
+            case attribute_type_enum_1.AttributeType.ACTUAL_RESULT:
+                return this.buildActualResultPrompt(report, reportTypeLabel);
+            case attribute_type_enum_1.AttributeType.EXPECTED_RESULT:
+                return this.buildExpectedResultPrompt(report, reportTypeLabel);
+            case attribute_type_enum_1.AttributeType.SUPPORTING_EVIDENCE:
+                return this.buildSupportingEvidencePrompt(report, reportTypeLabel);
+            case attribute_type_enum_1.AttributeType.SEVERITY_LEVEL:
+                return this.buildSeverityLevelPrompt(report, reportTypeLabel);
+            case attribute_type_enum_1.AttributeType.INFORMATION_CONSISTENCY:
+                return this.buildInformationConsistencyPrompt(report, reportTypeLabel);
+            case attribute_type_enum_1.AttributeType.TEST_IDENTITY:
+                return this.buildTestIdentityPrompt(report, reportTypeLabel);
+            default:
+                return this.buildGenericPrompt(attribute, report, reportTypeLabel);
+        }
+    }
+    buildTestEnvironmentPrompt(report, reportTypeLabel) {
+        const env = report.testEnvironment;
+        return `Evaluate the Test Environment attribute for this ${reportTypeLabel.toLowerCase()}:
+
+Test Environment Data:
+- Operating System: ${env?.os || 'Not provided'}
+- Browser: ${env?.browser || 'Not provided'}
+- Device: ${env?.device || 'Not provided'}
+- Additional Info: ${env?.additionalInfo || 'None'}
+
+Scoring Criteria:
+- All required fields (OS, Browser, Device) are provided: +0.5
+- Additional relevant information is provided: +0.3
+- Information is clear and specific: +0.2
+
+Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
+    }
+    buildStepsToReproducePrompt(report, reportTypeLabel) {
+        const steps = report.stepsToReproduce || [];
+        const stepsText = steps.length > 0
+            ? steps.map((step, i) => `${i + 1}. ${step}`).join('\n')
+            : 'No steps provided';
+        return `Evaluate the Steps to Reproduce attribute for this ${reportTypeLabel.toLowerCase()}:
+
+Steps to Reproduce:
+${stepsText}
+
+Scoring Criteria:
+- At least 3 steps provided: +0.3
+- Steps are clear and sequential: +0.3
+- Each step is detailed enough (minimum 10 characters): +0.2
+- Steps are actionable and specific: +0.2
+
+Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
+    }
+    buildActualResultPrompt(report, reportTypeLabel) {
+        const actualResult = report.actualResult || 'Not provided';
+        const isSuccessReport = report.reportType === report_type_enum_1.ReportType.SUCCESS_REPORT;
+        if (isSuccessReport) {
+            return `Evaluate the Success Description (Actual Result) attribute for this success report:
+
+Success Description:
+${actualResult}
+
+Scoring Criteria:
+- Description is provided and meaningful (minimum 30 characters): +0.3
+- Description clearly explains what succeeded: +0.3
+- Description includes relevant context: +0.2
+- Description is clear and well-written: +0.2
+
+Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
+        }
+        return `Evaluate the Actual Result attribute for this bug report:
+
+Actual Result:
+${actualResult}
+
+Scoring Criteria:
+- Actual result is provided and meaningful (minimum 30 characters): +0.3
+- Clearly describes what actually happened: +0.3
+- Includes relevant error messages or symptoms: +0.2
+- Description is clear and specific: +0.2
+
+Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
+    }
+    buildExpectedResultPrompt(report, reportTypeLabel) {
+        const expectedResult = report.expectedResult || 'Not provided';
+        return `Evaluate the Expected Result attribute for this ${reportTypeLabel.toLowerCase()}:
+
+Expected Result:
+${expectedResult}
+
+Scoring Criteria:
+- Expected result is provided and meaningful (minimum 10 characters): +0.4
+- Clearly describes what should have happened: +0.3
+- Contrasts appropriately with actual result: +0.2
+- Description is clear and specific: +0.1
+
+Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
+    }
+    buildSupportingEvidencePrompt(report, reportTypeLabel) {
+        const evidence = report.supportingEvidence || [];
+        const evidenceText = evidence.length > 0
+            ? evidence
+                .map((e, i) => `${i + 1}. Type: ${e.type}, URL: ${e.url || 'N/A'}, Description: ${e.description || 'None'}`)
+                .join('\n')
+            : 'No supporting evidence provided';
+        return `Evaluate the Supporting Evidence attribute for this ${reportTypeLabel.toLowerCase()}:
+
+Supporting Evidence:
+${evidenceText}
+
+Scoring Criteria:
+- At least one piece of evidence is provided: +0.5
+- Evidence is relevant to the report: +0.3
+- Evidence includes proper description or context: +0.2
+
+Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
+    }
+    buildSeverityLevelPrompt(report, reportTypeLabel) {
+        const severity = report.severityLevel;
+        const actualResult = report.actualResult || '';
+        const expectedResult = report.expectedResult || '';
+        return `Evaluate the Severity Level attribute for this ${reportTypeLabel.toLowerCase()}:
+
+Severity Level: ${severity}
+
+Actual Result: ${actualResult.substring(0, 200)}
+Expected Result: ${expectedResult.substring(0, 200)}
+
+Scoring Criteria:
+- Severity level is appropriate for the described issue: +0.5
+- Severity matches the impact described in actual/expected results: +0.3
+- Severity level is correctly assigned (Critical for crashes, High for major issues, etc.): +0.2
+
+Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
+    }
+    buildInformationConsistencyPrompt(report, reportTypeLabel) {
+        const actualResult = report.actualResult || '';
+        const expectedResult = report.expectedResult || '';
+        const severity = report.severityLevel;
+        const steps = report.stepsToReproduce || [];
+        return `Evaluate the Information Consistency attribute for this ${reportTypeLabel.toLowerCase()}:
+
+Actual Result: ${actualResult.substring(0, 200)}
+Expected Result: ${expectedResult.substring(0, 200)}
+Severity Level: ${severity}
+Steps to Reproduce: ${steps.length} steps provided
+
+Scoring Criteria:
+- Actual and expected results are different (as they should be for bug reports): +0.3
+- Both actual and expected results are meaningful (minimum 10 characters each): +0.2
+- Severity level is consistent with the described issue: +0.2
+- Steps to reproduce align with the described issue: +0.2
+- Overall information is coherent and consistent: +0.1
+
+Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
+    }
+    buildTestIdentityPrompt(report, reportTypeLabel) {
+        const testIdentity = report.testIdentity;
+        return `Evaluate the Test Identity attribute for this ${reportTypeLabel.toLowerCase()}:
+
+Test Identity Data:
+- Test ID: ${testIdentity?.testId || 'Not provided'}
+- Version: ${testIdentity?.version || 'Not provided'}
+- Title: ${testIdentity?.title || 'Not provided'}
+
+Scoring Criteria:
+- Test ID is provided and valid: +0.4
+- Version is provided: +0.3
+- Test case name is provided: +0.3
+
+Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
+    }
+    buildGenericPrompt(attribute, report, reportTypeLabel) {
+        return `Evaluate the ${attribute} attribute for this ${reportTypeLabel.toLowerCase()}.
+
+Report Data:
+${JSON.stringify(report, null, 2)}
+
+Provide a score from 0.0 to 1.0 based on the quality and completeness of this attribute.
+
+Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
+    }
+};
+exports.PromptBuilderService = PromptBuilderService;
+exports.PromptBuilderService = PromptBuilderService = __decorate([
+    (0, common_1.Injectable)()
+], PromptBuilderService);
 
 
 /***/ }),
@@ -6232,8 +6882,8 @@ __decorate([
     __metadata("design:type", typeof (_a = typeof evidence_type_enum_1.EvidenceType !== "undefined" && evidence_type_enum_1.EvidenceType) === "function" ? _a : Object)
 ], Evidence.prototype, "type", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
-    (0, mongoose_1.Prop)({ required: true }),
+    (0, graphql_1.Field)({ nullable: true }),
+    (0, mongoose_1.Prop)({ required: false }),
     __metadata("design:type", String)
 ], Evidence.prototype, "url", void 0);
 __decorate([
@@ -6495,6 +7145,13 @@ exports.UATReportSchema.index({ domain: 1 });
 exports.UATReportSchema.index({ status: 1, severityLevel: 1 });
 exports.UATReportSchema.index({ reportType: 1 });
 exports.UATReportSchema.index({ reportType: 1, status: 1 });
+exports.UATReportSchema.index({
+    'testIdentity.testId': 1,
+    'testIdentity.version': 1,
+    domain: 1,
+    actualResult: 1,
+    createdBy: 1,
+});
 
 
 /***/ }),
@@ -6535,6 +7192,16 @@ let CreateUATReportService = class CreateUATReportService {
     }
     async create(input, userId) {
         try {
+            const existing = await this.uatReportModel.findOne({
+                'testIdentity.testId': input.testIdentity?.testId,
+                'testIdentity.version': input.testIdentity?.version,
+                domain: input.domain || null,
+                actualResult: input.actualResult,
+                createdBy: userId,
+            });
+            if (existing) {
+                throw new gqlerr_1.ThrowGQL('UAT Report redundan: data dengan Test ID, versi, domain, dan actual result yang sama sudah ada.', gqlerr_1.GQLThrowType.UNPROCESSABLE);
+            }
             const report = await this.uatReportModel.create({
                 _id: new bson_1.ObjectId().toString(),
                 ...input,
@@ -6555,6 +7222,80 @@ exports.CreateUATReportService = CreateUATReportService = __decorate([
     __param(0, (0, mongoose_1.InjectModel)(uat_report_1.UATReport.name)),
     __metadata("design:paramtypes", [typeof (_a = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _a : Object])
 ], CreateUATReportService);
+
+
+/***/ }),
+
+/***/ "./src/uat-reports/services/delete-bulk-uat-reports.service.ts":
+/*!*********************************************************************!*\
+  !*** ./src/uat-reports/services/delete-bulk-uat-reports.service.ts ***!
+  \*********************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DeleteBulkUATReportsService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const mongoose_1 = __webpack_require__(/*! @nestjs/mongoose */ "@nestjs/mongoose");
+const mongoose_2 = __webpack_require__(/*! mongoose */ "mongoose");
+const gqlerr_1 = __webpack_require__(/*! @app/gqlerr */ "./libs/gqlerr/src/index.ts");
+const uat_report_1 = __webpack_require__(/*! ../models/uat-report */ "./src/uat-reports/models/uat-report.ts");
+let DeleteBulkUATReportsService = class DeleteBulkUATReportsService {
+    constructor(uatReportModel) {
+        this.uatReportModel = uatReportModel;
+    }
+    async deleteByIds(ids) {
+        if (!ids || ids.length === 0) {
+            throw new gqlerr_1.ThrowGQL('No UAT Report IDs provided', gqlerr_1.GQLThrowType.UNPROCESSABLE);
+        }
+        try {
+            const result = await this.uatReportModel.deleteMany({
+                _id: { $in: ids },
+            });
+            if (result.deletedCount === 0) {
+                throw new gqlerr_1.ThrowGQL('No UAT Reports found for the provided IDs', gqlerr_1.GQLThrowType.NOT_FOUND);
+            }
+            return true;
+        }
+        catch (error) {
+            if (error instanceof gqlerr_1.ThrowGQL) {
+                throw error;
+            }
+            throw new gqlerr_1.ThrowGQL(error, gqlerr_1.GQLThrowType.UNPROCESSABLE);
+        }
+    }
+    async deleteAll() {
+        try {
+            await this.uatReportModel.deleteMany({});
+            return true;
+        }
+        catch (error) {
+            if (error instanceof gqlerr_1.ThrowGQL) {
+                throw error;
+            }
+            throw new gqlerr_1.ThrowGQL(error, gqlerr_1.GQLThrowType.UNPROCESSABLE);
+        }
+    }
+};
+exports.DeleteBulkUATReportsService = DeleteBulkUATReportsService;
+exports.DeleteBulkUATReportsService = DeleteBulkUATReportsService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, mongoose_1.InjectModel)(uat_report_1.UATReport.name)),
+    __metadata("design:paramtypes", [typeof (_a = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _a : Object])
+], DeleteBulkUATReportsService);
 
 
 /***/ }),
@@ -7035,6 +7776,7 @@ let UploadBatchReportsService = class UploadBatchReportsService {
                 reports: [],
                 errors: [],
             };
+            const seenKeys = new Set();
             for (let i = 0; i < parsedData.length; i++) {
                 try {
                     const reportData = parsedData[i];
@@ -7065,6 +7807,39 @@ let UploadBatchReportsService = class UploadBatchReportsService {
                         status: report_status_enum_1.ReportStatus.PENDING_EVALUATION,
                         createdBy: userId,
                     };
+                    const dedupeKey = [
+                        userId,
+                        testIdentity.testId || '',
+                        testIdentity.version || '',
+                        reportObj.domain || '',
+                        reportObj.actualResult || '',
+                    ].join('||');
+                    if (seenKeys.has(dedupeKey)) {
+                        results.failed++;
+                        results.errors.push({
+                            row: i + 1,
+                            message: 'Data redundan di dalam file upload: kombinasi Test ID, versi, domain, dan actual result sudah muncul sebelumnya.',
+                            data: JSON.stringify(parsedData[i]),
+                        });
+                        continue;
+                    }
+                    const existing = await this.uatReportModel.findOne({
+                        'testIdentity.testId': testIdentity.testId,
+                        'testIdentity.version': testIdentity.version,
+                        domain: reportObj.domain || null,
+                        actualResult: reportObj.actualResult,
+                        createdBy: userId,
+                    });
+                    if (existing) {
+                        results.failed++;
+                        results.errors.push({
+                            row: i + 1,
+                            message: 'Data redundan: laporan dengan Test ID, versi, domain, dan actual result yang sama sudah tersimpan sebelumnya.',
+                            data: JSON.stringify(parsedData[i]),
+                        });
+                        continue;
+                    }
+                    seenKeys.add(dedupeKey);
                     if (reportType === report_type_enum_1.ReportType.BUG_REPORT) {
                         reportObj.stepsToReproduce = stepsToReproduce;
                         reportObj.supportingEvidence = evidence;
@@ -7162,9 +7937,14 @@ let UploadBatchReportsService = class UploadBatchReportsService {
                         description: null,
                     };
                 }
+                const url = typeof e.url === 'string'
+                    ? e.url
+                    : typeof e === 'string'
+                        ? e
+                        : '';
                 return {
                     type: e.type || evidence_type_enum_1.EvidenceType.SCREENSHOT,
-                    url: e.url || e,
+                    url,
                     description: e.description || null,
                 };
             });
@@ -7264,6 +8044,7 @@ const update_uat_report_service_1 = __webpack_require__(/*! ./services/update-ua
 const delete_uat_report_service_1 = __webpack_require__(/*! ./services/delete-uat-report.service */ "./src/uat-reports/services/delete-uat-report.service.ts");
 const upload_batch_reports_service_1 = __webpack_require__(/*! ./services/upload-batch-reports.service */ "./src/uat-reports/services/upload-batch-reports.service.ts");
 const get_dashboard_stats_service_1 = __webpack_require__(/*! ./services/get-dashboard-stats.service */ "./src/uat-reports/services/get-dashboard-stats.service.ts");
+const delete_bulk_uat_reports_service_1 = __webpack_require__(/*! ./services/delete-bulk-uat-reports.service */ "./src/uat-reports/services/delete-bulk-uat-reports.service.ts");
 const uat_reports_resolver_1 = __webpack_require__(/*! ./uat-reports.resolver */ "./src/uat-reports/uat-reports.resolver.ts");
 const evaluations_module_1 = __webpack_require__(/*! ../evaluations/evaluations.module */ "./src/evaluations/evaluations.module.ts");
 let UATReportsModule = class UATReportsModule {
@@ -7284,6 +8065,7 @@ exports.UATReportsModule = UATReportsModule = __decorate([
             list_uat_reports_service_1.ListUATReportsService,
             update_uat_report_service_1.UpdateUATReportService,
             delete_uat_report_service_1.DeleteUATReportService,
+            delete_bulk_uat_reports_service_1.DeleteBulkUATReportsService,
             upload_batch_reports_service_1.UploadBatchReportsService,
             get_dashboard_stats_service_1.GetDashboardStatsService,
             uat_reports_resolver_1.UATReportsResolver,
@@ -7294,6 +8076,7 @@ exports.UATReportsModule = UATReportsModule = __decorate([
             list_uat_reports_service_1.ListUATReportsService,
             update_uat_report_service_1.UpdateUATReportService,
             delete_uat_report_service_1.DeleteUATReportService,
+            delete_bulk_uat_reports_service_1.DeleteBulkUATReportsService,
         ],
     })
 ], UATReportsModule);
@@ -7320,7 +8103,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UATReportsResolver = void 0;
 const graphql_1 = __webpack_require__(/*! @nestjs/graphql */ "@nestjs/graphql");
@@ -7332,6 +8115,7 @@ const get_uat_report_service_1 = __webpack_require__(/*! ./services/get-uat-repo
 const list_uat_reports_service_1 = __webpack_require__(/*! ./services/list-uat-reports.service */ "./src/uat-reports/services/list-uat-reports.service.ts");
 const update_uat_report_service_1 = __webpack_require__(/*! ./services/update-uat-report.service */ "./src/uat-reports/services/update-uat-report.service.ts");
 const delete_uat_report_service_1 = __webpack_require__(/*! ./services/delete-uat-report.service */ "./src/uat-reports/services/delete-uat-report.service.ts");
+const delete_bulk_uat_reports_service_1 = __webpack_require__(/*! ./services/delete-bulk-uat-reports.service */ "./src/uat-reports/services/delete-bulk-uat-reports.service.ts");
 const upload_batch_reports_service_1 = __webpack_require__(/*! ./services/upload-batch-reports.service */ "./src/uat-reports/services/upload-batch-reports.service.ts");
 const get_dashboard_stats_service_1 = __webpack_require__(/*! ./services/get-dashboard-stats.service */ "./src/uat-reports/services/get-dashboard-stats.service.ts");
 const uat_report_view_1 = __webpack_require__(/*! ./dto/views/uat-report.view */ "./src/uat-reports/dto/views/uat-report.view.ts");
@@ -7346,7 +8130,7 @@ const uat_report_sort_input_1 = __webpack_require__(/*! ./dto/inputs/uat-report-
 const types_1 = __webpack_require__(/*! ../common/types */ "./src/common/types/index.ts");
 const user_view_1 = __webpack_require__(/*! ../users/dto/views/user.view */ "./src/users/dto/views/user.view.ts");
 let UATReportsResolver = class UATReportsResolver {
-    constructor(createUATReportService, getUATReportService, listUATReportsService, updateUATReportService, deleteUATReportService, uploadBatchReportsService, getDashboardStatsService) {
+    constructor(createUATReportService, getUATReportService, listUATReportsService, updateUATReportService, deleteUATReportService, uploadBatchReportsService, getDashboardStatsService, deleteBulkUATReportsService) {
         this.createUATReportService = createUATReportService;
         this.getUATReportService = getUATReportService;
         this.listUATReportsService = listUATReportsService;
@@ -7354,6 +8138,7 @@ let UATReportsResolver = class UATReportsResolver {
         this.deleteUATReportService = deleteUATReportService;
         this.uploadBatchReportsService = uploadBatchReportsService;
         this.getDashboardStatsService = getDashboardStatsService;
+        this.deleteBulkUATReportsService = deleteBulkUATReportsService;
     }
     async createUATReport(input, user) {
         return await this.createUATReportService.create(input, user._id);
@@ -7366,6 +8151,12 @@ let UATReportsResolver = class UATReportsResolver {
     }
     async deleteUATReport(id) {
         return await this.deleteUATReportService.delete(id);
+    }
+    async deleteBulkUATReports(ids) {
+        return await this.deleteBulkUATReportsService.deleteByIds(ids);
+    }
+    async deleteAllUATReports() {
+        return await this.deleteBulkUATReportsService.deleteAll();
     }
     async getUATReport(id) {
         return await this.getUATReportService.findById(id);
@@ -7385,8 +8176,8 @@ __decorate([
     __param(0, (0, graphql_1.Args)('input')),
     __param(1, (0, decorators_1.CurrentUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_h = typeof create_uat_report_input_1.CreateUATReportInput !== "undefined" && create_uat_report_input_1.CreateUATReportInput) === "function" ? _h : Object, typeof (_j = typeof user_view_1.UserView !== "undefined" && user_view_1.UserView) === "function" ? _j : Object]),
-    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
+    __metadata("design:paramtypes", [typeof (_j = typeof create_uat_report_input_1.CreateUATReportInput !== "undefined" && create_uat_report_input_1.CreateUATReportInput) === "function" ? _j : Object, typeof (_k = typeof user_view_1.UserView !== "undefined" && user_view_1.UserView) === "function" ? _k : Object]),
+    __metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
 ], UATReportsResolver.prototype, "createUATReport", null);
 __decorate([
     (0, graphql_1.Mutation)(() => batch_upload_result_view_1.BatchUploadResult, { name: 'uploadBatchReports' }),
@@ -7395,8 +8186,8 @@ __decorate([
     __param(0, (0, graphql_1.Args)('input')),
     __param(1, (0, decorators_1.CurrentUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_l = typeof batch_upload_input_1.BatchUploadInput !== "undefined" && batch_upload_input_1.BatchUploadInput) === "function" ? _l : Object, typeof (_m = typeof user_view_1.UserView !== "undefined" && user_view_1.UserView) === "function" ? _m : Object]),
-    __metadata("design:returntype", typeof (_o = typeof Promise !== "undefined" && Promise) === "function" ? _o : Object)
+    __metadata("design:paramtypes", [typeof (_m = typeof batch_upload_input_1.BatchUploadInput !== "undefined" && batch_upload_input_1.BatchUploadInput) === "function" ? _m : Object, typeof (_o = typeof user_view_1.UserView !== "undefined" && user_view_1.UserView) === "function" ? _o : Object]),
+    __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
 ], UATReportsResolver.prototype, "uploadBatchReports", null);
 __decorate([
     (0, graphql_1.Mutation)(() => uat_report_view_1.UATReportView, { name: 'updateUATReport' }),
@@ -7405,8 +8196,8 @@ __decorate([
     __param(0, (0, graphql_1.Args)('id')),
     __param(1, (0, graphql_1.Args)('input')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_p = typeof update_uat_report_input_1.UpdateUATReportInput !== "undefined" && update_uat_report_input_1.UpdateUATReportInput) === "function" ? _p : Object]),
-    __metadata("design:returntype", typeof (_q = typeof Promise !== "undefined" && Promise) === "function" ? _q : Object)
+    __metadata("design:paramtypes", [String, typeof (_q = typeof update_uat_report_input_1.UpdateUATReportInput !== "undefined" && update_uat_report_input_1.UpdateUATReportInput) === "function" ? _q : Object]),
+    __metadata("design:returntype", typeof (_r = typeof Promise !== "undefined" && Promise) === "function" ? _r : Object)
 ], UATReportsResolver.prototype, "updateUATReport", null);
 __decorate([
     (0, graphql_1.Mutation)(() => Boolean, { name: 'deleteUATReport' }),
@@ -7415,15 +8206,32 @@ __decorate([
     __param(0, (0, graphql_1.Args)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_r = typeof Promise !== "undefined" && Promise) === "function" ? _r : Object)
+    __metadata("design:returntype", typeof (_s = typeof Promise !== "undefined" && Promise) === "function" ? _s : Object)
 ], UATReportsResolver.prototype, "deleteUATReport", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => Boolean, { name: 'deleteBulkUATReports' }),
+    (0, common_1.UseGuards)(guards_1.JwtAuthGuard, guards_1.RolesGuard),
+    (0, decorators_1.Roles)('ADMIN'),
+    __param(0, (0, graphql_1.Args)({ name: 'ids', type: () => [String] })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", typeof (_t = typeof Promise !== "undefined" && Promise) === "function" ? _t : Object)
+], UATReportsResolver.prototype, "deleteBulkUATReports", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => Boolean, { name: 'deleteAllUATReports' }),
+    (0, common_1.UseGuards)(guards_1.JwtAuthGuard, guards_1.RolesGuard),
+    (0, decorators_1.Roles)('ADMIN'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", typeof (_u = typeof Promise !== "undefined" && Promise) === "function" ? _u : Object)
+], UATReportsResolver.prototype, "deleteAllUATReports", null);
 __decorate([
     (0, graphql_1.Query)(() => uat_report_view_1.UATReportView, { name: 'getUATReport' }),
     (0, common_1.UseGuards)(guards_1.JwtAuthGuard),
     __param(0, (0, graphql_1.Args)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_s = typeof Promise !== "undefined" && Promise) === "function" ? _s : Object)
+    __metadata("design:returntype", typeof (_v = typeof Promise !== "undefined" && Promise) === "function" ? _v : Object)
 ], UATReportsResolver.prototype, "getUATReport", null);
 __decorate([
     (0, graphql_1.Query)(() => uat_report_connection_view_1.UATReportConnection, { name: 'getUATReports' }),
@@ -7432,19 +8240,19 @@ __decorate([
     __param(1, (0, graphql_1.Args)('sort', { nullable: true })),
     __param(2, (0, graphql_1.Args)('pagination', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_t = typeof uat_report_filter_input_1.UATReportFilterInput !== "undefined" && uat_report_filter_input_1.UATReportFilterInput) === "function" ? _t : Object, typeof (_u = typeof uat_report_sort_input_1.UATReportSortInput !== "undefined" && uat_report_sort_input_1.UATReportSortInput) === "function" ? _u : Object, typeof (_v = typeof types_1.PaginationInput !== "undefined" && types_1.PaginationInput) === "function" ? _v : Object]),
-    __metadata("design:returntype", typeof (_w = typeof Promise !== "undefined" && Promise) === "function" ? _w : Object)
+    __metadata("design:paramtypes", [typeof (_w = typeof uat_report_filter_input_1.UATReportFilterInput !== "undefined" && uat_report_filter_input_1.UATReportFilterInput) === "function" ? _w : Object, typeof (_x = typeof uat_report_sort_input_1.UATReportSortInput !== "undefined" && uat_report_sort_input_1.UATReportSortInput) === "function" ? _x : Object, typeof (_y = typeof types_1.PaginationInput !== "undefined" && types_1.PaginationInput) === "function" ? _y : Object]),
+    __metadata("design:returntype", typeof (_z = typeof Promise !== "undefined" && Promise) === "function" ? _z : Object)
 ], UATReportsResolver.prototype, "getUATReports", null);
 __decorate([
     (0, graphql_1.Query)(() => dashboard_stats_view_1.DashboardStatsView, { name: 'getDashboardStats' }),
     (0, common_1.UseGuards)(guards_1.JwtAuthGuard),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_x = typeof Promise !== "undefined" && Promise) === "function" ? _x : Object)
+    __metadata("design:returntype", typeof (_0 = typeof Promise !== "undefined" && Promise) === "function" ? _0 : Object)
 ], UATReportsResolver.prototype, "getDashboardStats", null);
 exports.UATReportsResolver = UATReportsResolver = __decorate([
     (0, graphql_1.Resolver)(() => uat_report_view_1.UATReportView),
-    __metadata("design:paramtypes", [typeof (_a = typeof create_uat_report_service_1.CreateUATReportService !== "undefined" && create_uat_report_service_1.CreateUATReportService) === "function" ? _a : Object, typeof (_b = typeof get_uat_report_service_1.GetUATReportService !== "undefined" && get_uat_report_service_1.GetUATReportService) === "function" ? _b : Object, typeof (_c = typeof list_uat_reports_service_1.ListUATReportsService !== "undefined" && list_uat_reports_service_1.ListUATReportsService) === "function" ? _c : Object, typeof (_d = typeof update_uat_report_service_1.UpdateUATReportService !== "undefined" && update_uat_report_service_1.UpdateUATReportService) === "function" ? _d : Object, typeof (_e = typeof delete_uat_report_service_1.DeleteUATReportService !== "undefined" && delete_uat_report_service_1.DeleteUATReportService) === "function" ? _e : Object, typeof (_f = typeof upload_batch_reports_service_1.UploadBatchReportsService !== "undefined" && upload_batch_reports_service_1.UploadBatchReportsService) === "function" ? _f : Object, typeof (_g = typeof get_dashboard_stats_service_1.GetDashboardStatsService !== "undefined" && get_dashboard_stats_service_1.GetDashboardStatsService) === "function" ? _g : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof create_uat_report_service_1.CreateUATReportService !== "undefined" && create_uat_report_service_1.CreateUATReportService) === "function" ? _a : Object, typeof (_b = typeof get_uat_report_service_1.GetUATReportService !== "undefined" && get_uat_report_service_1.GetUATReportService) === "function" ? _b : Object, typeof (_c = typeof list_uat_reports_service_1.ListUATReportsService !== "undefined" && list_uat_reports_service_1.ListUATReportsService) === "function" ? _c : Object, typeof (_d = typeof update_uat_report_service_1.UpdateUATReportService !== "undefined" && update_uat_report_service_1.UpdateUATReportService) === "function" ? _d : Object, typeof (_e = typeof delete_uat_report_service_1.DeleteUATReportService !== "undefined" && delete_uat_report_service_1.DeleteUATReportService) === "function" ? _e : Object, typeof (_f = typeof upload_batch_reports_service_1.UploadBatchReportsService !== "undefined" && upload_batch_reports_service_1.UploadBatchReportsService) === "function" ? _f : Object, typeof (_g = typeof get_dashboard_stats_service_1.GetDashboardStatsService !== "undefined" && get_dashboard_stats_service_1.GetDashboardStatsService) === "function" ? _g : Object, typeof (_h = typeof delete_bulk_uat_reports_service_1.DeleteBulkUATReportsService !== "undefined" && delete_bulk_uat_reports_service_1.DeleteBulkUATReportsService) === "function" ? _h : Object])
 ], UATReportsResolver);
 
 
@@ -8213,6 +9021,16 @@ module.exports = require("@nestjs/apollo");
 
 /***/ }),
 
+/***/ "@nestjs/cache-manager":
+/*!****************************************!*\
+  !*** external "@nestjs/cache-manager" ***!
+  \****************************************/
+/***/ ((module) => {
+
+module.exports = require("@nestjs/cache-manager");
+
+/***/ }),
+
 /***/ "@nestjs/common":
 /*!*********************************!*\
   !*** external "@nestjs/common" ***!
@@ -8313,6 +9131,16 @@ module.exports = require("bson");
 
 /***/ }),
 
+/***/ "cache-manager":
+/*!********************************!*\
+  !*** external "cache-manager" ***!
+  \********************************/
+/***/ ((module) => {
+
+module.exports = require("cache-manager");
+
+/***/ }),
+
 /***/ "class-transformer":
 /*!************************************!*\
   !*** external "class-transformer" ***!
@@ -8343,6 +9171,16 @@ module.exports = require("cookie-parser");
 
 /***/ }),
 
+/***/ "crypto":
+/*!*************************!*\
+  !*** external "crypto" ***!
+  \*************************/
+/***/ ((module) => {
+
+module.exports = require("crypto");
+
+/***/ }),
+
 /***/ "graphql":
 /*!**************************!*\
   !*** external "graphql" ***!
@@ -8360,6 +9198,16 @@ module.exports = require("graphql");
 /***/ ((module) => {
 
 module.exports = require("mongoose");
+
+/***/ }),
+
+/***/ "openai":
+/*!*************************!*\
+  !*** external "openai" ***!
+  \*************************/
+/***/ ((module) => {
+
+module.exports = require("openai");
 
 /***/ }),
 

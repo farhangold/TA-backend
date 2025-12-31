@@ -4,18 +4,19 @@ import { Evaluation, EvaluationSchema } from './models/evaluation';
 import { UATReportsModule } from '../uat-reports/uat-reports.module';
 import { ScoringRulesModule } from '../scoring-rules/scoring-rules.module';
 import { UsersModule } from '../users/users.module';
+import { LLMModule } from '../llm/llm.module';
 import { UATReport, UATReportSchema } from '../uat-reports/models/uat-report';
 import { User, UserSchema } from '../users/models/user';
-import { TestIdentityEvaluator } from './services/evaluators/test-identity.evaluator';
-import { TestEnvironmentEvaluator } from './services/evaluators/test-environment.evaluator';
-import { StepsToReproduceEvaluator } from './services/evaluators/steps-to-reproduce.evaluator';
-import { ActualResultEvaluator } from './services/evaluators/actual-result.evaluator';
-import { ExpectedResultEvaluator } from './services/evaluators/expected-result.evaluator';
-import { SupportingEvidenceEvaluator } from './services/evaluators/supporting-evidence.evaluator';
-import { SeverityLevelEvaluator } from './services/evaluators/severity-level.evaluator';
-import { InformationConsistencyEvaluator } from './services/evaluators/information-consistency.evaluator';
-import { DescriptionSuccessEvaluator } from './services/evaluators/description-success.evaluator';
-import { EnvironmentSuccessEvaluator } from './services/evaluators/environment-success.evaluator';
+import { LLMTestIdentityEvaluator } from './services/evaluators/llm-test-identity.evaluator';
+import { LLMTestEnvironmentEvaluator } from './services/evaluators/llm-test-environment.evaluator';
+import { LLMStepsToReproduceEvaluator } from './services/evaluators/llm-steps-to-reproduce.evaluator';
+import { LLMActualResultEvaluator } from './services/evaluators/llm-actual-result.evaluator';
+import { LLMExpectedResultEvaluator } from './services/evaluators/llm-expected-result.evaluator';
+import { LLMSupportingEvidenceEvaluator } from './services/evaluators/llm-supporting-evidence.evaluator';
+import { LLMSeverityLevelEvaluator } from './services/evaluators/llm-severity-level.evaluator';
+import { LLMInformationConsistencyEvaluator } from './services/evaluators/llm-information-consistency.evaluator';
+import { LLMDescriptionSuccessEvaluator } from './services/evaluators/llm-description-success.evaluator';
+import { LLMEnvironmentSuccessEvaluator } from './services/evaluators/llm-environment-success.evaluator';
 import { CalculateScoreService } from './services/calculate-score.service';
 import { DetermineStatusService } from './services/determine-status.service';
 import { GenerateFeedbackService } from './services/generate-feedback.service';
@@ -35,18 +36,19 @@ import { EvaluationsResolver } from './evaluations.resolver';
     forwardRef(() => UATReportsModule),
     ScoringRulesModule,
     UsersModule,
+    LLMModule,
   ],
   providers: [
-    TestIdentityEvaluator,
-    TestEnvironmentEvaluator,
-    StepsToReproduceEvaluator,
-    ActualResultEvaluator,
-    ExpectedResultEvaluator,
-    SupportingEvidenceEvaluator,
-    SeverityLevelEvaluator,
-    InformationConsistencyEvaluator,
-    DescriptionSuccessEvaluator,
-    EnvironmentSuccessEvaluator,
+    LLMTestIdentityEvaluator,
+    LLMTestEnvironmentEvaluator,
+    LLMStepsToReproduceEvaluator,
+    LLMActualResultEvaluator,
+    LLMExpectedResultEvaluator,
+    LLMSupportingEvidenceEvaluator,
+    LLMSeverityLevelEvaluator,
+    LLMInformationConsistencyEvaluator,
+    LLMDescriptionSuccessEvaluator,
+    LLMEnvironmentSuccessEvaluator,
     CalculateScoreService,
     DetermineStatusService,
     GenerateFeedbackService,
