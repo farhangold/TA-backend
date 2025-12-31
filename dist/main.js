@@ -2117,7 +2117,6 @@ const generate_feedback_service_1 = __webpack_require__(/*! ./services/generate-
 const evaluate_report_service_1 = __webpack_require__(/*! ./services/evaluate-report.service */ "./src/evaluations/services/evaluate-report.service.ts");
 const get_evaluation_service_1 = __webpack_require__(/*! ./services/get-evaluation.service */ "./src/evaluations/services/get-evaluation.service.ts");
 const batch_evaluate_reports_service_1 = __webpack_require__(/*! ./services/batch-evaluate-reports.service */ "./src/evaluations/services/batch-evaluate-reports.service.ts");
-const delete_evaluation_service_1 = __webpack_require__(/*! ./services/delete-evaluation.service */ "./src/evaluations/services/delete-evaluation.service.ts");
 const evaluations_resolver_1 = __webpack_require__(/*! ./evaluations.resolver */ "./src/evaluations/evaluations.resolver.ts");
 let EvaluationsModule = class EvaluationsModule {
 };
@@ -2152,10 +2151,9 @@ exports.EvaluationsModule = EvaluationsModule = __decorate([
             evaluate_report_service_1.EvaluateReportService,
             get_evaluation_service_1.GetEvaluationService,
             batch_evaluate_reports_service_1.BatchEvaluateReportsService,
-            delete_evaluation_service_1.DeleteEvaluationService,
             evaluations_resolver_1.EvaluationsResolver,
         ],
-        exports: [evaluate_report_service_1.EvaluateReportService, get_evaluation_service_1.GetEvaluationService, delete_evaluation_service_1.DeleteEvaluationService],
+        exports: [evaluate_report_service_1.EvaluateReportService, get_evaluation_service_1.GetEvaluationService],
     })
 ], EvaluationsModule);
 
@@ -2181,7 +2179,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.EvaluationsResolver = void 0;
 const graphql_1 = __webpack_require__(/*! @nestjs/graphql */ "@nestjs/graphql");
@@ -2191,7 +2189,6 @@ const decorators_1 = __webpack_require__(/*! ../common/decorators */ "./src/comm
 const evaluate_report_service_1 = __webpack_require__(/*! ./services/evaluate-report.service */ "./src/evaluations/services/evaluate-report.service.ts");
 const get_evaluation_service_1 = __webpack_require__(/*! ./services/get-evaluation.service */ "./src/evaluations/services/get-evaluation.service.ts");
 const batch_evaluate_reports_service_1 = __webpack_require__(/*! ./services/batch-evaluate-reports.service */ "./src/evaluations/services/batch-evaluate-reports.service.ts");
-const delete_evaluation_service_1 = __webpack_require__(/*! ./services/delete-evaluation.service */ "./src/evaluations/services/delete-evaluation.service.ts");
 const evaluation_view_1 = __webpack_require__(/*! ./dto/views/evaluation.view */ "./src/evaluations/dto/views/evaluation.view.ts");
 const evaluation_connection_view_1 = __webpack_require__(/*! ./dto/views/evaluation-connection.view */ "./src/evaluations/dto/views/evaluation-connection.view.ts");
 const uat_report_view_1 = __webpack_require__(/*! ../uat-reports/dto/views/uat-report.view */ "./src/uat-reports/dto/views/uat-report.view.ts");
@@ -2200,11 +2197,10 @@ const get_uat_report_service_1 = __webpack_require__(/*! ../uat-reports/services
 const get_user_service_1 = __webpack_require__(/*! ../users/services/get-user.service */ "./src/users/services/get-user.service.ts");
 const types_1 = __webpack_require__(/*! ../common/types */ "./src/common/types/index.ts");
 let EvaluationsResolver = class EvaluationsResolver {
-    constructor(evaluateReportService, getEvaluationService, batchEvaluateReportsService, deleteEvaluationService, getUATReportService, getUserService) {
+    constructor(evaluateReportService, getEvaluationService, batchEvaluateReportsService, getUATReportService, getUserService) {
         this.evaluateReportService = evaluateReportService;
         this.getEvaluationService = getEvaluationService;
         this.batchEvaluateReportsService = batchEvaluateReportsService;
-        this.deleteEvaluationService = deleteEvaluationService;
         this.getUATReportService = getUATReportService;
         this.getUserService = getUserService;
     }
@@ -2219,9 +2215,6 @@ let EvaluationsResolver = class EvaluationsResolver {
     }
     async getEvaluationHistory(reportId, pagination) {
         return this.getEvaluationService.findHistoryByReportId(reportId, pagination);
-    }
-    async deleteEvaluationByReport(reportId) {
-        return this.deleteEvaluationService.deleteByReportId(reportId);
     }
     async getReport(evaluation) {
         if (typeof evaluation.reportId === 'object' &&
@@ -2249,8 +2242,8 @@ __decorate([
     __param(0, (0, graphql_1.Args)('id')),
     __param(1, (0, decorators_1.CurrentUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_g = typeof user_view_1.UserView !== "undefined" && user_view_1.UserView) === "function" ? _g : Object]),
-    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
+    __metadata("design:paramtypes", [String, typeof (_f = typeof user_view_1.UserView !== "undefined" && user_view_1.UserView) === "function" ? _f : Object]),
+    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
 ], EvaluationsResolver.prototype, "evaluateReport", null);
 __decorate([
     (0, graphql_1.Mutation)(() => [evaluation_view_1.EvaluationView], { name: 'evaluateBatchReports' }),
@@ -2259,8 +2252,8 @@ __decorate([
     __param(0, (0, graphql_1.Args)('ids', { type: () => [String] })),
     __param(1, (0, decorators_1.CurrentUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Array, typeof (_j = typeof user_view_1.UserView !== "undefined" && user_view_1.UserView) === "function" ? _j : Object]),
-    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
+    __metadata("design:paramtypes", [Array, typeof (_h = typeof user_view_1.UserView !== "undefined" && user_view_1.UserView) === "function" ? _h : Object]),
+    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
 ], EvaluationsResolver.prototype, "evaluateBatchReports", null);
 __decorate([
     (0, graphql_1.Query)(() => evaluation_view_1.EvaluationView, { name: 'getEvaluation' }),
@@ -2268,7 +2261,7 @@ __decorate([
     __param(0, (0, graphql_1.Args)('reportId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
+    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
 ], EvaluationsResolver.prototype, "getEvaluation", null);
 __decorate([
     (0, graphql_1.Query)(() => evaluation_connection_view_1.EvaluationConnection, { name: 'getEvaluationHistory' }),
@@ -2276,35 +2269,26 @@ __decorate([
     __param(0, (0, graphql_1.Args)('reportId')),
     __param(1, (0, graphql_1.Args)('pagination', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_m = typeof types_1.PaginationInput !== "undefined" && types_1.PaginationInput) === "function" ? _m : Object]),
-    __metadata("design:returntype", typeof (_o = typeof Promise !== "undefined" && Promise) === "function" ? _o : Object)
+    __metadata("design:paramtypes", [String, typeof (_l = typeof types_1.PaginationInput !== "undefined" && types_1.PaginationInput) === "function" ? _l : Object]),
+    __metadata("design:returntype", typeof (_m = typeof Promise !== "undefined" && Promise) === "function" ? _m : Object)
 ], EvaluationsResolver.prototype, "getEvaluationHistory", null);
-__decorate([
-    (0, graphql_1.Mutation)(() => Boolean, { name: 'deleteEvaluationByReport' }),
-    (0, common_1.UseGuards)(guards_1.JwtAuthGuard, guards_1.RolesGuard),
-    (0, decorators_1.Roles)('ADMIN', 'REVIEWER'),
-    __param(0, (0, graphql_1.Args)('reportId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
-], EvaluationsResolver.prototype, "deleteEvaluationByReport", null);
 __decorate([
     (0, graphql_1.ResolveField)(() => uat_report_view_1.UATReportView, { name: 'report' }),
     __param(0, (0, graphql_1.Parent)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_q = typeof evaluation_view_1.EvaluationView !== "undefined" && evaluation_view_1.EvaluationView) === "function" ? _q : Object]),
-    __metadata("design:returntype", typeof (_r = typeof Promise !== "undefined" && Promise) === "function" ? _r : Object)
+    __metadata("design:paramtypes", [typeof (_o = typeof evaluation_view_1.EvaluationView !== "undefined" && evaluation_view_1.EvaluationView) === "function" ? _o : Object]),
+    __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
 ], EvaluationsResolver.prototype, "getReport", null);
 __decorate([
     (0, graphql_1.ResolveField)(() => user_view_1.UserView, { name: 'evaluatedBy', nullable: true }),
     __param(0, (0, graphql_1.Parent)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_s = typeof evaluation_view_1.EvaluationView !== "undefined" && evaluation_view_1.EvaluationView) === "function" ? _s : Object]),
-    __metadata("design:returntype", typeof (_t = typeof Promise !== "undefined" && Promise) === "function" ? _t : Object)
+    __metadata("design:paramtypes", [typeof (_q = typeof evaluation_view_1.EvaluationView !== "undefined" && evaluation_view_1.EvaluationView) === "function" ? _q : Object]),
+    __metadata("design:returntype", typeof (_r = typeof Promise !== "undefined" && Promise) === "function" ? _r : Object)
 ], EvaluationsResolver.prototype, "getEvaluatedBy", null);
 exports.EvaluationsResolver = EvaluationsResolver = __decorate([
     (0, graphql_1.Resolver)(() => evaluation_view_1.EvaluationView),
-    __metadata("design:paramtypes", [typeof (_a = typeof evaluate_report_service_1.EvaluateReportService !== "undefined" && evaluate_report_service_1.EvaluateReportService) === "function" ? _a : Object, typeof (_b = typeof get_evaluation_service_1.GetEvaluationService !== "undefined" && get_evaluation_service_1.GetEvaluationService) === "function" ? _b : Object, typeof (_c = typeof batch_evaluate_reports_service_1.BatchEvaluateReportsService !== "undefined" && batch_evaluate_reports_service_1.BatchEvaluateReportsService) === "function" ? _c : Object, typeof (_d = typeof delete_evaluation_service_1.DeleteEvaluationService !== "undefined" && delete_evaluation_service_1.DeleteEvaluationService) === "function" ? _d : Object, typeof (_e = typeof get_uat_report_service_1.GetUATReportService !== "undefined" && get_uat_report_service_1.GetUATReportService) === "function" ? _e : Object, typeof (_f = typeof get_user_service_1.GetUserService !== "undefined" && get_user_service_1.GetUserService) === "function" ? _f : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof evaluate_report_service_1.EvaluateReportService !== "undefined" && evaluate_report_service_1.EvaluateReportService) === "function" ? _a : Object, typeof (_b = typeof get_evaluation_service_1.GetEvaluationService !== "undefined" && get_evaluation_service_1.GetEvaluationService) === "function" ? _b : Object, typeof (_c = typeof batch_evaluate_reports_service_1.BatchEvaluateReportsService !== "undefined" && batch_evaluate_reports_service_1.BatchEvaluateReportsService) === "function" ? _c : Object, typeof (_d = typeof get_uat_report_service_1.GetUATReportService !== "undefined" && get_uat_report_service_1.GetUATReportService) === "function" ? _d : Object, typeof (_e = typeof get_user_service_1.GetUserService !== "undefined" && get_user_service_1.GetUserService) === "function" ? _e : Object])
 ], EvaluationsResolver);
 
 
@@ -2719,63 +2703,6 @@ exports.CalculateScoreService = CalculateScoreService;
 exports.CalculateScoreService = CalculateScoreService = __decorate([
     (0, common_1.Injectable)()
 ], CalculateScoreService);
-
-
-/***/ }),
-
-/***/ "./src/evaluations/services/delete-evaluation.service.ts":
-/*!***************************************************************!*\
-  !*** ./src/evaluations/services/delete-evaluation.service.ts ***!
-  \***************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DeleteEvaluationService = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const mongoose_1 = __webpack_require__(/*! @nestjs/mongoose */ "@nestjs/mongoose");
-const mongoose_2 = __webpack_require__(/*! mongoose */ "mongoose");
-const gqlerr_1 = __webpack_require__(/*! @app/gqlerr */ "./libs/gqlerr/src/index.ts");
-const evaluation_1 = __webpack_require__(/*! ../models/evaluation */ "./src/evaluations/models/evaluation.ts");
-let DeleteEvaluationService = class DeleteEvaluationService {
-    constructor(evaluationModel) {
-        this.evaluationModel = evaluationModel;
-    }
-    async deleteByReportId(reportId) {
-        try {
-            const result = await this.evaluationModel.deleteMany({ reportId });
-            if (result.deletedCount === 0) {
-                throw new gqlerr_1.ThrowGQL('Evaluation not found', gqlerr_1.GQLThrowType.NOT_FOUND);
-            }
-            return true;
-        }
-        catch (error) {
-            if (error instanceof gqlerr_1.ThrowGQL) {
-                throw error;
-            }
-            throw new gqlerr_1.ThrowGQL(error, gqlerr_1.GQLThrowType.UNPROCESSABLE);
-        }
-    }
-};
-exports.DeleteEvaluationService = DeleteEvaluationService;
-exports.DeleteEvaluationService = DeleteEvaluationService = __decorate([
-    (0, common_1.Injectable)(),
-    __param(0, (0, mongoose_1.InjectModel)(evaluation_1.Evaluation.name)),
-    __metadata("design:paramtypes", [typeof (_a = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _a : Object])
-], DeleteEvaluationService);
 
 
 /***/ }),
