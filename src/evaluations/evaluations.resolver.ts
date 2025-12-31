@@ -12,7 +12,6 @@ import { Roles, CurrentUser } from '../common/decorators';
 import { EvaluateReportService } from './services/evaluate-report.service';
 import { GetEvaluationService } from './services/get-evaluation.service';
 import { BatchEvaluateReportsService } from './services/batch-evaluate-reports.service';
-import { DeleteEvaluationService } from './services/delete-evaluation.service';
 import { EvaluationView } from './dto/views/evaluation.view';
 import { EvaluationConnection } from './dto/views/evaluation-connection.view';
 import { UATReportView } from '../uat-reports/dto/views/uat-report.view';
@@ -27,7 +26,6 @@ export class EvaluationsResolver {
     private readonly evaluateReportService: EvaluateReportService,
     private readonly getEvaluationService: GetEvaluationService,
     private readonly batchEvaluateReportsService: BatchEvaluateReportsService,
-    private readonly deleteEvaluationService: DeleteEvaluationService,
     private readonly getUATReportService: GetUATReportService,
     private readonly getUserService: GetUserService,
   ) {}
@@ -70,15 +68,6 @@ export class EvaluationsResolver {
       reportId,
       pagination,
     );
-  }
-
-  @Mutation(() => Boolean, { name: 'deleteEvaluationByReport' })
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN', 'REVIEWER')
-  async deleteEvaluationByReport(
-    @Args('reportId') reportId: string,
-  ): Promise<boolean> {
-    return this.deleteEvaluationService.deleteByReportId(reportId);
   }
 
   @ResolveField(() => UATReportView, { name: 'report' })

@@ -23,7 +23,6 @@ import { GenerateFeedbackService } from './services/generate-feedback.service';
 import { EvaluateReportService } from './services/evaluate-report.service';
 import { GetEvaluationService } from './services/get-evaluation.service';
 import { BatchEvaluateReportsService } from './services/batch-evaluate-reports.service';
-import { DeleteEvaluationService } from './services/delete-evaluation.service';
 import { EvaluationsResolver } from './evaluations.resolver';
 
 @Module({
@@ -55,9 +54,8 @@ import { EvaluationsResolver } from './evaluations.resolver';
     EvaluateReportService,
     GetEvaluationService,
     BatchEvaluateReportsService,
-    DeleteEvaluationService,
     EvaluationsResolver,
   ],
-  exports: [EvaluateReportService, GetEvaluationService, DeleteEvaluationService],
+  exports: [EvaluateReportService, GetEvaluationService],
 })
 export class EvaluationsModule {}
