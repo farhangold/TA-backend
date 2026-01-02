@@ -463,6 +463,35 @@ healthCheck: String!
 
 ---
 
+## Dokumentasi LLM Evaluation System
+
+Sistem ini menggunakan **hybrid evaluation model** yang menggabungkan LLM-based dan rule-based evaluation untuk mengevaluasi UAT Reports.
+
+📖 **Dokumentasi Lengkap**: Lihat [docs/LLM_IMPLEMENTATION.md](./docs/LLM_IMPLEMENTATION.md)
+
+### Ringkasan Cepat
+
+- **Model LLM**: GPT-4o (OpenAI)
+- **Atribut LLM-based**: Steps to Reproduce, Actual Result
+- **Atribut Rule-based**: Test Environment, Supporting Evidence, Expected Result
+- **Bahasa**: Semua prompt dalam Bahasa Indonesia
+- **Caching**: 24 jam TTL untuk mengurangi biaya API
+- **Failover**: Otomatis set `NEEDS_MANUAL_REVIEW` pada LLM failure
+
+### Konfigurasi LLM
+
+```env
+OPENAI_API_KEY=sk-...
+OPENAI_MODEL=gpt-4o
+OPENAI_TEMPERATURE=0.2
+OPENAI_TIMEOUT=30000
+OPENAI_MAX_RETRIES=3
+LLM_CACHE_ENABLED=true
+LLM_CACHE_TTL=86400000
+```
+
+---
+
 ## Setup dan Instalasi
 
 ### Prasyarat
@@ -470,6 +499,7 @@ healthCheck: String!
 - Node.js (v18 atau lebih tinggi)
 - MongoDB (v5.0 atau lebih tinggi)
 - npm atau yarn
+- OpenAI API Key (untuk LLM evaluation)
 
 ### Langkah Instalasi
 

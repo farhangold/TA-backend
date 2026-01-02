@@ -2281,7 +2281,7 @@ __decorate([
     __metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
 ], EvaluationsResolver.prototype, "deleteEvaluationByReport", null);
 __decorate([
-    (0, graphql_1.Query)(() => evaluation_view_1.EvaluationView, { name: 'getEvaluation', nullable: true }),
+    (0, graphql_1.Query)(() => evaluation_view_1.EvaluationView, { name: 'getEvaluation' }),
     (0, common_1.UseGuards)(guards_1.JwtAuthGuard),
     __param(0, (0, graphql_1.Args)('reportId')),
     __metadata("design:type", Function),
@@ -3870,7 +3870,7 @@ let GetEvaluationService = class GetEvaluationService {
                 .lean()
                 .exec());
             if (!evaluation) {
-                return null;
+                throw new gqlerr_1.ThrowGQL('Evaluation not found', gqlerr_1.GQLThrowType.NOT_FOUND);
             }
             return (0, parser_1.parseEvaluationToView)(evaluation);
         }

@@ -61,11 +61,11 @@ export class EvaluationsResolver {
     return await this.deleteEvaluationService.deleteByReportId(reportId);
   }
 
-  @Query(() => EvaluationView, { name: 'getEvaluation', nullable: true })
+  @Query(() => EvaluationView, { name: 'getEvaluation' })
   @UseGuards(JwtAuthGuard)
   async getEvaluation(
     @Args('reportId') reportId: string,
-  ): Promise<EvaluationView | null> {
+  ): Promise<EvaluationView> {
     return this.getEvaluationService.findByReportId(reportId);
   }
 
