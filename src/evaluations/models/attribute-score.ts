@@ -2,6 +2,38 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Field, ObjectType, Float } from '@nestjs/graphql';
 import { AttributeType } from '../../scoring-rules/enums/attribute-type.enum';
 
+export type EvaluationStatus = 'VALID' | 'AMBIGUOUS' | 'INVALID' | 'NEEDS_MANUAL_REVIEW';
+
+@Schema({ _id: false })
+@ObjectType('QualityFlags')
+export class QualityFlags {
+  @Field({ nullable: true })
+  @Prop({ required: false, type: Boolean })
+  isConsistent?: boolean;
+
+  @Field({ nullable: true })
+  @Prop({ required: false, type: Boolean })
+  isClear?: boolean;
+
+  @Field({ nullable: true })
+  @Prop({ required: false, type: Boolean })
+  isContradictory?: boolean;
+
+  @Field({ nullable: true })
+  @Prop({ required: false, type: Boolean })
+  isTooGeneric?: boolean;
+
+  @Field({ nullable: true })
+  @Prop({ required: false, type: Boolean })
+  hasBias?: boolean;
+
+  @Field({ nullable: true })
+  @Prop({ required: false, type: Boolean })
+  isAmbiguous?: boolean;
+}
+
+export const QualityFlagsSchema = SchemaFactory.createForClass(QualityFlags);
+
 @Schema({ _id: false })
 @ObjectType()
 export class AttributeScore {
@@ -32,6 +64,14 @@ export class AttributeScore {
   @Field({ nullable: true })
   @Prop({ required: false })
   reasoning?: string;
+
+  @Field({ nullable: true })
+  @Prop({ required: false, type: String })
+  evaluationStatus?: EvaluationStatus;
+
+  @Field(() => QualityFlags, { nullable: true })
+  @Prop({ required: false, type: Object })
+  qualityFlags?: QualityFlags;
 }
 
 export const AttributeScoreSchema =

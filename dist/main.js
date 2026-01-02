@@ -1926,6 +1926,7 @@ exports.EvaluationView = void 0;
 const graphql_1 = __webpack_require__(/*! @nestjs/graphql */ "@nestjs/graphql");
 const attribute_score_1 = __webpack_require__(/*! ../../models/attribute-score */ "./src/evaluations/models/attribute-score.ts");
 const evaluation_feedback_1 = __webpack_require__(/*! ../../models/evaluation-feedback */ "./src/evaluations/models/evaluation-feedback.ts");
+const llm_evaluation_error_1 = __webpack_require__(/*! ../../models/llm-evaluation-error */ "./src/evaluations/models/llm-evaluation-error.ts");
 const validation_status_enum_1 = __webpack_require__(/*! ../../enums/validation-status.enum */ "./src/evaluations/enums/validation-status.enum.ts");
 const completeness_status_enum_1 = __webpack_require__(/*! ../../enums/completeness-status.enum */ "./src/evaluations/enums/completeness-status.enum.ts");
 const attribute_type_enum_1 = __webpack_require__(/*! ../../../scoring-rules/enums/attribute-type.enum */ "./src/scoring-rules/enums/attribute-type.enum.ts");
@@ -1999,6 +2000,14 @@ __decorate([
     (0, graphql_1.Field)(() => graphql_1.Int),
     __metadata("design:type", Number)
 ], EvaluationView.prototype, "version", void 0);
+__decorate([
+    (0, graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Boolean)
+], EvaluationView.prototype, "requiresManualReview", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => [llm_evaluation_error_1.LLMEvaluationError], { nullable: true }),
+    __metadata("design:type", Array)
+], EvaluationView.prototype, "llmEvaluationErrors", void 0);
 exports.EvaluationView = EvaluationView = __decorate([
     (0, graphql_1.ObjectType)()
 ], EvaluationView);
@@ -2117,6 +2126,7 @@ const generate_feedback_service_1 = __webpack_require__(/*! ./services/generate-
 const evaluate_report_service_1 = __webpack_require__(/*! ./services/evaluate-report.service */ "./src/evaluations/services/evaluate-report.service.ts");
 const get_evaluation_service_1 = __webpack_require__(/*! ./services/get-evaluation.service */ "./src/evaluations/services/get-evaluation.service.ts");
 const batch_evaluate_reports_service_1 = __webpack_require__(/*! ./services/batch-evaluate-reports.service */ "./src/evaluations/services/batch-evaluate-reports.service.ts");
+const delete_evaluation_service_1 = __webpack_require__(/*! ./services/delete-evaluation.service */ "./src/evaluations/services/delete-evaluation.service.ts");
 const evaluations_resolver_1 = __webpack_require__(/*! ./evaluations.resolver */ "./src/evaluations/evaluations.resolver.ts");
 let EvaluationsModule = class EvaluationsModule {
 };
@@ -2151,6 +2161,7 @@ exports.EvaluationsModule = EvaluationsModule = __decorate([
             evaluate_report_service_1.EvaluateReportService,
             get_evaluation_service_1.GetEvaluationService,
             batch_evaluate_reports_service_1.BatchEvaluateReportsService,
+            delete_evaluation_service_1.DeleteEvaluationService,
             evaluations_resolver_1.EvaluationsResolver,
         ],
         exports: [evaluate_report_service_1.EvaluateReportService, get_evaluation_service_1.GetEvaluationService],
@@ -2179,7 +2190,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.EvaluationsResolver = void 0;
 const graphql_1 = __webpack_require__(/*! @nestjs/graphql */ "@nestjs/graphql");
@@ -2189,6 +2200,7 @@ const decorators_1 = __webpack_require__(/*! ../common/decorators */ "./src/comm
 const evaluate_report_service_1 = __webpack_require__(/*! ./services/evaluate-report.service */ "./src/evaluations/services/evaluate-report.service.ts");
 const get_evaluation_service_1 = __webpack_require__(/*! ./services/get-evaluation.service */ "./src/evaluations/services/get-evaluation.service.ts");
 const batch_evaluate_reports_service_1 = __webpack_require__(/*! ./services/batch-evaluate-reports.service */ "./src/evaluations/services/batch-evaluate-reports.service.ts");
+const delete_evaluation_service_1 = __webpack_require__(/*! ./services/delete-evaluation.service */ "./src/evaluations/services/delete-evaluation.service.ts");
 const evaluation_view_1 = __webpack_require__(/*! ./dto/views/evaluation.view */ "./src/evaluations/dto/views/evaluation.view.ts");
 const evaluation_connection_view_1 = __webpack_require__(/*! ./dto/views/evaluation-connection.view */ "./src/evaluations/dto/views/evaluation-connection.view.ts");
 const uat_report_view_1 = __webpack_require__(/*! ../uat-reports/dto/views/uat-report.view */ "./src/uat-reports/dto/views/uat-report.view.ts");
@@ -2197,10 +2209,11 @@ const get_uat_report_service_1 = __webpack_require__(/*! ../uat-reports/services
 const get_user_service_1 = __webpack_require__(/*! ../users/services/get-user.service */ "./src/users/services/get-user.service.ts");
 const types_1 = __webpack_require__(/*! ../common/types */ "./src/common/types/index.ts");
 let EvaluationsResolver = class EvaluationsResolver {
-    constructor(evaluateReportService, getEvaluationService, batchEvaluateReportsService, getUATReportService, getUserService) {
+    constructor(evaluateReportService, getEvaluationService, batchEvaluateReportsService, deleteEvaluationService, getUATReportService, getUserService) {
         this.evaluateReportService = evaluateReportService;
         this.getEvaluationService = getEvaluationService;
         this.batchEvaluateReportsService = batchEvaluateReportsService;
+        this.deleteEvaluationService = deleteEvaluationService;
         this.getUATReportService = getUATReportService;
         this.getUserService = getUserService;
     }
@@ -2209,6 +2222,9 @@ let EvaluationsResolver = class EvaluationsResolver {
     }
     async evaluateBatchReports(ids, user) {
         return await this.batchEvaluateReportsService.evaluateBatch(ids, user._id);
+    }
+    async deleteEvaluationByReport(reportId) {
+        return await this.deleteEvaluationService.deleteByReportId(reportId);
     }
     async getEvaluation(reportId) {
         return this.getEvaluationService.findByReportId(reportId);
@@ -2242,8 +2258,8 @@ __decorate([
     __param(0, (0, graphql_1.Args)('id')),
     __param(1, (0, decorators_1.CurrentUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_f = typeof user_view_1.UserView !== "undefined" && user_view_1.UserView) === "function" ? _f : Object]),
-    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
+    __metadata("design:paramtypes", [String, typeof (_g = typeof user_view_1.UserView !== "undefined" && user_view_1.UserView) === "function" ? _g : Object]),
+    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
 ], EvaluationsResolver.prototype, "evaluateReport", null);
 __decorate([
     (0, graphql_1.Mutation)(() => [evaluation_view_1.EvaluationView], { name: 'evaluateBatchReports' }),
@@ -2252,16 +2268,25 @@ __decorate([
     __param(0, (0, graphql_1.Args)('ids', { type: () => [String] })),
     __param(1, (0, decorators_1.CurrentUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Array, typeof (_h = typeof user_view_1.UserView !== "undefined" && user_view_1.UserView) === "function" ? _h : Object]),
-    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
+    __metadata("design:paramtypes", [Array, typeof (_j = typeof user_view_1.UserView !== "undefined" && user_view_1.UserView) === "function" ? _j : Object]),
+    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
 ], EvaluationsResolver.prototype, "evaluateBatchReports", null);
 __decorate([
-    (0, graphql_1.Query)(() => evaluation_view_1.EvaluationView, { name: 'getEvaluation' }),
+    (0, graphql_1.Mutation)(() => Boolean, { name: 'deleteEvaluationByReport' }),
+    (0, common_1.UseGuards)(guards_1.JwtAuthGuard, guards_1.RolesGuard),
+    (0, decorators_1.Roles)('ADMIN', 'REVIEWER'),
+    __param(0, (0, graphql_1.Args)('reportId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
+], EvaluationsResolver.prototype, "deleteEvaluationByReport", null);
+__decorate([
+    (0, graphql_1.Query)(() => evaluation_view_1.EvaluationView, { name: 'getEvaluation', nullable: true }),
     (0, common_1.UseGuards)(guards_1.JwtAuthGuard),
     __param(0, (0, graphql_1.Args)('reportId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
+    __metadata("design:returntype", typeof (_m = typeof Promise !== "undefined" && Promise) === "function" ? _m : Object)
 ], EvaluationsResolver.prototype, "getEvaluation", null);
 __decorate([
     (0, graphql_1.Query)(() => evaluation_connection_view_1.EvaluationConnection, { name: 'getEvaluationHistory' }),
@@ -2269,26 +2294,26 @@ __decorate([
     __param(0, (0, graphql_1.Args)('reportId')),
     __param(1, (0, graphql_1.Args)('pagination', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_l = typeof types_1.PaginationInput !== "undefined" && types_1.PaginationInput) === "function" ? _l : Object]),
-    __metadata("design:returntype", typeof (_m = typeof Promise !== "undefined" && Promise) === "function" ? _m : Object)
+    __metadata("design:paramtypes", [String, typeof (_o = typeof types_1.PaginationInput !== "undefined" && types_1.PaginationInput) === "function" ? _o : Object]),
+    __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
 ], EvaluationsResolver.prototype, "getEvaluationHistory", null);
 __decorate([
     (0, graphql_1.ResolveField)(() => uat_report_view_1.UATReportView, { name: 'report' }),
     __param(0, (0, graphql_1.Parent)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_o = typeof evaluation_view_1.EvaluationView !== "undefined" && evaluation_view_1.EvaluationView) === "function" ? _o : Object]),
-    __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
+    __metadata("design:paramtypes", [typeof (_q = typeof evaluation_view_1.EvaluationView !== "undefined" && evaluation_view_1.EvaluationView) === "function" ? _q : Object]),
+    __metadata("design:returntype", typeof (_r = typeof Promise !== "undefined" && Promise) === "function" ? _r : Object)
 ], EvaluationsResolver.prototype, "getReport", null);
 __decorate([
     (0, graphql_1.ResolveField)(() => user_view_1.UserView, { name: 'evaluatedBy', nullable: true }),
     __param(0, (0, graphql_1.Parent)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_q = typeof evaluation_view_1.EvaluationView !== "undefined" && evaluation_view_1.EvaluationView) === "function" ? _q : Object]),
-    __metadata("design:returntype", typeof (_r = typeof Promise !== "undefined" && Promise) === "function" ? _r : Object)
+    __metadata("design:paramtypes", [typeof (_s = typeof evaluation_view_1.EvaluationView !== "undefined" && evaluation_view_1.EvaluationView) === "function" ? _s : Object]),
+    __metadata("design:returntype", typeof (_t = typeof Promise !== "undefined" && Promise) === "function" ? _t : Object)
 ], EvaluationsResolver.prototype, "getEvaluatedBy", null);
 exports.EvaluationsResolver = EvaluationsResolver = __decorate([
     (0, graphql_1.Resolver)(() => evaluation_view_1.EvaluationView),
-    __metadata("design:paramtypes", [typeof (_a = typeof evaluate_report_service_1.EvaluateReportService !== "undefined" && evaluate_report_service_1.EvaluateReportService) === "function" ? _a : Object, typeof (_b = typeof get_evaluation_service_1.GetEvaluationService !== "undefined" && get_evaluation_service_1.GetEvaluationService) === "function" ? _b : Object, typeof (_c = typeof batch_evaluate_reports_service_1.BatchEvaluateReportsService !== "undefined" && batch_evaluate_reports_service_1.BatchEvaluateReportsService) === "function" ? _c : Object, typeof (_d = typeof get_uat_report_service_1.GetUATReportService !== "undefined" && get_uat_report_service_1.GetUATReportService) === "function" ? _d : Object, typeof (_e = typeof get_user_service_1.GetUserService !== "undefined" && get_user_service_1.GetUserService) === "function" ? _e : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof evaluate_report_service_1.EvaluateReportService !== "undefined" && evaluate_report_service_1.EvaluateReportService) === "function" ? _a : Object, typeof (_b = typeof get_evaluation_service_1.GetEvaluationService !== "undefined" && get_evaluation_service_1.GetEvaluationService) === "function" ? _b : Object, typeof (_c = typeof batch_evaluate_reports_service_1.BatchEvaluateReportsService !== "undefined" && batch_evaluate_reports_service_1.BatchEvaluateReportsService) === "function" ? _c : Object, typeof (_d = typeof delete_evaluation_service_1.DeleteEvaluationService !== "undefined" && delete_evaluation_service_1.DeleteEvaluationService) === "function" ? _d : Object, typeof (_e = typeof get_uat_report_service_1.GetUATReportService !== "undefined" && get_uat_report_service_1.GetUATReportService) === "function" ? _e : Object, typeof (_f = typeof get_user_service_1.GetUserService !== "undefined" && get_user_service_1.GetUserService) === "function" ? _f : Object])
 ], EvaluationsResolver);
 
 
@@ -2312,10 +2337,48 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AttributeScoreSchema = exports.AttributeScore = void 0;
+exports.AttributeScoreSchema = exports.AttributeScore = exports.QualityFlagsSchema = exports.QualityFlags = void 0;
 const mongoose_1 = __webpack_require__(/*! @nestjs/mongoose */ "@nestjs/mongoose");
 const graphql_1 = __webpack_require__(/*! @nestjs/graphql */ "@nestjs/graphql");
 const attribute_type_enum_1 = __webpack_require__(/*! ../../scoring-rules/enums/attribute-type.enum */ "./src/scoring-rules/enums/attribute-type.enum.ts");
+let QualityFlags = class QualityFlags {
+};
+exports.QualityFlags = QualityFlags;
+__decorate([
+    (0, graphql_1.Field)({ nullable: true }),
+    (0, mongoose_1.Prop)({ required: false, type: Boolean }),
+    __metadata("design:type", Boolean)
+], QualityFlags.prototype, "isConsistent", void 0);
+__decorate([
+    (0, graphql_1.Field)({ nullable: true }),
+    (0, mongoose_1.Prop)({ required: false, type: Boolean }),
+    __metadata("design:type", Boolean)
+], QualityFlags.prototype, "isClear", void 0);
+__decorate([
+    (0, graphql_1.Field)({ nullable: true }),
+    (0, mongoose_1.Prop)({ required: false, type: Boolean }),
+    __metadata("design:type", Boolean)
+], QualityFlags.prototype, "isContradictory", void 0);
+__decorate([
+    (0, graphql_1.Field)({ nullable: true }),
+    (0, mongoose_1.Prop)({ required: false, type: Boolean }),
+    __metadata("design:type", Boolean)
+], QualityFlags.prototype, "isTooGeneric", void 0);
+__decorate([
+    (0, graphql_1.Field)({ nullable: true }),
+    (0, mongoose_1.Prop)({ required: false, type: Boolean }),
+    __metadata("design:type", Boolean)
+], QualityFlags.prototype, "hasBias", void 0);
+__decorate([
+    (0, graphql_1.Field)({ nullable: true }),
+    (0, mongoose_1.Prop)({ required: false, type: Boolean }),
+    __metadata("design:type", Boolean)
+], QualityFlags.prototype, "isAmbiguous", void 0);
+exports.QualityFlags = QualityFlags = __decorate([
+    (0, mongoose_1.Schema)({ _id: false }),
+    (0, graphql_1.ObjectType)('QualityFlags')
+], QualityFlags);
+exports.QualityFlagsSchema = mongoose_1.SchemaFactory.createForClass(QualityFlags);
 let AttributeScore = class AttributeScore {
 };
 exports.AttributeScore = AttributeScore;
@@ -2354,6 +2417,16 @@ __decorate([
     (0, mongoose_1.Prop)({ required: false }),
     __metadata("design:type", String)
 ], AttributeScore.prototype, "reasoning", void 0);
+__decorate([
+    (0, graphql_1.Field)({ nullable: true }),
+    (0, mongoose_1.Prop)({ required: false, type: String }),
+    __metadata("design:type", String)
+], AttributeScore.prototype, "evaluationStatus", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => QualityFlags, { nullable: true }),
+    (0, mongoose_1.Prop)({ required: false, type: Object }),
+    __metadata("design:type", QualityFlags)
+], AttributeScore.prototype, "qualityFlags", void 0);
 exports.AttributeScore = AttributeScore = __decorate([
     (0, mongoose_1.Schema)({ _id: false }),
     (0, graphql_1.ObjectType)()
@@ -2442,6 +2515,7 @@ const graphql_1 = __webpack_require__(/*! @nestjs/graphql */ "@nestjs/graphql");
 const mongoose_2 = __webpack_require__(/*! mongoose */ "mongoose");
 const attribute_score_1 = __webpack_require__(/*! ./attribute-score */ "./src/evaluations/models/attribute-score.ts");
 const evaluation_feedback_1 = __webpack_require__(/*! ./evaluation-feedback */ "./src/evaluations/models/evaluation-feedback.ts");
+const llm_evaluation_error_1 = __webpack_require__(/*! ./llm-evaluation-error */ "./src/evaluations/models/llm-evaluation-error.ts");
 const validation_status_enum_1 = __webpack_require__(/*! ../enums/validation-status.enum */ "./src/evaluations/enums/validation-status.enum.ts");
 const completeness_status_enum_1 = __webpack_require__(/*! ../enums/completeness-status.enum */ "./src/evaluations/enums/completeness-status.enum.ts");
 const attribute_type_enum_1 = __webpack_require__(/*! ../../scoring-rules/enums/attribute-type.enum */ "./src/scoring-rules/enums/attribute-type.enum.ts");
@@ -2529,6 +2603,20 @@ __decorate([
     (0, mongoose_1.Prop)({ required: true, default: 1 }),
     __metadata("design:type", Number)
 ], Evaluation.prototype, "version", void 0);
+__decorate([
+    (0, graphql_1.Field)(),
+    (0, mongoose_1.Prop)({ required: false, default: false }),
+    __metadata("design:type", Boolean)
+], Evaluation.prototype, "requiresManualReview", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => [llm_evaluation_error_1.LLMEvaluationError], { nullable: true }),
+    (0, mongoose_1.Prop)({
+        required: false,
+        type: [llm_evaluation_error_1.LLMEvaluationErrorSchema],
+        default: [],
+    }),
+    __metadata("design:type", Array)
+], Evaluation.prototype, "llmEvaluationErrors", void 0);
 exports.Evaluation = Evaluation = __decorate([
     (0, mongoose_1.Schema)({ timestamps: true }),
     (0, graphql_1.ObjectType)()
@@ -2540,6 +2628,55 @@ exports.EvaluationSchema.index({ validationStatus: 1 });
 exports.EvaluationSchema.index({ reportId: 1, version: -1 });
 exports.EvaluationSchema.index({ reportType: 1 });
 exports.EvaluationSchema.index({ reportType: 1, validationStatus: 1 });
+
+
+/***/ }),
+
+/***/ "./src/evaluations/models/llm-evaluation-error.ts":
+/*!********************************************************!*\
+  !*** ./src/evaluations/models/llm-evaluation-error.ts ***!
+  \********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LLMEvaluationErrorSchema = exports.LLMEvaluationError = void 0;
+const mongoose_1 = __webpack_require__(/*! @nestjs/mongoose */ "@nestjs/mongoose");
+const graphql_1 = __webpack_require__(/*! @nestjs/graphql */ "@nestjs/graphql");
+const attribute_type_enum_1 = __webpack_require__(/*! ../../scoring-rules/enums/attribute-type.enum */ "./src/scoring-rules/enums/attribute-type.enum.ts");
+let LLMEvaluationError = class LLMEvaluationError {
+};
+exports.LLMEvaluationError = LLMEvaluationError;
+__decorate([
+    (0, graphql_1.Field)(() => attribute_type_enum_1.AttributeType),
+    (0, mongoose_1.Prop)({ required: true, type: String, enum: attribute_type_enum_1.AttributeType }),
+    __metadata("design:type", typeof (_a = typeof attribute_type_enum_1.AttributeType !== "undefined" && attribute_type_enum_1.AttributeType) === "function" ? _a : Object)
+], LLMEvaluationError.prototype, "attribute", void 0);
+__decorate([
+    (0, graphql_1.Field)(),
+    (0, mongoose_1.Prop)({ required: true }),
+    __metadata("design:type", String)
+], LLMEvaluationError.prototype, "error", void 0);
+__decorate([
+    (0, graphql_1.Field)(),
+    (0, mongoose_1.Prop)({ required: true, type: Date }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], LLMEvaluationError.prototype, "timestamp", void 0);
+exports.LLMEvaluationError = LLMEvaluationError = __decorate([
+    (0, mongoose_1.Schema)({ _id: false }),
+    (0, graphql_1.ObjectType)()
+], LLMEvaluationError);
+exports.LLMEvaluationErrorSchema = mongoose_1.SchemaFactory.createForClass(LLMEvaluationError);
 
 
 /***/ }),
@@ -2611,6 +2748,8 @@ function parseEvaluationToView(doc) {
         evaluatedBy: evaluatedBy,
         evaluatedAt: doc.evaluatedAt,
         version: doc.version,
+        requiresManualReview: doc.requiresManualReview ?? false,
+        llmEvaluationErrors: doc.llmEvaluationErrors ?? [],
     };
 }
 
@@ -2707,6 +2846,63 @@ exports.CalculateScoreService = CalculateScoreService = __decorate([
 
 /***/ }),
 
+/***/ "./src/evaluations/services/delete-evaluation.service.ts":
+/*!***************************************************************!*\
+  !*** ./src/evaluations/services/delete-evaluation.service.ts ***!
+  \***************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DeleteEvaluationService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const mongoose_1 = __webpack_require__(/*! @nestjs/mongoose */ "@nestjs/mongoose");
+const mongoose_2 = __webpack_require__(/*! mongoose */ "mongoose");
+const gqlerr_1 = __webpack_require__(/*! @app/gqlerr */ "./libs/gqlerr/src/index.ts");
+const evaluation_1 = __webpack_require__(/*! ../models/evaluation */ "./src/evaluations/models/evaluation.ts");
+let DeleteEvaluationService = class DeleteEvaluationService {
+    constructor(evaluationModel) {
+        this.evaluationModel = evaluationModel;
+    }
+    async deleteByReportId(reportId) {
+        try {
+            const result = await this.evaluationModel.deleteMany({ reportId });
+            if (result.deletedCount === 0) {
+                throw new gqlerr_1.ThrowGQL('Evaluation not found for this report', gqlerr_1.GQLThrowType.NOT_FOUND);
+            }
+            return true;
+        }
+        catch (error) {
+            if (error instanceof gqlerr_1.ThrowGQL) {
+                throw error;
+            }
+            throw new gqlerr_1.ThrowGQL(error, gqlerr_1.GQLThrowType.UNPROCESSABLE);
+        }
+    }
+};
+exports.DeleteEvaluationService = DeleteEvaluationService;
+exports.DeleteEvaluationService = DeleteEvaluationService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, mongoose_1.InjectModel)(evaluation_1.Evaluation.name)),
+    __metadata("design:paramtypes", [typeof (_a = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _a : Object])
+], DeleteEvaluationService);
+
+
+/***/ }),
+
 /***/ "./src/evaluations/services/determine-status.service.ts":
 /*!**************************************************************!*\
   !*** ./src/evaluations/services/determine-status.service.ts ***!
@@ -2791,6 +2987,7 @@ const parser_1 = __webpack_require__(/*! ../models/parser */ "./src/evaluations/
 const attribute_type_enum_1 = __webpack_require__(/*! ../../scoring-rules/enums/attribute-type.enum */ "./src/scoring-rules/enums/attribute-type.enum.ts");
 const completeness_status_enum_1 = __webpack_require__(/*! ../enums/completeness-status.enum */ "./src/evaluations/enums/completeness-status.enum.ts");
 const report_status_enum_1 = __webpack_require__(/*! ../../uat-reports/enums/report-status.enum */ "./src/uat-reports/enums/report-status.enum.ts");
+const llm_evaluation_failed_error_1 = __webpack_require__(/*! ../../llm/errors/llm-evaluation-failed.error */ "./src/llm/errors/llm-evaluation-failed.error.ts");
 let EvaluateReportService = class EvaluateReportService {
     constructor(evaluationModel, uatReportModel, getScoringRulesService, testIdentityEvaluator, testEnvironmentEvaluator, stepsToReproduceEvaluator, actualResultEvaluator, expectedResultEvaluator, supportingEvidenceEvaluator, severityLevelEvaluator, informationConsistencyEvaluator, descriptionSuccessEvaluator, environmentSuccessEvaluator, calculateScoreService, determineStatusService, generateFeedbackService) {
         this.evaluationModel = evaluationModel;
@@ -2826,6 +3023,7 @@ let EvaluateReportService = class EvaluateReportService {
             }, {});
             const validationConfig = await this.getScoringRulesService.getValidationConfig();
             const attributeScores = [];
+            const llmEvaluationErrors = [];
             let evaluators;
             if (reportType === report_type_enum_1.ReportType.SUCCESS_REPORT) {
                 evaluators = {
@@ -2849,6 +3047,25 @@ let EvaluateReportService = class EvaluateReportService {
                         return score;
                     }
                     catch (error) {
+                        if (error instanceof llm_evaluation_failed_error_1.LLMEvaluationFailedError) {
+                            const errorEntry = {
+                                attribute: error.attribute,
+                                error: error.originalError.message,
+                                timestamp: new Date(),
+                            };
+                            llmEvaluationErrors.push(errorEntry);
+                            console.error(`LLM evaluation failed for attribute ${attribute}:`, error);
+                            return {
+                                attribute: attribute,
+                                score: 0,
+                                maxScore: 1,
+                                weight: rule.weight,
+                                weightedScore: 0,
+                                passed: false,
+                                evaluationStatus: 'NEEDS_MANUAL_REVIEW',
+                                reasoning: `LLM evaluation failed: ${error.originalError.message}`,
+                            };
+                        }
                         console.error(`Error evaluating attribute ${attribute}:`, error);
                         return {
                             attribute: attribute,
@@ -2895,6 +3112,7 @@ let EvaluateReportService = class EvaluateReportService {
             const completenessStatus = incompleteAttributes.length === 0
                 ? completeness_status_enum_1.CompletenessStatus.COMPLETE
                 : completeness_status_enum_1.CompletenessStatus.INCOMPLETE;
+            const requiresManualReview = attributeScores.some((score) => score.evaluationStatus === 'NEEDS_MANUAL_REVIEW') || llmEvaluationErrors.length > 0;
             const processingTime = Date.now() - startTime;
             const latestEvaluation = await this.evaluationModel
                 .findOne({ reportId })
@@ -2917,10 +3135,19 @@ let EvaluateReportService = class EvaluateReportService {
                 evaluatedBy: userId || null,
                 evaluatedAt: new Date(),
                 version,
+                requiresManualReview,
+                llmEvaluationErrors: llmEvaluationErrors.length > 0 ? llmEvaluationErrors : undefined,
             });
-            const reportStatus = validationStatus === 'VALID'
-                ? report_status_enum_1.ReportStatus.VALID
-                : report_status_enum_1.ReportStatus.INVALID;
+            let reportStatus;
+            if (requiresManualReview) {
+                reportStatus = report_status_enum_1.ReportStatus.NEEDS_MANUAL_REVIEW;
+            }
+            else {
+                reportStatus =
+                    validationStatus === 'VALID'
+                        ? report_status_enum_1.ReportStatus.VALID
+                        : report_status_enum_1.ReportStatus.INVALID;
+            }
             await this.uatReportModel.updateOne({ _id: reportId }, { $set: { status: reportStatus } });
             const result = (0, parser_1.parseEvaluationToView)(evaluation);
             return result;
@@ -2967,21 +3194,63 @@ exports.LLMActualResultEvaluator = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const attribute_type_enum_1 = __webpack_require__(/*! ../../../scoring-rules/enums/attribute-type.enum */ "./src/scoring-rules/enums/attribute-type.enum.ts");
 const llm_evaluation_service_1 = __webpack_require__(/*! ../../../llm/services/llm-evaluation.service */ "./src/llm/services/llm-evaluation.service.ts");
+const llm_evaluation_failed_error_1 = __webpack_require__(/*! ../../../llm/errors/llm-evaluation-failed.error */ "./src/llm/errors/llm-evaluation-failed.error.ts");
 let LLMActualResultEvaluator = class LLMActualResultEvaluator {
     constructor(llmEvaluationService) {
         this.llmEvaluationService = llmEvaluationService;
     }
     async evaluate(report, rule, reportType) {
-        const result = await this.llmEvaluationService.evaluate(attribute_type_enum_1.AttributeType.ACTUAL_RESULT, report, reportType);
-        return {
-            attribute: attribute_type_enum_1.AttributeType.ACTUAL_RESULT,
-            score: result.score,
-            maxScore: 1,
-            weight: rule.weight,
-            weightedScore: result.score * rule.weight,
-            passed: result.score >= 0.7,
-            reasoning: result.reasoning,
-        };
+        try {
+            const result = await this.llmEvaluationService.evaluate(attribute_type_enum_1.AttributeType.ACTUAL_RESULT, report, reportType);
+            let finalScore = result.score;
+            const qualityFlags = result.qualityFlags;
+            if (qualityFlags) {
+                if (qualityFlags.isContradictory === true) {
+                    finalScore = Math.max(0, finalScore - 0.2);
+                }
+                if (qualityFlags.isTooGeneric === true) {
+                    finalScore = Math.max(0, finalScore - 0.15);
+                }
+                if (qualityFlags.hasBias === true) {
+                    finalScore = Math.max(0, finalScore - 0.1);
+                }
+                if (qualityFlags.isAmbiguous === true) {
+                    finalScore = Math.max(0, finalScore - 0.1);
+                }
+                if (qualityFlags.isConsistent === false) {
+                    finalScore = Math.max(0, finalScore - 0.15);
+                }
+                if (qualityFlags.isClear === false) {
+                    finalScore = Math.max(0, finalScore - 0.1);
+                }
+                finalScore = Math.min(1, Math.max(0, finalScore));
+            }
+            return {
+                attribute: attribute_type_enum_1.AttributeType.ACTUAL_RESULT,
+                score: finalScore,
+                maxScore: 1,
+                weight: rule.weight,
+                weightedScore: finalScore * rule.weight,
+                passed: finalScore >= 0.7,
+                reasoning: result.reasoning,
+                qualityFlags: qualityFlags,
+            };
+        }
+        catch (error) {
+            if (error instanceof llm_evaluation_failed_error_1.LLMEvaluationFailedError) {
+                return {
+                    attribute: attribute_type_enum_1.AttributeType.ACTUAL_RESULT,
+                    score: 0,
+                    maxScore: 1,
+                    weight: rule.weight,
+                    weightedScore: 0,
+                    passed: false,
+                    reasoning: `LLM evaluation failed: ${error.originalError.message}`,
+                    evaluationStatus: 'NEEDS_MANUAL_REVIEW',
+                };
+            }
+            throw error;
+        }
     }
 };
 exports.LLMActualResultEvaluator = LLMActualResultEvaluator;
@@ -3015,21 +3284,40 @@ exports.LLMDescriptionSuccessEvaluator = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const attribute_type_enum_1 = __webpack_require__(/*! ../../../scoring-rules/enums/attribute-type.enum */ "./src/scoring-rules/enums/attribute-type.enum.ts");
 const llm_evaluation_service_1 = __webpack_require__(/*! ../../../llm/services/llm-evaluation.service */ "./src/llm/services/llm-evaluation.service.ts");
+const llm_evaluation_failed_error_1 = __webpack_require__(/*! ../../../llm/errors/llm-evaluation-failed.error */ "./src/llm/errors/llm-evaluation-failed.error.ts");
 let LLMDescriptionSuccessEvaluator = class LLMDescriptionSuccessEvaluator {
     constructor(llmEvaluationService) {
         this.llmEvaluationService = llmEvaluationService;
     }
     async evaluate(report, rule, reportType) {
-        const result = await this.llmEvaluationService.evaluate(attribute_type_enum_1.AttributeType.ACTUAL_RESULT, report, reportType);
-        return {
-            attribute: attribute_type_enum_1.AttributeType.ACTUAL_RESULT,
-            score: result.score,
-            maxScore: 1,
-            weight: rule.weight,
-            weightedScore: result.score * rule.weight,
-            passed: result.score >= 0.7,
-            reasoning: result.reasoning,
-        };
+        try {
+            const result = await this.llmEvaluationService.evaluate(attribute_type_enum_1.AttributeType.ACTUAL_RESULT, report, reportType);
+            return {
+                attribute: attribute_type_enum_1.AttributeType.ACTUAL_RESULT,
+                score: result.score,
+                maxScore: 1,
+                weight: rule.weight,
+                weightedScore: result.score * rule.weight,
+                passed: result.score >= 0.7,
+                reasoning: result.reasoning,
+                qualityFlags: result.qualityFlags,
+            };
+        }
+        catch (error) {
+            if (error instanceof llm_evaluation_failed_error_1.LLMEvaluationFailedError) {
+                return {
+                    attribute: attribute_type_enum_1.AttributeType.ACTUAL_RESULT,
+                    score: 0,
+                    maxScore: 1,
+                    weight: rule.weight,
+                    weightedScore: 0,
+                    passed: false,
+                    reasoning: `LLM evaluation failed: ${error.originalError.message}`,
+                    evaluationStatus: 'NEEDS_MANUAL_REVIEW',
+                };
+            }
+            throw error;
+        }
     }
 };
 exports.LLMDescriptionSuccessEvaluator = LLMDescriptionSuccessEvaluator;
@@ -3255,21 +3543,55 @@ exports.LLMStepsToReproduceEvaluator = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const attribute_type_enum_1 = __webpack_require__(/*! ../../../scoring-rules/enums/attribute-type.enum */ "./src/scoring-rules/enums/attribute-type.enum.ts");
 const llm_evaluation_service_1 = __webpack_require__(/*! ../../../llm/services/llm-evaluation.service */ "./src/llm/services/llm-evaluation.service.ts");
+const llm_evaluation_failed_error_1 = __webpack_require__(/*! ../../../llm/errors/llm-evaluation-failed.error */ "./src/llm/errors/llm-evaluation-failed.error.ts");
 let LLMStepsToReproduceEvaluator = class LLMStepsToReproduceEvaluator {
     constructor(llmEvaluationService) {
         this.llmEvaluationService = llmEvaluationService;
     }
     async evaluate(report, rule, reportType) {
-        const result = await this.llmEvaluationService.evaluate(attribute_type_enum_1.AttributeType.STEPS_TO_REPRODUCE, report, reportType);
-        return {
-            attribute: attribute_type_enum_1.AttributeType.STEPS_TO_REPRODUCE,
-            score: result.score,
-            maxScore: 1,
-            weight: rule.weight,
-            weightedScore: result.score * rule.weight,
-            passed: result.score >= 0.7,
-            reasoning: result.reasoning,
-        };
+        try {
+            const result = await this.llmEvaluationService.evaluate(attribute_type_enum_1.AttributeType.STEPS_TO_REPRODUCE, report, reportType);
+            let evaluationStatus;
+            if (result.status) {
+                evaluationStatus = result.status;
+            }
+            else {
+                if (result.score >= 0.7) {
+                    evaluationStatus = 'VALID';
+                }
+                else if (result.score >= 0.4) {
+                    evaluationStatus = 'AMBIGUOUS';
+                }
+                else {
+                    evaluationStatus = 'INVALID';
+                }
+            }
+            return {
+                attribute: attribute_type_enum_1.AttributeType.STEPS_TO_REPRODUCE,
+                score: result.score,
+                maxScore: 1,
+                weight: rule.weight,
+                weightedScore: result.score * rule.weight,
+                passed: result.score >= 0.7,
+                reasoning: result.reasoning,
+                evaluationStatus,
+            };
+        }
+        catch (error) {
+            if (error instanceof llm_evaluation_failed_error_1.LLMEvaluationFailedError) {
+                return {
+                    attribute: attribute_type_enum_1.AttributeType.STEPS_TO_REPRODUCE,
+                    score: 0,
+                    maxScore: 1,
+                    weight: rule.weight,
+                    weightedScore: 0,
+                    passed: false,
+                    reasoning: `LLM evaluation failed: ${error.originalError.message}`,
+                    evaluationStatus: 'NEEDS_MANUAL_REVIEW',
+                };
+            }
+            throw error;
+        }
     }
 };
 exports.LLMStepsToReproduceEvaluator = LLMStepsToReproduceEvaluator;
@@ -3548,7 +3870,7 @@ let GetEvaluationService = class GetEvaluationService {
                 .lean()
                 .exec());
             if (!evaluation) {
-                throw new gqlerr_1.ThrowGQL('Evaluation not found', gqlerr_1.GQLThrowType.NOT_FOUND);
+                return null;
             }
             return (0, parser_1.parseEvaluationToView)(evaluation);
         }
@@ -3616,10 +3938,10 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
 exports["default"] = (0, config_1.registerAs)('llm', () => ({
     apiKey: process.env.OPENAI_API_KEY || '',
-    model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
+    model: process.env.OPENAI_MODEL || 'gpt-4o',
     temperature: process.env.OPENAI_TEMPERATURE
         ? parseFloat(process.env.OPENAI_TEMPERATURE)
-        : 0.3,
+        : 0.2,
     timeout: process.env.OPENAI_TIMEOUT
         ? parseInt(process.env.OPENAI_TIMEOUT, 10)
         : 30000,
@@ -3631,6 +3953,30 @@ exports["default"] = (0, config_1.registerAs)('llm', () => ({
         ? parseInt(process.env.LLM_CACHE_TTL, 10)
         : 86400000,
 }));
+
+
+/***/ }),
+
+/***/ "./src/llm/errors/llm-evaluation-failed.error.ts":
+/*!*******************************************************!*\
+  !*** ./src/llm/errors/llm-evaluation-failed.error.ts ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LLMEvaluationFailedError = void 0;
+class LLMEvaluationFailedError extends Error {
+    constructor(attribute, originalError, retryAttempts) {
+        super(`LLM evaluation failed for attribute ${attribute} after ${retryAttempts} attempts: ${originalError.message}`);
+        this.attribute = attribute;
+        this.originalError = originalError;
+        this.retryAttempts = retryAttempts;
+        this.name = 'LLMEvaluationFailedError';
+        Object.setPrototypeOf(this, LLMEvaluationFailedError.prototype);
+    }
+}
+exports.LLMEvaluationFailedError = LLMEvaluationFailedError;
 
 
 /***/ }),
@@ -3796,6 +4142,7 @@ const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
 const openai_1 = __webpack_require__(/*! openai */ "openai");
 const prompt_builder_service_1 = __webpack_require__(/*! ./prompt-builder.service */ "./src/llm/services/prompt-builder.service.ts");
 const llm_cache_service_1 = __webpack_require__(/*! ./llm-cache.service */ "./src/llm/services/llm-cache.service.ts");
+const llm_evaluation_failed_error_1 = __webpack_require__(/*! ../errors/llm-evaluation-failed.error */ "./src/llm/errors/llm-evaluation-failed.error.ts");
 let LLMEvaluationService = LLMEvaluationService_1 = class LLMEvaluationService {
     constructor(configService, promptBuilder, cacheService) {
         this.configService = configService;
@@ -3811,7 +4158,7 @@ let LLMEvaluationService = LLMEvaluationService_1 = class LLMEvaluationService {
         });
         this.model = this.configService.get('llm.model') || 'gpt-4o-mini';
         this.temperature =
-            this.configService.get('llm.temperature') || 0.3;
+            this.configService.get('llm.temperature') || 0.2;
         this.timeout = this.configService.get('llm.timeout') || 30000;
         this.maxRetries = this.configService.get('llm.maxRetries') || 3;
         this.cacheEnabled =
@@ -3854,11 +4201,8 @@ let LLMEvaluationService = LLMEvaluationService_1 = class LLMEvaluationService {
                 }
             }
         }
-        this.logger.error(`All retry attempts failed for attribute ${attribute}. Returning default score.`);
-        return {
-            score: 0,
-            reasoning: `Evaluation failed after ${this.maxRetries} attempts: ${lastError?.message || 'Unknown error'}`,
-        };
+        this.logger.error(`All retry attempts failed for attribute ${attribute}. Throwing error for failover.`);
+        throw new llm_evaluation_failed_error_1.LLMEvaluationFailedError(attribute, lastError || new Error('Unknown error'), this.maxRetries);
     }
     async callOpenAI(systemPrompt, userPrompt) {
         const controller = new AbortController();
@@ -3887,10 +4231,30 @@ let LLMEvaluationService = LLMEvaluationService_1 = class LLMEvaluationService {
             else if (score > 1) {
                 score = 1;
             }
-            return {
+            const result = {
                 score,
                 reasoning: parsed.reasoning || 'No reasoning provided',
             };
+            if (parsed.status) {
+                const validStatuses = ['VALID', 'AMBIGUOUS', 'INVALID'];
+                if (validStatuses.includes(parsed.status)) {
+                    result.status = parsed.status;
+                }
+            }
+            if (parsed.qualityFlags) {
+                result.qualityFlags = {
+                    isConsistent: parsed.qualityFlags.isConsistent ?? undefined,
+                    isClear: parsed.qualityFlags.isClear ?? undefined,
+                    isContradictory: parsed.qualityFlags.isContradictory ?? undefined,
+                    isTooGeneric: parsed.qualityFlags.isTooGeneric ?? undefined,
+                    hasBias: parsed.qualityFlags.hasBias ?? undefined,
+                    isAmbiguous: parsed.qualityFlags.isAmbiguous ?? undefined,
+                };
+            }
+            if (parsed.issues && Array.isArray(parsed.issues)) {
+                result.issues = parsed.issues;
+            }
+            return result;
         }
         catch (error) {
             clearTimeout(timeoutId);
@@ -3956,22 +4320,56 @@ let PromptBuilderService = class PromptBuilderService {
         };
     }
     getSystemPrompt(attribute, reportType) {
-        const reportTypeLabel = reportType === report_type_enum_1.ReportType.BUG_REPORT ? 'Bug Report' : 'Success Report';
-        return `You are an expert quality assurance evaluator. Your task is to evaluate ${reportTypeLabel.toLowerCase()} attributes and provide a score from 0.0 to 1.0.
+        const reportTypeLabel = reportType === report_type_enum_1.ReportType.BUG_REPORT ? 'Laporan Bug' : 'Laporan Sukses';
+        if (attribute === attribute_type_enum_1.AttributeType.STEPS_TO_REPRODUCE) {
+            return `Anda adalah evaluator quality assurance ahli yang mengkhususkan diri dalam mengevaluasi kemampuan reproduksi test case. Tugas Anda adalah mengevaluasi Langkah-langkah untuk Reproduksi untuk ${reportTypeLabel.toLowerCase()} dan memberikan penilaian semantik.
 
-You must respond ONLY with valid JSON in this exact format:
-{"score": 0.0-1.0, "reasoning": "brief explanation of your evaluation"}
+Anda HARUS merespons HANYA dengan JSON yang valid dalam format ini:
+{"score": 0.0-1.0, "status": "VALID|AMBIGUOUS|INVALID", "reasoning": "penjelasan singkat", "issues": ["daftar masalah jika ada"]}
 
-The score should reflect:
-- 0.0-0.3: Poor quality, missing critical information
-- 0.4-0.6: Acceptable but incomplete or unclear
-- 0.7-0.9: Good quality with minor issues
-- 1.0: Excellent quality, complete and clear
+Pemetaan Status:
+- VALID: score >= 0.7 - Langkah-langkah tersusun secara logis, dapat direproduksi, dan lengkap
+- AMBIGUOUS: 0.4 <= score < 0.7 - Langkah-langkah memiliki beberapa masalah tetapi mungkin masih bisa digunakan
+- INVALID: score < 0.4 - Langkah-langkah tidak jelas, tidak logis, atau tidak lengkap
 
-Be strict but fair in your evaluation.`;
+Skor harus mencerminkan kualitas semantik, bukan jumlah karakter. Evaluasi berdasarkan:
+- Urutan dan logika langkah
+- Hubungan sebab-akibat antar langkah
+- Kemampuan reproduksi oleh tester lain
+- Kelengkapan untuk reproduksi bug
+
+Bersikap ketat tetapi adil dalam evaluasi Anda.`;
+        }
+        if (attribute === attribute_type_enum_1.AttributeType.ACTUAL_RESULT) {
+            return `Anda adalah evaluator quality assurance ahli yang mengkhususkan diri dalam mengevaluasi deskripsi laporan bug. Tugas Anda adalah mengevaluasi deskripsi Hasil Aktual untuk ${reportTypeLabel.toLowerCase()} dan memberikan penilaian semantik.
+
+Anda HARUS merespons HANYA dengan JSON yang valid dalam format ini:
+{"score": 0.0-1.0, "reasoning": "penjelasan singkat", "qualityFlags": {"isConsistent": true/false, "isClear": true/false, "isContradictory": false/true, "isTooGeneric": false/true, "hasBias": false/true, "isAmbiguous": false/true}}
+
+Skor harus mencerminkan kualitas semantik, bukan jumlah karakter. Evaluasi berdasarkan:
+- Konsistensi dengan judul laporan
+- Kejelasan deskripsi perilaku sistem
+- Tidak ada kontradiksi
+- Spesifisitas (tidak terlalu umum)
+- Kelengkapan informasi
+
+Bersikap ketat tetapi adil dalam evaluasi Anda.`;
+        }
+        return `Anda adalah evaluator quality assurance ahli. Tugas Anda adalah mengevaluasi atribut ${reportTypeLabel.toLowerCase()} dan memberikan skor dari 0.0 hingga 1.0.
+
+Anda HARUS merespons HANYA dengan JSON yang valid dalam format ini:
+{"score": 0.0-1.0, "reasoning": "penjelasan singkat dari evaluasi Anda"}
+
+Skor harus mencerminkan:
+- 0.0-0.3: Kualitas buruk, informasi kritis hilang
+- 0.4-0.6: Dapat diterima tetapi tidak lengkap atau tidak jelas
+- 0.7-0.9: Kualitas baik dengan masalah minor
+- 1.0: Kualitas sangat baik, lengkap dan jelas
+
+Bersikap ketat tetapi adil dalam evaluasi Anda.`;
     }
     getUserPrompt(attribute, report, reportType) {
-        const reportTypeLabel = reportType === report_type_enum_1.ReportType.BUG_REPORT ? 'Bug Report' : 'Success Report';
+        const reportTypeLabel = reportType === report_type_enum_1.ReportType.BUG_REPORT ? 'Laporan Bug' : 'Laporan Sukses';
         switch (attribute) {
             case attribute_type_enum_1.AttributeType.TEST_ENVIRONMENT:
                 return this.buildTestEnvironmentPrompt(report, reportTypeLabel);
@@ -3995,167 +4393,237 @@ Be strict but fair in your evaluation.`;
     }
     buildTestEnvironmentPrompt(report, reportTypeLabel) {
         const env = report.testEnvironment;
-        return `Evaluate the Test Environment attribute for this ${reportTypeLabel.toLowerCase()}:
+        return `Evaluasi atribut Lingkungan Uji untuk ${reportTypeLabel.toLowerCase()} ini:
 
-Test Environment Data:
-- Operating System: ${env?.os || 'Not provided'}
-- Browser: ${env?.browser || 'Not provided'}
-- Device: ${env?.device || 'Not provided'}
-- Additional Info: ${env?.additionalInfo || 'None'}
+Data Lingkungan Uji:
+- Sistem Operasi: ${env?.os || 'Tidak disediakan'}
+- Browser: ${env?.browser || 'Tidak disediakan'}
+- Perangkat: ${env?.device || 'Tidak disediakan'}
+- Informasi Tambahan: ${env?.additionalInfo || 'Tidak ada'}
 
-Scoring Criteria:
-- All required fields (OS, Browser, Device) are provided: +0.5
-- Additional relevant information is provided: +0.3
-- Information is clear and specific: +0.2
+Kriteria Penilaian:
+- Semua field wajib (OS, Browser, Perangkat) disediakan: +0.5
+- Informasi tambahan yang relevan disediakan: +0.3
+- Informasi jelas dan spesifik: +0.2
 
-Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
+Kembalikan JSON: {"score": 0.0-1.0, "reasoning": "penjelasan"}`;
     }
     buildStepsToReproducePrompt(report, reportTypeLabel) {
         const steps = report.stepsToReproduce || [];
         const stepsText = steps.length > 0
             ? steps.map((step, i) => `${i + 1}. ${step}`).join('\n')
-            : 'No steps provided';
-        return `Evaluate the Steps to Reproduce attribute for this ${reportTypeLabel.toLowerCase()}:
+            : 'Tidak ada langkah yang disediakan';
+        const title = report.testIdentity?.title || 'N/A';
+        const actualResult = report.actualResult || 'N/A';
+        const expectedResult = report.expectedResult || 'N/A';
+        return `Evaluasi atribut Langkah-langkah untuk Reproduksi untuk ${reportTypeLabel.toLowerCase()} ini:
 
-Steps to Reproduce:
+Judul Laporan: ${title}
+
+Langkah-langkah untuk Reproduksi:
 ${stepsText}
 
-Scoring Criteria:
-- At least 3 steps provided: +0.3
-- Steps are clear and sequential: +0.3
-- Each step is detailed enough (minimum 10 characters): +0.2
-- Steps are actionable and specific: +0.2
+Konteks:
+- Hasil Aktual: ${actualResult.substring(0, 200)}${actualResult.length > 200 ? '...' : ''}
+- Hasil yang Diharapkan: ${expectedResult.substring(0, 200)}${expectedResult.length > 200 ? '...' : ''}
 
-Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
+Kriteria Evaluasi Semantik:
+1. Validitas Urutan (0.3 poin):
+   - Apakah langkah-langkah dalam urutan yang logis?
+   - Apakah mereka mengikuti progresi alami?
+   - Apakah ada awal dan akhir yang jelas?
+
+2. Hubungan Sebab-Akibat (0.3 poin):
+   - Apakah langkah-langkah saling membangun?
+   - Apakah ada rantai sebab-akibat yang jelas?
+   - Apakah dependensi antar langkah eksplisit?
+
+3. Kemampuan Reproduksi (0.2 poin):
+   - Dapatkah tester lain mengikuti langkah-langkah ini?
+   - Apakah tindakan spesifik dan tidak ambigu?
+   - Apakah semua detail yang diperlukan disertakan?
+
+4. Kelengkapan (0.2 poin):
+   - Apakah semua langkah yang diperlukan untuk mereproduksi masalah ada?
+   - Apakah tidak ada yang kritis yang hilang?
+   - Apakah mengikuti langkah-langkah ini akan secara andal mereproduksi bug?
+
+Kembalikan JSON: {"score": 0.0-1.0, "status": "VALID|AMBIGUOUS|INVALID", "reasoning": "penjelasan detail", "issues": ["daftar masalah spesifik yang ditemukan"]}`;
     }
     buildActualResultPrompt(report, reportTypeLabel) {
         const actualResult = report.actualResult || 'Not provided';
         const isSuccessReport = report.reportType === report_type_enum_1.ReportType.SUCCESS_REPORT;
+        const title = report.testIdentity?.title || 'N/A';
+        const expectedResult = report.expectedResult || 'N/A';
         if (isSuccessReport) {
-            return `Evaluate the Success Description (Actual Result) attribute for this success report:
+            return `Evaluasi atribut Deskripsi Sukses (Hasil Aktual) untuk laporan sukses ini:
 
-Success Description:
+Judul Laporan: ${title}
+
+Deskripsi Sukses:
 ${actualResult}
 
-Scoring Criteria:
-- Description is provided and meaningful (minimum 30 characters): +0.3
-- Description clearly explains what succeeded: +0.3
-- Description includes relevant context: +0.2
-- Description is clear and well-written: +0.2
-
-Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
-        }
-        return `Evaluate the Actual Result attribute for this bug report:
-
-Actual Result:
-${actualResult}
-
-Scoring Criteria:
-- Actual result is provided and meaningful (minimum 30 characters): +0.3
-- Clearly describes what actually happened: +0.3
-- Includes relevant error messages or symptoms: +0.2
-- Description is clear and specific: +0.2
-
-Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
-    }
-    buildExpectedResultPrompt(report, reportTypeLabel) {
-        const expectedResult = report.expectedResult || 'Not provided';
-        return `Evaluate the Expected Result attribute for this ${reportTypeLabel.toLowerCase()}:
-
-Expected Result:
+Hasil yang Diharapkan (untuk konteks):
 ${expectedResult}
 
-Scoring Criteria:
-- Expected result is provided and meaningful (minimum 10 characters): +0.4
-- Clearly describes what should have happened: +0.3
-- Contrasts appropriately with actual result: +0.2
-- Description is clear and specific: +0.1
+Kriteria Evaluasi Semantik:
+1. Konsistensi dengan Judul (0.2 poin):
+   - Apakah deskripsi konsisten dengan judul laporan?
+   - Apakah sesuai dengan yang disarankan oleh judul?
 
-Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
+2. Kejelasan Perilaku Sukses (0.3 poin):
+   - Apakah jelas apa yang berhasil?
+   - Apakah perilaku sukses dijelaskan secara detail?
+   - Dapatkah pembaca memahami apa yang berfungsi?
+
+3. Tidak Kontradiktif (0.2 poin):
+   - Apakah ada kontradiksi dalam deskripsi?
+   - Apakah informasi koheren?
+
+4. Spesifisitas (0.2 poin):
+   - Apakah deskripsi cukup spesifik?
+   - Tidak terlalu umum atau samar?
+   - Menyertakan detail yang relevan?
+
+5. Kelengkapan (0.1 poin):
+   - Apakah semua informasi yang diperlukan disertakan?
+   - Dapatkah seseorang memahami kesuksesan tanpa konteks tambahan?
+
+Kembalikan JSON: {"score": 0.0-1.0, "reasoning": "penjelasan detail", "qualityFlags": {"isConsistent": true/false, "isClear": true/false, "isContradictory": false/true, "isTooGeneric": false/true, "hasBias": false/true, "isAmbiguous": false/true}}`;
+        }
+        return `Evaluasi atribut Hasil Aktual untuk laporan bug ini:
+
+Judul Laporan: ${title}
+
+Hasil Aktual:
+${actualResult}
+
+Hasil yang Diharapkan (untuk perbandingan):
+${expectedResult}
+
+Kriteria Evaluasi Semantik:
+1. Konsistensi dengan Judul (0.2 poin):
+   - Apakah hasil aktual konsisten dengan judul laporan?
+   - Apakah menggambarkan masalah yang disebutkan dalam judul?
+
+2. Kejelasan Perilaku Sistem (0.3 poin):
+   - Apakah jelas apa yang sebenarnya terjadi?
+   - Apakah perilaku sistem dijelaskan dengan jelas?
+   - Dapatkah pembaca memahami masalahnya?
+
+3. Tidak Kontradiktif (0.2 poin):
+   - Apakah ada kontradiksi dalam deskripsi?
+   - Apakah informasi koheren dan logis?
+
+4. Spesifisitas (0.2 poin):
+   - Apakah deskripsi cukup spesifik?
+   - Tidak terlalu umum atau samar?
+   - Menyertakan pesan error, gejala, atau detail yang relevan?
+
+5. Kelengkapan (0.1 poin):
+   - Apakah semua informasi yang diperlukan disertakan?
+   - Dapatkah seseorang memahami masalah tanpa konteks tambahan?
+
+Kembalikan JSON: {"score": 0.0-1.0, "reasoning": "penjelasan detail", "qualityFlags": {"isConsistent": true/false, "isClear": true/false, "isContradictory": false/true, "isTooGeneric": false/true, "hasBias": false/true, "isAmbiguous": false/true}}`;
+    }
+    buildExpectedResultPrompt(report, reportTypeLabel) {
+        const expectedResult = report.expectedResult || 'Tidak disediakan';
+        return `Evaluasi atribut Hasil yang Diharapkan untuk ${reportTypeLabel.toLowerCase()} ini:
+
+Hasil yang Diharapkan:
+${expectedResult}
+
+Kriteria Penilaian:
+- Hasil yang diharapkan disediakan dan bermakna (minimal 10 karakter): +0.4
+- Jelas menggambarkan apa yang seharusnya terjadi: +0.3
+- Kontras dengan tepat terhadap hasil aktual: +0.2
+- Deskripsi jelas dan spesifik: +0.1
+
+Kembalikan JSON: {"score": 0.0-1.0, "reasoning": "penjelasan"}`;
     }
     buildSupportingEvidencePrompt(report, reportTypeLabel) {
         const evidence = report.supportingEvidence || [];
         const evidenceText = evidence.length > 0
             ? evidence
-                .map((e, i) => `${i + 1}. Type: ${e.type}, URL: ${e.url || 'N/A'}, Description: ${e.description || 'None'}`)
+                .map((e, i) => `${i + 1}. Tipe: ${e.type}, URL: ${e.url || 'N/A'}, Deskripsi: ${e.description || 'Tidak ada'}`)
                 .join('\n')
-            : 'No supporting evidence provided';
-        return `Evaluate the Supporting Evidence attribute for this ${reportTypeLabel.toLowerCase()}:
+            : 'Tidak ada bukti pendukung yang disediakan';
+        return `Evaluasi atribut Bukti Pendukung untuk ${reportTypeLabel.toLowerCase()} ini:
 
-Supporting Evidence:
+Bukti Pendukung:
 ${evidenceText}
 
-Scoring Criteria:
-- At least one piece of evidence is provided: +0.5
-- Evidence is relevant to the report: +0.3
-- Evidence includes proper description or context: +0.2
+Kriteria Penilaian:
+- Setidaknya satu bukti disediakan: +0.5
+- Bukti relevan dengan laporan: +0.3
+- Bukti menyertakan deskripsi atau konteks yang tepat: +0.2
 
-Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
+Kembalikan JSON: {"score": 0.0-1.0, "reasoning": "penjelasan"}`;
     }
     buildSeverityLevelPrompt(report, reportTypeLabel) {
         const severity = report.severityLevel;
         const actualResult = report.actualResult || '';
         const expectedResult = report.expectedResult || '';
-        return `Evaluate the Severity Level attribute for this ${reportTypeLabel.toLowerCase()}:
+        return `Evaluasi atribut Tingkat Keparahan untuk ${reportTypeLabel.toLowerCase()} ini:
 
-Severity Level: ${severity}
+Tingkat Keparahan: ${severity}
 
-Actual Result: ${actualResult.substring(0, 200)}
-Expected Result: ${expectedResult.substring(0, 200)}
+Hasil Aktual: ${actualResult.substring(0, 200)}
+Hasil yang Diharapkan: ${expectedResult.substring(0, 200)}
 
-Scoring Criteria:
-- Severity level is appropriate for the described issue: +0.5
-- Severity matches the impact described in actual/expected results: +0.3
-- Severity level is correctly assigned (Critical for crashes, High for major issues, etc.): +0.2
+Kriteria Penilaian:
+- Tingkat keparahan sesuai dengan masalah yang dijelaskan: +0.5
+- Keparahan sesuai dengan dampak yang dijelaskan dalam hasil aktual/diharapkan: +0.3
+- Tingkat keparahan ditetapkan dengan benar (Critical untuk crash, High untuk masalah besar, dll.): +0.2
 
-Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
+Kembalikan JSON: {"score": 0.0-1.0, "reasoning": "penjelasan"}`;
     }
     buildInformationConsistencyPrompt(report, reportTypeLabel) {
         const actualResult = report.actualResult || '';
         const expectedResult = report.expectedResult || '';
         const severity = report.severityLevel;
         const steps = report.stepsToReproduce || [];
-        return `Evaluate the Information Consistency attribute for this ${reportTypeLabel.toLowerCase()}:
+        return `Evaluasi atribut Konsistensi Informasi untuk ${reportTypeLabel.toLowerCase()} ini:
 
-Actual Result: ${actualResult.substring(0, 200)}
-Expected Result: ${expectedResult.substring(0, 200)}
-Severity Level: ${severity}
-Steps to Reproduce: ${steps.length} steps provided
+Hasil Aktual: ${actualResult.substring(0, 200)}
+Hasil yang Diharapkan: ${expectedResult.substring(0, 200)}
+Tingkat Keparahan: ${severity}
+Langkah-langkah untuk Reproduksi: ${steps.length} langkah disediakan
 
-Scoring Criteria:
-- Actual and expected results are different (as they should be for bug reports): +0.3
-- Both actual and expected results are meaningful (minimum 10 characters each): +0.2
-- Severity level is consistent with the described issue: +0.2
-- Steps to reproduce align with the described issue: +0.2
-- Overall information is coherent and consistent: +0.1
+Kriteria Penilaian:
+- Hasil aktual dan yang diharapkan berbeda (seperti yang seharusnya untuk laporan bug): +0.3
+- Baik hasil aktual maupun yang diharapkan bermakna (minimal 10 karakter masing-masing): +0.2
+- Tingkat keparahan konsisten dengan masalah yang dijelaskan: +0.2
+- Langkah-langkah untuk reproduksi selaras dengan masalah yang dijelaskan: +0.2
+- Secara keseluruhan informasi koheren dan konsisten: +0.1
 
-Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
+Kembalikan JSON: {"score": 0.0-1.0, "reasoning": "penjelasan"}`;
     }
     buildTestIdentityPrompt(report, reportTypeLabel) {
         const testIdentity = report.testIdentity;
-        return `Evaluate the Test Identity attribute for this ${reportTypeLabel.toLowerCase()}:
+        return `Evaluasi atribut Identitas Test untuk ${reportTypeLabel.toLowerCase()} ini:
 
-Test Identity Data:
-- Test ID: ${testIdentity?.testId || 'Not provided'}
-- Version: ${testIdentity?.version || 'Not provided'}
-- Title: ${testIdentity?.title || 'Not provided'}
+Data Identitas Test:
+- ID Test: ${testIdentity?.testId || 'Tidak disediakan'}
+- Versi: ${testIdentity?.version || 'Tidak disediakan'}
+- Judul: ${testIdentity?.title || 'Tidak disediakan'}
 
-Scoring Criteria:
-- Test ID is provided and valid: +0.4
-- Version is provided: +0.3
-- Test case name is provided: +0.3
+Kriteria Penilaian:
+- ID Test disediakan dan valid: +0.4
+- Versi disediakan: +0.3
+- Nama test case disediakan: +0.3
 
-Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
+Kembalikan JSON: {"score": 0.0-1.0, "reasoning": "penjelasan"}`;
     }
     buildGenericPrompt(attribute, report, reportTypeLabel) {
-        return `Evaluate the ${attribute} attribute for this ${reportTypeLabel.toLowerCase()}.
+        return `Evaluasi atribut ${attribute} untuk ${reportTypeLabel.toLowerCase()} ini.
 
-Report Data:
+Data Laporan:
 ${JSON.stringify(report, null, 2)}
 
-Provide a score from 0.0 to 1.0 based on the quality and completeness of this attribute.
+Berikan skor dari 0.0 hingga 1.0 berdasarkan kualitas dan kelengkapan atribut ini.
 
-Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
+Kembalikan JSON: {"score": 0.0-1.0, "reasoning": "penjelasan"}`;
     }
 };
 exports.PromptBuilderService = PromptBuilderService;
@@ -5279,14 +5747,14 @@ let InitializeScoringRulesService = class InitializeScoringRulesService {
             {
                 attribute: attribute_type_enum_1.AttributeType.STEPS_TO_REPRODUCE,
                 description: 'Steps to Reproduce Completeness',
-                criteria: 'IF steps.length >= 3 AND logically ordered THEN score = 1; IF ambiguous THEN 0.5',
+                criteria: 'LLM-based semantic evaluation: Sequence validity, causal relationships, reproducibility, and completeness. Status: VALID (score >= 0.7), AMBIGUOUS (0.4-0.7), or INVALID (< 0.4)',
                 weight: 25,
                 isActive: true,
             },
             {
                 attribute: attribute_type_enum_1.AttributeType.ACTUAL_RESULT,
                 description: 'Actual Result Completeness',
-                criteria: 'IF actualResult.length >= 30 THEN score = 1 ELSE 0',
+                criteria: 'LLM-based semantic evaluation: Consistency with title, clarity of system behavior, non-contradictory, specificity, and completeness. Score 0.0-1.0 with quality flags',
                 weight: 10,
                 isActive: true,
             },
@@ -6695,6 +7163,7 @@ var ReportStatus;
     ReportStatus["VALID"] = "VALID";
     ReportStatus["INVALID"] = "INVALID";
     ReportStatus["FAILED"] = "FAILED";
+    ReportStatus["NEEDS_MANUAL_REVIEW"] = "NEEDS_MANUAL_REVIEW";
 })(ReportStatus || (exports.ReportStatus = ReportStatus = {}));
 (0, graphql_1.registerEnumType)(ReportStatus, {
     name: 'ReportStatus',

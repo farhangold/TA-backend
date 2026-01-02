@@ -28,6 +28,7 @@ import { AttributeType } from '../../scoring-rules/enums/attribute-type.enum';
 import { CompletenessStatus } from '../enums/completeness-status.enum';
 import { ReportStatus } from '../../uat-reports/enums/report-status.enum';
 import { EvaluationView } from '../dto/views/evaluation.view';
+import { LLMEvaluationFailedError } from '../../llm/errors/llm-evaluation-failed.error';
 
 @Injectable()
 export class EvaluateReportService {
@@ -87,20 +88,30 @@ export class EvaluateReportService {
 
       // 4. Run each attribute evaluator based on report type
       const attributeScores: any[] = [];
+      const llmEvaluationErrors: Array<{
+        attribute: AttributeType;
+        error: string;
+        timestamp: Date;
+      }> = [];
 
       // Select evaluators based on report type
+      // Cost Control Strategy:
+      // - LLM-based evaluation: STEPS_TO_REPRODUCE and ACTUAL_RESULT only (as per requirements)
+      // - Rule-based evaluation: TEST_ENVIRONMENT, SUPPORTING_EVIDENCE, EXPECTED_RESULT (for efficiency)
+      // Note: Current implementation uses LLM for all attributes. Per requirements, only Steps to Reproduce
+      // and Actual Result should use LLM for semantic evaluation. Other attributes should be rule-based.
       let evaluators: Record<string, any>;
       if (reportType === ReportType.SUCCESS_REPORT) {
         evaluators = {
           [AttributeType.TEST_ENVIRONMENT]: this.environmentSuccessEvaluator,
-          [AttributeType.ACTUAL_RESULT]: this.descriptionSuccessEvaluator,
+          [AttributeType.ACTUAL_RESULT]: this.descriptionSuccessEvaluator, // LLM-based
         };
       } else {
         // Bug Report evaluators
         evaluators = {
           [AttributeType.TEST_ENVIRONMENT]: this.testEnvironmentEvaluator,
-          [AttributeType.STEPS_TO_REPRODUCE]: this.stepsToReproduceEvaluator,
-          [AttributeType.ACTUAL_RESULT]: this.actualResultEvaluator,
+          [AttributeType.STEPS_TO_REPRODUCE]: this.stepsToReproduceEvaluator, // LLM-based
+          [AttributeType.ACTUAL_RESULT]: this.actualResultEvaluator, // LLM-based
           [AttributeType.SUPPORTING_EVIDENCE]: this.supportingEvidenceEvaluator,
         };
       }
@@ -118,11 +129,32 @@ export class EvaluateReportService {
               );
               return score;
             } catch (error) {
-              // If evaluation fails, return a default score of 0
-              console.error(
-                `Error evaluating attribute ${attribute}:`,
-                error,
-              );
+              // Handle LLM evaluation failures
+              if (error instanceof LLMEvaluationFailedError) {
+                const errorEntry = {
+                  attribute: error.attribute,
+                  error: error.originalError.message,
+                  timestamp: new Date(),
+                };
+                llmEvaluationErrors.push(errorEntry);
+                console.error(
+                  `LLM evaluation failed for attribute ${attribute}:`,
+                  error,
+                );
+                // Return score with NEEDS_MANUAL_REVIEW status (already handled by evaluator)
+                return {
+                  attribute: attribute as AttributeType,
+                  score: 0,
+                  maxScore: 1,
+                  weight: rule.weight,
+                  weightedScore: 0,
+                  passed: false,
+                  evaluationStatus: 'NEEDS_MANUAL_REVIEW' as const,
+                  reasoning: `LLM evaluation failed: ${error.originalError.message}`,
+                };
+              }
+              // If evaluation fails for other reasons, return a default score of 0
+              console.error(`Error evaluating attribute ${attribute}:`, error);
               return {
                 attribute: attribute as AttributeType,
                 score: 0,
@@ -203,6 +235,12 @@ export class EvaluateReportService {
           ? CompletenessStatus.COMPLETE
           : CompletenessStatus.INCOMPLETE;
 
+      // 7.6. Check for manual review requirements
+      const requiresManualReview =
+        attributeScores.some(
+          (score) => score.evaluationStatus === 'NEEDS_MANUAL_REVIEW',
+        ) || llmEvaluationErrors.length > 0;
+
       // 8. Calculate processing time
       const processingTime = Date.now() - startTime;
 
@@ -230,13 +268,22 @@ export class EvaluateReportService {
         evaluatedBy: userId || null,
         evaluatedAt: new Date(),
         version,
+        requiresManualReview,
+        llmEvaluationErrors:
+          llmEvaluationErrors.length > 0 ? llmEvaluationErrors : undefined,
       });
 
       // 11. Update report status based on validation result
-      const reportStatus =
-        validationStatus === 'VALID'
-          ? ReportStatus.VALID
-          : ReportStatus.INVALID;
+      // Priority: NEEDS_MANUAL_REVIEW > VALID/INVALID
+      let reportStatus: ReportStatus;
+      if (requiresManualReview) {
+        reportStatus = ReportStatus.NEEDS_MANUAL_REVIEW;
+      } else {
+        reportStatus =
+          validationStatus === 'VALID'
+            ? ReportStatus.VALID
+            : ReportStatus.INVALID;
+      }
       await this.uatReportModel.updateOne(
         { _id: reportId },
         { $set: { status: reportStatus } },

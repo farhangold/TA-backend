@@ -29,20 +29,59 @@ export class PromptBuilderService {
     reportType: ReportType,
   ): string {
     const reportTypeLabel =
-      reportType === ReportType.BUG_REPORT ? 'Bug Report' : 'Success Report';
+      reportType === ReportType.BUG_REPORT ? 'Laporan Bug' : 'Laporan Sukses';
 
-    return `You are an expert quality assurance evaluator. Your task is to evaluate ${reportTypeLabel.toLowerCase()} attributes and provide a score from 0.0 to 1.0.
+    // Special handling for Steps to Reproduce
+    if (attribute === AttributeType.STEPS_TO_REPRODUCE) {
+      return `Anda adalah evaluator quality assurance ahli yang mengkhususkan diri dalam mengevaluasi kemampuan reproduksi test case. Tugas Anda adalah mengevaluasi Langkah-langkah untuk Reproduksi untuk ${reportTypeLabel.toLowerCase()} dan memberikan penilaian semantik.
 
-You must respond ONLY with valid JSON in this exact format:
-{"score": 0.0-1.0, "reasoning": "brief explanation of your evaluation"}
+Anda HARUS merespons HANYA dengan JSON yang valid dalam format ini:
+{"score": 0.0-1.0, "status": "VALID|AMBIGUOUS|INVALID", "reasoning": "penjelasan singkat", "issues": ["daftar masalah jika ada"]}
 
-The score should reflect:
-- 0.0-0.3: Poor quality, missing critical information
-- 0.4-0.6: Acceptable but incomplete or unclear
-- 0.7-0.9: Good quality with minor issues
-- 1.0: Excellent quality, complete and clear
+Pemetaan Status:
+- VALID: score >= 0.7 - Langkah-langkah tersusun secara logis, dapat direproduksi, dan lengkap
+- AMBIGUOUS: 0.4 <= score < 0.7 - Langkah-langkah memiliki beberapa masalah tetapi mungkin masih bisa digunakan
+- INVALID: score < 0.4 - Langkah-langkah tidak jelas, tidak logis, atau tidak lengkap
 
-Be strict but fair in your evaluation.`;
+Skor harus mencerminkan kualitas semantik, bukan jumlah karakter. Evaluasi berdasarkan:
+- Urutan dan logika langkah
+- Hubungan sebab-akibat antar langkah
+- Kemampuan reproduksi oleh tester lain
+- Kelengkapan untuk reproduksi bug
+
+Bersikap ketat tetapi adil dalam evaluasi Anda.`;
+    }
+
+    // Special handling for Actual Result
+    if (attribute === AttributeType.ACTUAL_RESULT) {
+      return `Anda adalah evaluator quality assurance ahli yang mengkhususkan diri dalam mengevaluasi deskripsi laporan bug. Tugas Anda adalah mengevaluasi deskripsi Hasil Aktual untuk ${reportTypeLabel.toLowerCase()} dan memberikan penilaian semantik.
+
+Anda HARUS merespons HANYA dengan JSON yang valid dalam format ini:
+{"score": 0.0-1.0, "reasoning": "penjelasan singkat", "qualityFlags": {"isConsistent": true/false, "isClear": true/false, "isContradictory": false/true, "isTooGeneric": false/true, "hasBias": false/true, "isAmbiguous": false/true}}
+
+Skor harus mencerminkan kualitas semantik, bukan jumlah karakter. Evaluasi berdasarkan:
+- Konsistensi dengan judul laporan
+- Kejelasan deskripsi perilaku sistem
+- Tidak ada kontradiksi
+- Spesifisitas (tidak terlalu umum)
+- Kelengkapan informasi
+
+Bersikap ketat tetapi adil dalam evaluasi Anda.`;
+    }
+
+    // Default system prompt for other attributes
+    return `Anda adalah evaluator quality assurance ahli. Tugas Anda adalah mengevaluasi atribut ${reportTypeLabel.toLowerCase()} dan memberikan skor dari 0.0 hingga 1.0.
+
+Anda HARUS merespons HANYA dengan JSON yang valid dalam format ini:
+{"score": 0.0-1.0, "reasoning": "penjelasan singkat dari evaluasi Anda"}
+
+Skor harus mencerminkan:
+- 0.0-0.3: Kualitas buruk, informasi kritis hilang
+- 0.4-0.6: Dapat diterima tetapi tidak lengkap atau tidak jelas
+- 0.7-0.9: Kualitas baik dengan masalah minor
+- 1.0: Kualitas sangat baik, lengkap dan jelas
+
+Bersikap ketat tetapi adil dalam evaluasi Anda.`;
   }
 
   private getUserPrompt(
@@ -51,7 +90,7 @@ Be strict but fair in your evaluation.`;
     reportType: ReportType,
   ): string {
     const reportTypeLabel =
-      reportType === ReportType.BUG_REPORT ? 'Bug Report' : 'Success Report';
+      reportType === ReportType.BUG_REPORT ? 'Laporan Bug' : 'Laporan Sukses';
 
     switch (attribute) {
       case AttributeType.TEST_ENVIRONMENT:
@@ -80,20 +119,20 @@ Be strict but fair in your evaluation.`;
     reportTypeLabel: string,
   ): string {
     const env = report.testEnvironment;
-    return `Evaluate the Test Environment attribute for this ${reportTypeLabel.toLowerCase()}:
+    return `Evaluasi atribut Lingkungan Uji untuk ${reportTypeLabel.toLowerCase()} ini:
 
-Test Environment Data:
-- Operating System: ${env?.os || 'Not provided'}
-- Browser: ${env?.browser || 'Not provided'}
-- Device: ${env?.device || 'Not provided'}
-- Additional Info: ${env?.additionalInfo || 'None'}
+Data Lingkungan Uji:
+- Sistem Operasi: ${env?.os || 'Tidak disediakan'}
+- Browser: ${env?.browser || 'Tidak disediakan'}
+- Perangkat: ${env?.device || 'Tidak disediakan'}
+- Informasi Tambahan: ${env?.additionalInfo || 'Tidak ada'}
 
-Scoring Criteria:
-- All required fields (OS, Browser, Device) are provided: +0.5
-- Additional relevant information is provided: +0.3
-- Information is clear and specific: +0.2
+Kriteria Penilaian:
+- Semua field wajib (OS, Browser, Perangkat) disediakan: +0.5
+- Informasi tambahan yang relevan disediakan: +0.3
+- Informasi jelas dan spesifik: +0.2
 
-Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
+Kembalikan JSON: {"score": 0.0-1.0, "reasoning": "penjelasan"}`;
   }
 
   private buildStepsToReproducePrompt(
@@ -104,20 +143,45 @@ Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
     const stepsText =
       steps.length > 0
         ? steps.map((step, i) => `${i + 1}. ${step}`).join('\n')
-        : 'No steps provided';
+        : 'Tidak ada langkah yang disediakan';
 
-    return `Evaluate the Steps to Reproduce attribute for this ${reportTypeLabel.toLowerCase()}:
+    const title = report.testIdentity?.title || 'N/A';
+    const actualResult = report.actualResult || 'N/A';
+    const expectedResult = report.expectedResult || 'N/A';
 
-Steps to Reproduce:
+    return `Evaluasi atribut Langkah-langkah untuk Reproduksi untuk ${reportTypeLabel.toLowerCase()} ini:
+
+Judul Laporan: ${title}
+
+Langkah-langkah untuk Reproduksi:
 ${stepsText}
 
-Scoring Criteria:
-- At least 3 steps provided: +0.3
-- Steps are clear and sequential: +0.3
-- Each step is detailed enough (minimum 10 characters): +0.2
-- Steps are actionable and specific: +0.2
+Konteks:
+- Hasil Aktual: ${actualResult.substring(0, 200)}${actualResult.length > 200 ? '...' : ''}
+- Hasil yang Diharapkan: ${expectedResult.substring(0, 200)}${expectedResult.length > 200 ? '...' : ''}
 
-Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
+Kriteria Evaluasi Semantik:
+1. Validitas Urutan (0.3 poin):
+   - Apakah langkah-langkah dalam urutan yang logis?
+   - Apakah mereka mengikuti progresi alami?
+   - Apakah ada awal dan akhir yang jelas?
+
+2. Hubungan Sebab-Akibat (0.3 poin):
+   - Apakah langkah-langkah saling membangun?
+   - Apakah ada rantai sebab-akibat yang jelas?
+   - Apakah dependensi antar langkah eksplisit?
+
+3. Kemampuan Reproduksi (0.2 poin):
+   - Dapatkah tester lain mengikuti langkah-langkah ini?
+   - Apakah tindakan spesifik dan tidak ambigu?
+   - Apakah semua detail yang diperlukan disertakan?
+
+4. Kelengkapan (0.2 poin):
+   - Apakah semua langkah yang diperlukan untuk mereproduksi masalah ada?
+   - Apakah tidak ada yang kritis yang hilang?
+   - Apakah mengikuti langkah-langkah ini akan secara andal mereproduksi bug?
+
+Kembalikan JSON: {"score": 0.0-1.0, "status": "VALID|AMBIGUOUS|INVALID", "reasoning": "penjelasan detail", "issues": ["daftar masalah spesifik yang ditemukan"]}`;
   }
 
   private buildActualResultPrompt(
@@ -126,53 +190,99 @@ Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
   ): string {
     const actualResult = report.actualResult || 'Not provided';
     const isSuccessReport = report.reportType === ReportType.SUCCESS_REPORT;
+    const title = report.testIdentity?.title || 'N/A';
+    const expectedResult = report.expectedResult || 'N/A';
 
     if (isSuccessReport) {
-      return `Evaluate the Success Description (Actual Result) attribute for this success report:
+      return `Evaluasi atribut Deskripsi Sukses (Hasil Aktual) untuk laporan sukses ini:
 
-Success Description:
+Judul Laporan: ${title}
+
+Deskripsi Sukses:
 ${actualResult}
 
-Scoring Criteria:
-- Description is provided and meaningful (minimum 30 characters): +0.3
-- Description clearly explains what succeeded: +0.3
-- Description includes relevant context: +0.2
-- Description is clear and well-written: +0.2
+Hasil yang Diharapkan (untuk konteks):
+${expectedResult}
 
-Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
+Kriteria Evaluasi Semantik:
+1. Konsistensi dengan Judul (0.2 poin):
+   - Apakah deskripsi konsisten dengan judul laporan?
+   - Apakah sesuai dengan yang disarankan oleh judul?
+
+2. Kejelasan Perilaku Sukses (0.3 poin):
+   - Apakah jelas apa yang berhasil?
+   - Apakah perilaku sukses dijelaskan secara detail?
+   - Dapatkah pembaca memahami apa yang berfungsi?
+
+3. Tidak Kontradiktif (0.2 poin):
+   - Apakah ada kontradiksi dalam deskripsi?
+   - Apakah informasi koheren?
+
+4. Spesifisitas (0.2 poin):
+   - Apakah deskripsi cukup spesifik?
+   - Tidak terlalu umum atau samar?
+   - Menyertakan detail yang relevan?
+
+5. Kelengkapan (0.1 poin):
+   - Apakah semua informasi yang diperlukan disertakan?
+   - Dapatkah seseorang memahami kesuksesan tanpa konteks tambahan?
+
+Kembalikan JSON: {"score": 0.0-1.0, "reasoning": "penjelasan detail", "qualityFlags": {"isConsistent": true/false, "isClear": true/false, "isContradictory": false/true, "isTooGeneric": false/true, "hasBias": false/true, "isAmbiguous": false/true}}`;
     }
 
-    return `Evaluate the Actual Result attribute for this bug report:
+    return `Evaluasi atribut Hasil Aktual untuk laporan bug ini:
 
-Actual Result:
+Judul Laporan: ${title}
+
+Hasil Aktual:
 ${actualResult}
 
-Scoring Criteria:
-- Actual result is provided and meaningful (minimum 30 characters): +0.3
-- Clearly describes what actually happened: +0.3
-- Includes relevant error messages or symptoms: +0.2
-- Description is clear and specific: +0.2
+Hasil yang Diharapkan (untuk perbandingan):
+${expectedResult}
 
-Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
+Kriteria Evaluasi Semantik:
+1. Konsistensi dengan Judul (0.2 poin):
+   - Apakah hasil aktual konsisten dengan judul laporan?
+   - Apakah menggambarkan masalah yang disebutkan dalam judul?
+
+2. Kejelasan Perilaku Sistem (0.3 poin):
+   - Apakah jelas apa yang sebenarnya terjadi?
+   - Apakah perilaku sistem dijelaskan dengan jelas?
+   - Dapatkah pembaca memahami masalahnya?
+
+3. Tidak Kontradiktif (0.2 poin):
+   - Apakah ada kontradiksi dalam deskripsi?
+   - Apakah informasi koheren dan logis?
+
+4. Spesifisitas (0.2 poin):
+   - Apakah deskripsi cukup spesifik?
+   - Tidak terlalu umum atau samar?
+   - Menyertakan pesan error, gejala, atau detail yang relevan?
+
+5. Kelengkapan (0.1 poin):
+   - Apakah semua informasi yang diperlukan disertakan?
+   - Dapatkah seseorang memahami masalah tanpa konteks tambahan?
+
+Kembalikan JSON: {"score": 0.0-1.0, "reasoning": "penjelasan detail", "qualityFlags": {"isConsistent": true/false, "isClear": true/false, "isContradictory": false/true, "isTooGeneric": false/true, "hasBias": false/true, "isAmbiguous": false/true}}`;
   }
 
   private buildExpectedResultPrompt(
     report: UATReport,
     reportTypeLabel: string,
   ): string {
-    const expectedResult = report.expectedResult || 'Not provided';
-    return `Evaluate the Expected Result attribute for this ${reportTypeLabel.toLowerCase()}:
+    const expectedResult = report.expectedResult || 'Tidak disediakan';
+    return `Evaluasi atribut Hasil yang Diharapkan untuk ${reportTypeLabel.toLowerCase()} ini:
 
-Expected Result:
+Hasil yang Diharapkan:
 ${expectedResult}
 
-Scoring Criteria:
-- Expected result is provided and meaningful (minimum 10 characters): +0.4
-- Clearly describes what should have happened: +0.3
-- Contrasts appropriately with actual result: +0.2
-- Description is clear and specific: +0.1
+Kriteria Penilaian:
+- Hasil yang diharapkan disediakan dan bermakna (minimal 10 karakter): +0.4
+- Jelas menggambarkan apa yang seharusnya terjadi: +0.3
+- Kontras dengan tepat terhadap hasil aktual: +0.2
+- Deskripsi jelas dan spesifik: +0.1
 
-Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
+Kembalikan JSON: {"score": 0.0-1.0, "reasoning": "penjelasan"}`;
   }
 
   private buildSupportingEvidencePrompt(
@@ -185,22 +295,22 @@ Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
         ? evidence
             .map(
               (e, i) =>
-                `${i + 1}. Type: ${e.type}, URL: ${e.url || 'N/A'}, Description: ${e.description || 'None'}`,
+                `${i + 1}. Tipe: ${e.type}, URL: ${e.url || 'N/A'}, Deskripsi: ${e.description || 'Tidak ada'}`,
             )
             .join('\n')
-        : 'No supporting evidence provided';
+        : 'Tidak ada bukti pendukung yang disediakan';
 
-    return `Evaluate the Supporting Evidence attribute for this ${reportTypeLabel.toLowerCase()}:
+    return `Evaluasi atribut Bukti Pendukung untuk ${reportTypeLabel.toLowerCase()} ini:
 
-Supporting Evidence:
+Bukti Pendukung:
 ${evidenceText}
 
-Scoring Criteria:
-- At least one piece of evidence is provided: +0.5
-- Evidence is relevant to the report: +0.3
-- Evidence includes proper description or context: +0.2
+Kriteria Penilaian:
+- Setidaknya satu bukti disediakan: +0.5
+- Bukti relevan dengan laporan: +0.3
+- Bukti menyertakan deskripsi atau konteks yang tepat: +0.2
 
-Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
+Kembalikan JSON: {"score": 0.0-1.0, "reasoning": "penjelasan"}`;
   }
 
   private buildSeverityLevelPrompt(
@@ -211,19 +321,19 @@ Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
     const actualResult = report.actualResult || '';
     const expectedResult = report.expectedResult || '';
 
-    return `Evaluate the Severity Level attribute for this ${reportTypeLabel.toLowerCase()}:
+    return `Evaluasi atribut Tingkat Keparahan untuk ${reportTypeLabel.toLowerCase()} ini:
 
-Severity Level: ${severity}
+Tingkat Keparahan: ${severity}
 
-Actual Result: ${actualResult.substring(0, 200)}
-Expected Result: ${expectedResult.substring(0, 200)}
+Hasil Aktual: ${actualResult.substring(0, 200)}
+Hasil yang Diharapkan: ${expectedResult.substring(0, 200)}
 
-Scoring Criteria:
-- Severity level is appropriate for the described issue: +0.5
-- Severity matches the impact described in actual/expected results: +0.3
-- Severity level is correctly assigned (Critical for crashes, High for major issues, etc.): +0.2
+Kriteria Penilaian:
+- Tingkat keparahan sesuai dengan masalah yang dijelaskan: +0.5
+- Keparahan sesuai dengan dampak yang dijelaskan dalam hasil aktual/diharapkan: +0.3
+- Tingkat keparahan ditetapkan dengan benar (Critical untuk crash, High untuk masalah besar, dll.): +0.2
 
-Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
+Kembalikan JSON: {"score": 0.0-1.0, "reasoning": "penjelasan"}`;
   }
 
   private buildInformationConsistencyPrompt(
@@ -235,21 +345,21 @@ Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
     const severity = report.severityLevel;
     const steps = report.stepsToReproduce || [];
 
-    return `Evaluate the Information Consistency attribute for this ${reportTypeLabel.toLowerCase()}:
+    return `Evaluasi atribut Konsistensi Informasi untuk ${reportTypeLabel.toLowerCase()} ini:
 
-Actual Result: ${actualResult.substring(0, 200)}
-Expected Result: ${expectedResult.substring(0, 200)}
-Severity Level: ${severity}
-Steps to Reproduce: ${steps.length} steps provided
+Hasil Aktual: ${actualResult.substring(0, 200)}
+Hasil yang Diharapkan: ${expectedResult.substring(0, 200)}
+Tingkat Keparahan: ${severity}
+Langkah-langkah untuk Reproduksi: ${steps.length} langkah disediakan
 
-Scoring Criteria:
-- Actual and expected results are different (as they should be for bug reports): +0.3
-- Both actual and expected results are meaningful (minimum 10 characters each): +0.2
-- Severity level is consistent with the described issue: +0.2
-- Steps to reproduce align with the described issue: +0.2
-- Overall information is coherent and consistent: +0.1
+Kriteria Penilaian:
+- Hasil aktual dan yang diharapkan berbeda (seperti yang seharusnya untuk laporan bug): +0.3
+- Baik hasil aktual maupun yang diharapkan bermakna (minimal 10 karakter masing-masing): +0.2
+- Tingkat keparahan konsisten dengan masalah yang dijelaskan: +0.2
+- Langkah-langkah untuk reproduksi selaras dengan masalah yang dijelaskan: +0.2
+- Secara keseluruhan informasi koheren dan konsisten: +0.1
 
-Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
+Kembalikan JSON: {"score": 0.0-1.0, "reasoning": "penjelasan"}`;
   }
 
   private buildTestIdentityPrompt(
@@ -257,19 +367,19 @@ Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
     reportTypeLabel: string,
   ): string {
     const testIdentity = report.testIdentity;
-    return `Evaluate the Test Identity attribute for this ${reportTypeLabel.toLowerCase()}:
+    return `Evaluasi atribut Identitas Test untuk ${reportTypeLabel.toLowerCase()} ini:
 
-Test Identity Data:
-- Test ID: ${testIdentity?.testId || 'Not provided'}
-- Version: ${testIdentity?.version || 'Not provided'}
-- Title: ${testIdentity?.title || 'Not provided'}
+Data Identitas Test:
+- ID Test: ${testIdentity?.testId || 'Tidak disediakan'}
+- Versi: ${testIdentity?.version || 'Tidak disediakan'}
+- Judul: ${testIdentity?.title || 'Tidak disediakan'}
 
-Scoring Criteria:
-- Test ID is provided and valid: +0.4
-- Version is provided: +0.3
-- Test case name is provided: +0.3
+Kriteria Penilaian:
+- ID Test disediakan dan valid: +0.4
+- Versi disediakan: +0.3
+- Nama test case disediakan: +0.3
 
-Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
+Kembalikan JSON: {"score": 0.0-1.0, "reasoning": "penjelasan"}`;
   }
 
   private buildGenericPrompt(
@@ -277,14 +387,14 @@ Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
     report: UATReport,
     reportTypeLabel: string,
   ): string {
-    return `Evaluate the ${attribute} attribute for this ${reportTypeLabel.toLowerCase()}.
+    return `Evaluasi atribut ${attribute} untuk ${reportTypeLabel.toLowerCase()} ini.
 
-Report Data:
+Data Laporan:
 ${JSON.stringify(report, null, 2)}
 
-Provide a score from 0.0 to 1.0 based on the quality and completeness of this attribute.
+Berikan skor dari 0.0 hingga 1.0 berdasarkan kualitas dan kelengkapan atribut ini.
 
-Return JSON: {"score": 0.0-1.0, "reasoning": "explanation"}`;
+Kembalikan JSON: {"score": 0.0-1.0, "reasoning": "penjelasan"}`;
   }
 }
 

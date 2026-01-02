@@ -1,6 +1,7 @@
 import { ObjectType, Field, Float, Int } from '@nestjs/graphql';
 import { AttributeScore } from '../../models/attribute-score';
 import { EvaluationFeedback } from '../../models/evaluation-feedback';
+import { LLMEvaluationError } from '../../models/llm-evaluation-error';
 import { ValidationStatus } from '../../enums/validation-status.enum';
 import { CompletenessStatus } from '../../enums/completeness-status.enum';
 import { AttributeType } from '../../../scoring-rules/enums/attribute-type.enum';
@@ -57,4 +58,10 @@ export class EvaluationView {
 
   @Field(() => Int)
   version: number;
+
+  @Field({ nullable: true })
+  requiresManualReview?: boolean;
+
+  @Field(() => [LLMEvaluationError], { nullable: true })
+  llmEvaluationErrors?: LLMEvaluationError[];
 }

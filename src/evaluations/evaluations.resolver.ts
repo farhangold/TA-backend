@@ -12,6 +12,7 @@ import { Roles, CurrentUser } from '../common/decorators';
 import { EvaluateReportService } from './services/evaluate-report.service';
 import { GetEvaluationService } from './services/get-evaluation.service';
 import { BatchEvaluateReportsService } from './services/batch-evaluate-reports.service';
+import { DeleteEvaluationService } from './services/delete-evaluation.service';
 import { EvaluationView } from './dto/views/evaluation.view';
 import { EvaluationConnection } from './dto/views/evaluation-connection.view';
 import { UATReportView } from '../uat-reports/dto/views/uat-report.view';
@@ -26,6 +27,7 @@ export class EvaluationsResolver {
     private readonly evaluateReportService: EvaluateReportService,
     private readonly getEvaluationService: GetEvaluationService,
     private readonly batchEvaluateReportsService: BatchEvaluateReportsService,
+    private readonly deleteEvaluationService: DeleteEvaluationService,
     private readonly getUATReportService: GetUATReportService,
     private readonly getUserService: GetUserService,
   ) {}
@@ -50,11 +52,20 @@ export class EvaluationsResolver {
     return await this.batchEvaluateReportsService.evaluateBatch(ids, user._id);
   }
 
-  @Query(() => EvaluationView, { name: 'getEvaluation' })
+  @Mutation(() => Boolean, { name: 'deleteEvaluationByReport' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'REVIEWER')
+  async deleteEvaluationByReport(
+    @Args('reportId') reportId: string,
+  ): Promise<boolean> {
+    return await this.deleteEvaluationService.deleteByReportId(reportId);
+  }
+
+  @Query(() => EvaluationView, { name: 'getEvaluation', nullable: true })
   @UseGuards(JwtAuthGuard)
   async getEvaluation(
     @Args('reportId') reportId: string,
-  ): Promise<EvaluationView> {
+  ): Promise<EvaluationView | null> {
     return this.getEvaluationService.findByReportId(reportId);
   }
 

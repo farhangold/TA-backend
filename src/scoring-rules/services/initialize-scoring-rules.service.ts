@@ -138,14 +138,15 @@ export class InitializeScoringRulesService {
         attribute: AttributeType.STEPS_TO_REPRODUCE,
         description: 'Steps to Reproduce Completeness',
         criteria:
-          'IF steps.length >= 3 AND logically ordered THEN score = 1; IF ambiguous THEN 0.5',
+          'LLM-based semantic evaluation: Sequence validity, causal relationships, reproducibility, and completeness. Status: VALID (score >= 0.7), AMBIGUOUS (0.4-0.7), or INVALID (< 0.4)',
         weight: 25,
         isActive: true,
       },
       {
         attribute: AttributeType.ACTUAL_RESULT,
         description: 'Actual Result Completeness',
-        criteria: 'IF actualResult.length >= 30 THEN score = 1 ELSE 0',
+        criteria:
+          'LLM-based semantic evaluation: Consistency with title, clarity of system behavior, non-contradictory, specificity, and completeness. Score 0.0-1.0 with quality flags',
         weight: 10,
         isActive: true,
       },

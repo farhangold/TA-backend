@@ -6,6 +6,7 @@ export enum ReportStatus {
   VALID = 'VALID',
   INVALID = 'INVALID',
   FAILED = 'FAILED',
+  NEEDS_MANUAL_REVIEW = 'NEEDS_MANUAL_REVIEW',
 }
 
 registerEnumType(ReportStatus, {

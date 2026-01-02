@@ -6,10 +6,25 @@ import { LLMCacheService } from './llm-cache.service';
 import { AttributeType } from '../../scoring-rules/enums/attribute-type.enum';
 import { UATReport } from '../../uat-reports/models/uat-report';
 import { ReportType } from '../../uat-reports/enums/report-type.enum';
+import { LLMEvaluationFailedError } from '../errors/llm-evaluation-failed.error';
+
+export type StepsToReproduceStatus = 'VALID' | 'AMBIGUOUS' | 'INVALID';
+
+export interface ActualResultQualityFlags {
+  isConsistent?: boolean;
+  isClear?: boolean;
+  isContradictory?: boolean;
+  isTooGeneric?: boolean;
+  hasBias?: boolean;
+  isAmbiguous?: boolean;
+}
 
 export interface LLMEvaluationResult {
   score: number;
   reasoning: string;
+  status?: StepsToReproduceStatus;
+  qualityFlags?: ActualResultQualityFlags;
+  issues?: string[];
 }
 
 @Injectable()
@@ -39,7 +54,7 @@ export class LLMEvaluationService {
 
     this.model = this.configService.get<string>('llm.model') || 'gpt-4o-mini';
     this.temperature =
-      this.configService.get<number>('llm.temperature') || 0.3;
+      this.configService.get<number>('llm.temperature') || 0.2;
     this.timeout = this.configService.get<number>('llm.timeout') || 30000;
     this.maxRetries = this.configService.get<number>('llm.maxRetries') || 3;
     this.cacheEnabled =
@@ -110,14 +125,15 @@ export class LLMEvaluationService {
       }
     }
 
-    // All retries failed, return default score
+    // All retries failed, throw error for failover mechanism
     this.logger.error(
-      `All retry attempts failed for attribute ${attribute}. Returning default score.`,
+      `All retry attempts failed for attribute ${attribute}. Throwing error for failover.`,
     );
-    return {
-      score: 0,
-      reasoning: `Evaluation failed after ${this.maxRetries} attempts: ${lastError?.message || 'Unknown error'}`,
-    };
+    throw new LLMEvaluationFailedError(
+      attribute,
+      lastError || new Error('Unknown error'),
+      this.maxRetries,
+    );
   }
 
   private async callOpenAI(
@@ -159,10 +175,38 @@ export class LLMEvaluationService {
         score = 1;
       }
 
-      return {
+      // Build result with required fields
+      const result: LLMEvaluationResult = {
         score,
         reasoning: parsed.reasoning || 'No reasoning provided',
       };
+
+      // Add optional fields if present
+      if (parsed.status) {
+        // Validate status for Steps to Reproduce
+        const validStatuses: StepsToReproduceStatus[] = ['VALID', 'AMBIGUOUS', 'INVALID'];
+        if (validStatuses.includes(parsed.status)) {
+          result.status = parsed.status;
+        }
+      }
+
+      if (parsed.qualityFlags) {
+        // Validate and add quality flags for Actual Result
+        result.qualityFlags = {
+          isConsistent: parsed.qualityFlags.isConsistent ?? undefined,
+          isClear: parsed.qualityFlags.isClear ?? undefined,
+          isContradictory: parsed.qualityFlags.isContradictory ?? undefined,
+          isTooGeneric: parsed.qualityFlags.isTooGeneric ?? undefined,
+          hasBias: parsed.qualityFlags.hasBias ?? undefined,
+          isAmbiguous: parsed.qualityFlags.isAmbiguous ?? undefined,
+        };
+      }
+
+      if (parsed.issues && Array.isArray(parsed.issues)) {
+        result.issues = parsed.issues;
+      }
+
+      return result;
     } catch (error) {
       clearTimeout(timeoutId);
       

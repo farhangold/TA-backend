@@ -2,10 +2,10 @@ import { registerAs } from '@nestjs/config';
 
 export default registerAs('llm', () => ({
   apiKey: process.env.OPENAI_API_KEY || '',
-  model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
+  model: process.env.OPENAI_MODEL || 'gpt-4o',
   temperature: process.env.OPENAI_TEMPERATURE
     ? parseFloat(process.env.OPENAI_TEMPERATURE)
-    : 0.3,
+    : 0.2,
   timeout: process.env.OPENAI_TIMEOUT
     ? parseInt(process.env.OPENAI_TIMEOUT, 10)
     : 30000,

@@ -72,5 +72,7 @@ export function parseEvaluationToView(doc: EvaluationDocument): EvaluationView {
     evaluatedBy: evaluatedBy as never, // Populated by GraphQL @ResolveField
     evaluatedAt: doc.evaluatedAt,
     version: doc.version,
+    requiresManualReview: doc.requiresManualReview ?? false,
+    llmEvaluationErrors: doc.llmEvaluationErrors ?? [],
   };
 }

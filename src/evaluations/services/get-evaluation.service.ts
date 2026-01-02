@@ -18,7 +18,7 @@ export class GetEvaluationService {
     private evaluationModel: Model<EvaluationDocument>,
   ) {}
 
-  async findByReportId(reportId: string): Promise<EvaluationView> {
+  async findByReportId(reportId: string): Promise<EvaluationView | null> {
     try {
       // Get the latest evaluation for the report
       // Note: reportId and evaluatedBy are not populated here because they are resolved via GraphQL @ResolveField
@@ -29,7 +29,8 @@ export class GetEvaluationService {
         .exec()) as unknown as EvaluationDocument | null;
 
       if (!evaluation) {
-        throw new ThrowGQL('Evaluation not found', GQLThrowType.NOT_FOUND);
+        // Return null instead of throwing error - evaluation might not exist yet
+        return null;
       }
 
       return parseEvaluationToView(evaluation);

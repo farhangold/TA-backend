@@ -6,6 +6,10 @@ import {
   EvaluationFeedback,
   EvaluationFeedbackSchema,
 } from './evaluation-feedback';
+import {
+  LLMEvaluationError,
+  LLMEvaluationErrorSchema,
+} from './llm-evaluation-error';
 import { ValidationStatus } from '../enums/validation-status.enum';
 import { CompletenessStatus } from '../enums/completeness-status.enum';
 import { AttributeType } from '../../scoring-rules/enums/attribute-type.enum';
@@ -78,6 +82,18 @@ export class Evaluation {
   @Field(() => Int)
   @Prop({ required: true, default: 1 })
   version: number;
+
+  @Field()
+  @Prop({ required: false, default: false })
+  requiresManualReview?: boolean;
+
+  @Field(() => [LLMEvaluationError], { nullable: true })
+  @Prop({
+    required: false,
+    type: [LLMEvaluationErrorSchema],
+    default: [],
+  })
+  llmEvaluationErrors?: LLMEvaluationError[];
 }
 
 export type EvaluationDocument = HydratedDocument<Evaluation>;
