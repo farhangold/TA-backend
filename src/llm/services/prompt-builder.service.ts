@@ -344,6 +344,7 @@ Kembalikan JSON: {"score": 0.0-1.0, "reasoning": "penjelasan"}`;
     const expectedResult = report.expectedResult || '';
     const severity = report.severityLevel;
     const steps = report.stepsToReproduce || [];
+    const isBugReport = report.reportType === ReportType.BUG_REPORT;
 
     return `Evaluasi atribut Konsistensi Informasi untuk ${reportTypeLabel.toLowerCase()} ini:
 
@@ -353,11 +354,15 @@ Tingkat Keparahan: ${severity}
 Langkah-langkah untuk Reproduksi: ${steps.length} langkah disediakan
 
 Kriteria Penilaian:
-- Hasil aktual dan yang diharapkan berbeda (seperti yang seharusnya untuk laporan bug): +0.3
+${isBugReport 
+  ? '- Hasil aktual dan yang diharapkan berbeda (seperti yang seharusnya untuk laporan bug): +0.3'
+  : '- Hasil aktual dan yang diharapkan konsisten (untuk laporan sukses, jika sama berarti sistem bekerja sesuai harapan): +0.3'}
 - Baik hasil aktual maupun yang diharapkan bermakna (minimal 10 karakter masing-masing): +0.2
 - Tingkat keparahan konsisten dengan masalah yang dijelaskan: +0.2
 - Langkah-langkah untuk reproduksi selaras dengan masalah yang dijelaskan: +0.2
 - Secara keseluruhan informasi koheren dan konsisten: +0.1
+
+Catatan: Jika hasil aktual sama dengan yang diharapkan, ini menunjukkan sistem bekerja dengan benar dan laporan tersebut valid.
 
 Kembalikan JSON: {"score": 0.0-1.0, "reasoning": "penjelasan"}`;
   }

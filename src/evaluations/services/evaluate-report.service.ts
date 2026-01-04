@@ -224,7 +224,10 @@ export class EvaluateReportService {
         if (
           !report.supportingEvidence ||
           !Array.isArray(report.supportingEvidence) ||
-          report.supportingEvidence.length === 0
+          report.supportingEvidence.length === 0 ||
+          report.supportingEvidence.every(
+            (evidence) => !evidence || !evidence.url || evidence.url.trim() === ''
+          )
         ) {
           incompleteAttributes.push(AttributeType.SUPPORTING_EVIDENCE);
         }

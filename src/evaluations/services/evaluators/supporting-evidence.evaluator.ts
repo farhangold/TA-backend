@@ -9,8 +9,11 @@ export class SupportingEvidenceEvaluator {
   evaluate(report: UATReport, rule: ScoringRule): AttributeScore {
     const supportingEvidence = report.supportingEvidence || [];
 
-    // Check if at least one evidence is provided
-    const score = supportingEvidence.length > 0 ? 1 : 0;
+    // Check if at least one evidence is provided with a valid URL
+    const hasValidEvidence = supportingEvidence.some(
+      (evidence) => evidence && evidence.url && evidence.url.trim() !== '',
+    );
+    const score = hasValidEvidence ? 1 : 0;
 
     return {
       attribute: AttributeType.SUPPORTING_EVIDENCE,

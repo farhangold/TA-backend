@@ -40,8 +40,7 @@ export class GenerateFeedbackService {
       },
       [AttributeType.ACTUAL_RESULT]: {
         message: 'Actual result is too brief',
-        suggestion:
-          'Please provide a detailed description (at least 30 characters)',
+        suggestion: 'Please provide a detailed description',
       },
       [AttributeType.EXPECTED_RESULT]: {
         message: 'Expected result is missing or too brief',
